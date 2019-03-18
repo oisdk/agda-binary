@@ -61,25 +61,20 @@ dec (0< x) = dec⁺ x
 ⟦ suc n ⇑⟧ = inc ⟦ n ⇑⟧
 
 mutual
-  ⟦_⇓⟧ : Bits → ℕ
-  ⟦ 0₂ ⇓⟧ = 0
-  ⟦ 0< xs ⇓⟧ = ⟦ xs ⇓⟧⁺
-
-  ⟦_⇓⟧⁺ : Bits⁺ → ℕ
-  ⟦ B₀ xs ⇓⟧⁺ = ⟦ xs ⇓⟧₀
-  ⟦ B₁ xs ⇓⟧⁺ = ℕ.pred ⟦ xs ⇓⟧₁⁺¹
+  ⟦_⇓⟧≤ : 0≤ Bits₀ → ℕ
+  ⟦ 0₂ ⇓⟧≤ = 0
+  ⟦ 0< xs ⇓⟧≤ = ⟦ xs ⇓⟧₀
 
   ⟦_⇓⟧₁⁺¹ : Bits₁ → ℕ
-  ⟦ x 1& 0₂ ⇓⟧₁⁺¹    = 2 ℕ.^ suc x
-  ⟦ x 1& 0< xs ⇓⟧₁⁺¹ = 2 ℕ.^ suc x ℕ.* suc ⟦ xs ⇓⟧₀
+  ⟦ x 1& xs ⇓⟧₁⁺¹ = 2 ℕ.^ suc x ℕ.* suc ⟦ xs ⇓⟧≤
 
   ⟦_⇓⟧₀ : Bits₀ → ℕ
   ⟦ x 0& xs ⇓⟧₀ = 2 ℕ.^ suc x ℕ.* ℕ.pred ⟦ xs ⇓⟧₁⁺¹
 
-open import Relation.Binary.PropositionalEquality
+⟦_⇓⟧⁺ : Bits⁺ → ℕ
+⟦ B₀ xs ⇓⟧⁺ = ⟦ xs ⇓⟧₀
+⟦ B₁ xs ⇓⟧⁺ = ℕ.pred ⟦ xs ⇓⟧₁⁺¹
 
-roundTrip : ℕ → Set
-roundTrip n = ⟦ ⟦ n ⇑⟧ ⇓⟧  ≡ n
-
-_ : roundTrip 50
-_ = refl
+⟦_⇓⟧ : Bits → ℕ
+⟦ 0₂ ⇓⟧ = 0
+⟦ 0< xs ⇓⟧ = ⟦ xs ⇓⟧⁺
