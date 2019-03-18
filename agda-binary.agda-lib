@@ -1,0 +1,3 @@
+name: agda-binary
+depend: standard-library
+include: .
