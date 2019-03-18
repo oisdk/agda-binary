@@ -167,3 +167,62 @@ inc-homo (0< B₁ x 1& 0< suc y 0& z 1& xs) =
 homo : ∀ n → ⟦ ⟦ n ⇑⟧ ⇓⟧ ≡ n
 homo zero = refl
 homo (suc n) = inc-homo ⟦ n ⇑⟧ ⟨ trans ⟩ cong suc (homo n)
+
+data Suc-View : Bits → Set where
+  zeroᵇ : Suc-View 0₂
+  sucᵇ : ∀ x → Suc-View (inc x)
+
+suc-view : ∀ x → Suc-View x
+suc-view 0₂ = zeroᵇ
+suc-view (0< xs) = subst Suc-View (cong 0<_ (inc-dec xs)) (sucᵇ (dec⁺ xs))
+
+⟦inc⇓⟧≢0 : ∀ x → ⟦ inc x ⇓⟧ ≢ 0
+⟦inc⇓⟧≢0 x prf with sym (inc-homo x) ⟨ trans ⟩ prf
+⟦inc⇓⟧≢0 x prf | ()
+
+inc-injective : ∀ x y → inc x ≡ inc y → x ≡ y
+inc-injective 0₂                               0₂                               refl = refl
+inc-injective 0₂                               (0< B₀ zero  0& _ 1& _         ) ()
+inc-injective 0₂                               (0< B₀ suc _ 0& _ 1& _         ) ()
+inc-injective 0₂                               (0< B₁ _ 1& 0₂                 ) ()
+inc-injective 0₂                               (0< B₁ _ 1& 0< zero  0& _ 1& _ ) ()
+inc-injective 0₂                               (0< B₁ _ 1& 0< suc _ 0& _ 1& _ ) ()
+inc-injective (0< B₀ zero  0& _ 1& _         ) 0₂                               ()
+inc-injective (0< B₀ zero  0& _ 1& _         ) (0< B₀ zero  0& _ 1& _         ) refl = refl
+inc-injective (0< B₀ zero  0& _ 1& _         ) (0< B₀ suc _ 0& _ 1& _         ) ()
+inc-injective (0< B₀ zero  0& _ 1& _         ) (0< B₁ _ 1& 0₂                 ) ()
+inc-injective (0< B₀ zero  0& _ 1& _         ) (0< B₁ _ 1& 0< zero  0& _ 1& _ ) ()
+inc-injective (0< B₀ zero  0& _ 1& _         ) (0< B₁ _ 1& 0< suc _ 0& _ 1& _ ) ()
+inc-injective (0< B₀ suc _ 0& _ 1& _         ) 0₂                               ()
+inc-injective (0< B₀ suc _ 0& _ 1& _         ) (0< B₀ zero  0& _ 1& _         ) ()
+inc-injective (0< B₀ suc _ 0& _ 1& _         ) (0< B₀ suc _ 0& _ 1& _         ) refl = refl
+inc-injective (0< B₀ suc _ 0& _ 1& _         ) (0< B₁ _ 1& 0₂                 ) ()
+inc-injective (0< B₀ suc _ 0& _ 1& _         ) (0< B₁ _ 1& 0< zero  0& _ 1& _ ) ()
+inc-injective (0< B₀ suc _ 0& _ 1& _         ) (0< B₁ _ 1& 0< suc _ 0& _ 1& _ ) ()
+inc-injective (0< B₁ _ 1& 0₂                 ) 0₂                               ()
+inc-injective (0< B₁ _ 1& 0₂                 ) (0< B₀ zero  0& _ 1& _         ) ()
+inc-injective (0< B₁ _ 1& 0₂                 ) (0< B₀ suc _ 0& _ 1& _         ) ()
+inc-injective (0< B₁ _ 1& 0₂                 ) (0< B₁ _ 1& 0₂                 ) refl = refl
+inc-injective (0< B₁ _ 1& 0₂                 ) (0< B₁ _ 1& 0< zero  0& _ 1& _ ) ()
+inc-injective (0< B₁ _ 1& 0₂                 ) (0< B₁ _ 1& 0< suc _ 0& _ 1& _ ) ()
+inc-injective (0< B₁ _ 1& 0< zero  0& _ 1& _ ) 0₂                               ()
+inc-injective (0< B₁ _ 1& 0< zero  0& _ 1& _ ) (0< B₀ zero  0& _ 1& _         ) ()
+inc-injective (0< B₁ _ 1& 0< zero  0& _ 1& _ ) (0< B₀ suc _ 0& _ 1& _         ) ()
+inc-injective (0< B₁ _ 1& 0< zero  0& _ 1& _ ) (0< B₁ _ 1& 0₂                 ) ()
+inc-injective (0< B₁ _ 1& 0< zero  0& _ 1& _ ) (0< B₁ _ 1& 0< zero  0& _ 1& _ ) refl = refl
+inc-injective (0< B₁ _ 1& 0< zero  0& _ 1& _ ) (0< B₁ _ 1& 0< suc _ 0& _ 1& _ ) ()
+inc-injective (0< B₁ _ 1& 0< suc _ 0& _ 1& _ ) 0₂                               ()
+inc-injective (0< B₁ _ 1& 0< suc _ 0& _ 1& _ ) (0< B₀ zero  0& _ 1& _         ) ()
+inc-injective (0< B₁ _ 1& 0< suc _ 0& _ 1& _ ) (0< B₀ suc _ 0& _ 1& _         ) ()
+inc-injective (0< B₁ _ 1& 0< suc _ 0& _ 1& _ ) (0< B₁ _ 1& 0₂                 ) ()
+inc-injective (0< B₁ _ 1& 0< suc _ 0& _ 1& _ ) (0< B₁ _ 1& 0< zero  0& _ 1& _ ) ()
+inc-injective (0< B₁ _ 1& 0< suc _ 0& _ 1& _ ) (0< B₁ _ 1& 0< suc _ 0& _ 1& _ ) refl = refl
+
+invol : ∀ x → ⟦ ⟦ x ⇓⟧ ⇑⟧ ≡ x
+invol x = go _ x refl
+  where
+  go : ∀ n x → ⟦ x ⇓⟧ ≡ n → ⟦ ⟦ x ⇓⟧ ⇑⟧ ≡ x
+  go n x prf with suc-view x
+  go n .0₂ prf | zeroᵇ = refl
+  go zero .(0< inc⁺ x) prf | sucᵇ x = ⊥-elim (⟦inc⇓⟧≢0 x prf)
+  go (suc n) .(0< inc⁺ x) prf | sucᵇ x = cong ⟦_⇑⟧ (inc-homo x) ⟨ trans ⟩ cong inc (go n x (ℕ-Prop.suc-injective (sym (inc-homo x) ⟨ trans ⟩ prf)))
