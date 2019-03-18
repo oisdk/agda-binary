@@ -10,21 +10,21 @@ open import Relation.Nullary
 
 mutual
   infix 4 _≟₀_ _≟₁_ _≟≤_
-  _≟₀_ : Decidable (_≡_ {A = Bits₀})
+  _≟₀_ : Decidable (_≡_ {A = 𝔹₀})
   x 0& xs ≟₀ y 0& ys with x ℕ.≟ y
   x 0& xs ≟₀ y 0& ys | no ¬p = no λ { refl → ¬p refl }
   x 0& xs ≟₀ y 0& ys | yes p with xs ≟₁ ys
   x 0& xs ≟₀ y 0& ys | yes p | no ¬p = no λ { refl → ¬p refl }
   x 0& xs ≟₀ .x 0& .xs | yes refl | yes refl = yes refl
 
-  _≟₁_ : Decidable (_≡_ {A = Bits₁})
+  _≟₁_ : Decidable (_≡_ {A = 𝔹₁})
   x 1& xs ≟₁ y 1& ys with x ℕ.≟ y
   x 1& xs ≟₁ y 1& ys | no ¬p = no λ { refl → ¬p refl }
   x 1& xs ≟₁ y 1& ys | yes p with xs ≟≤ ys
   x 1& xs ≟₁ y 1& ys | yes p | no ¬p = no λ { refl → ¬p refl }
   x 1& xs ≟₁ y 1& ys | yes refl | yes refl = yes refl
 
-  _≟≤_ : Decidable (_≡_ {A = 0≤ Bits₀})
+  _≟≤_ : Decidable (_≡_ {A = 0≤ 𝔹₀})
   0₂ ≟≤ 0₂ = yes refl
   0₂ ≟≤ 0< _ = no (λ ())
   0< _ ≟≤ 0₂ = no (λ ())
@@ -33,7 +33,7 @@ mutual
   ... | no ¬p = no λ { refl → ¬p refl }
 
 infix 4 _≟_
-_≟_ : Decidable (_≡_ {A = Bits})
+_≟_ : Decidable (_≡_ {A = 𝔹})
 0₂ ≟ 0₂ = yes refl
 0₂ ≟ (0< x) = no (λ ())
 (0< x) ≟ 0₂ = no (λ ())

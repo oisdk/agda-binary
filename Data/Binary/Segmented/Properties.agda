@@ -34,7 +34,7 @@ inj {x} {y} = go (suc-rec x) (suc-rec y)
 
 open import Function.Bijection
 
-𝔹↔ℕ : Bits ⤖ ℕ
+𝔹↔ℕ : 𝔹 ⤖ ℕ
 𝔹↔ℕ = bijection ⟦_⇓⟧ ⟦_⇑⟧ inj homo
 
 inc-injective : ∀ x y → inc x ≡ inc y → x ≡ y
@@ -42,3 +42,4 @@ inc-injective x y x+1≡y+1 = inj (ℕ-Prop.suc-injective (sym (inc-homo x) ⟨ 
 
 homo⁻¹ : ∀ x → ⟦ ⟦ x ⇓⟧ ⇑⟧ ≡ x
 homo⁻¹ = Bijection.left-inverse-of 𝔹↔ℕ
+

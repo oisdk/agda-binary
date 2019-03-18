@@ -12,7 +12,7 @@ open import Data.Empty
 
 import Data.Nat.Properties as ℕ-Prop
 
-data Suc-View : Bits → Set where
+data Suc-View : 𝔹 → Set where
   zeroᵇ : Suc-View 0₂
   sucᵇ : ∀ x → Suc-View (inc x)
 
@@ -25,7 +25,7 @@ suc-view (0< xs) = subst Suc-View (cong 0<_ (inc-dec xs)) (sucᵇ (dec⁺ xs))
 ⟦x⇓⟧⁺≢0 .(inc⁺ x) p | sucᵇ x with sym (inc-homo x) ⟨ trans ⟩ p
 ⟦x⇓⟧⁺≢0 .(inc⁺ x) p | sucᵇ x | ()
 
-data Suc-Rec : Bits → Set where
+data Suc-Rec : 𝔹 → Set where
   zeroʳ : Suc-Rec 0₂
   sucʳ : ∀ x → Suc-Rec x → Suc-Rec (inc x)
 
