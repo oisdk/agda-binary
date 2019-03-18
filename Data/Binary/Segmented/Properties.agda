@@ -72,54 +72,50 @@ lemma₁ : ∀ x {y} → x ≢ 0 → x ℕ.+ y ≢ 0
 lemma₁ zero = λ z _ → z refl
 lemma₁ (suc x) = λ _ ()
 
-lemma₂ : ∀ {x} → x ≢ 0 → suc (2 ℕ.* ℕ.pred x) ≡ ℕ.pred (2 ℕ.* x)
+lemma₂ : ∀ {x} → x ≢ 0 → ℕ.pred (2 ℕ.* x) ≡ suc (2 ℕ.* ℕ.pred x)
 lemma₂ {zero} p = ⊥-elim (p refl)
-lemma₂ {suc x} _ = sym (ℕ-Prop.+-suc _ _)
+lemma₂ {suc x} _ = ℕ-Prop.+-suc _ _
 
 lemma₄ : ∀ x → 2 ℕ.^ x ≢ 0
 lemma₄ zero = λ ()
 lemma₄ (suc x) = lemma₁ _ (lemma₄ x)
 
+lemma₅ : ∀ x y → x ≢ 0 → y ≢ 0 → x ℕ.* y ≢ 0
+lemma₅ zero y x≢0 y≢0 = λ _ → x≢0 refl
+lemma₅ (suc x) zero x≢0 y≢0 = λ _ → y≢0 refl
+lemma₅ (suc x) (suc y) x≢0 y≢0 = λ ()
+
 lemma₃ : ∀ x → ⟦ x ⇓⟧₁⁺¹ ≢ 0
-lemma₃ (zero 1& 0₂) = λ ()
-lemma₃ (suc x 1& 0₂) = lemma₁ ((2 ℕ.^ x) ℕ.+ ((2 ℕ.^ x) ℕ.+ zero)) (lemma₁ (2 ℕ.^ x) (lemma₄ x))
-lemma₃ (x 1& 0< xs) p = lemma₁ (2 ℕ.^ suc x) (lemma₄ (suc x)) (ℕ-Prop.*-comm (suc ⟦ xs ⇓⟧₀) ((2 ℕ.^ x) ℕ.+ ((2 ℕ.^ x) ℕ.+ zero)) ⟨ trans ⟩ p)
+lemma₃ (x 1& xs) = lemma₅ (2 ℕ.^ suc x) (suc ⟦ xs ⇓⟧≤) (lemma₄ (suc x)) λ ()
 
 inc-homo : ∀ x → ⟦ inc x ⇓⟧ ≡ suc ⟦ x ⇓⟧
-inc-homo 0₂                      = refl
-inc-homo (0< B₀ zero  0& y 1& 0₂) =
+inc-homo 0₂ = refl
+inc-homo (0< B₀ zero  0& y 1& xs) =
   begin
-    ℕ.pred (2 ℕ.* (2 ℕ.^ suc y))
-  ≡⟨ sym (lemma₂ (lemma₄ (suc y))) ⟩
-    suc (2 ℕ.* ℕ.pred (2 ℕ.^ suc y))
+    ℕ.pred ⟦ suc y 1& xs ⇓⟧₁⁺¹
   ≡⟨⟩
-    suc ⟦ zero 0& y 1& 0₂ ⇓⟧₀
-  ∎
-inc-homo (0< B₀ zero  0& y 1& 0< xs) =
-  begin
-    ℕ.pred ⟦ suc y 1& 0< xs ⇓⟧₁⁺¹
+    ℕ.pred (2 ℕ.^ suc (suc y) ℕ.* suc ⟦ xs ⇓⟧≤)
   ≡⟨⟩
-    ℕ.pred (2 ℕ.^ suc (suc y) ℕ.* suc ⟦  xs ⇓⟧₀ )
-  ≡⟨⟩
-    ℕ.pred ((2 ℕ.* 2 ℕ.^ suc y) ℕ.* suc ⟦  xs ⇓⟧₀ )
+    ℕ.pred (2 ℕ.* 2 ℕ.^ suc y ℕ.* suc ⟦ xs ⇓⟧≤)
   ≡⟨ cong ℕ.pred (ℕ-Prop.*-assoc 2 (2 ℕ.^ suc y) _) ⟩
-    ℕ.pred (2 ℕ.* (2 ℕ.^ suc y ℕ.* suc ⟦  xs ⇓⟧₀) )
+    ℕ.pred (2 ℕ.* (2 ℕ.^ suc y ℕ.* suc ⟦ xs ⇓⟧≤))
   ≡⟨⟩
-    ℕ.pred (2 ℕ.* ⟦ y 1& 0< xs ⇓⟧₁⁺¹)
-  ≡⟨ sym (lemma₂ (lemma₃ (y 1& 0< xs))) ⟩
-    suc (2 ℕ.* ℕ.pred ⟦ y 1& 0< xs ⇓⟧₁⁺¹)
+    ℕ.pred (2 ℕ.* ⟦ y 1& xs ⇓⟧₁⁺¹)
+  ≡⟨ lemma₂ (lemma₃ (y 1& xs)) ⟩
+    suc (2 ℕ.* ℕ.pred ⟦ y 1& xs ⇓⟧₁⁺¹)
   ≡⟨⟩
-    suc ⟦ 0 0& y 1& 0< xs ⇓⟧₀
+    suc (2 ℕ.^ 1 ℕ.* ℕ.pred ⟦ y 1& xs ⇓⟧₁⁺¹)
+  ≡⟨⟩
+    suc ⟦ 0 0& y 1& xs ⇓⟧₀
   ∎
 inc-homo (0< B₀ suc x 0& y 1& xs) =
   begin
-    (2 ℕ.^ suc x) ℕ.* ℕ.pred ⟦ y 1& xs ⇓⟧₁⁺¹ ℕ.+ suc ((2 ℕ.^ suc x) ℕ.* ℕ.pred ⟦ y 1& xs ⇓⟧₁⁺¹ ℕ.+ zero)
+    (2 ℕ.^ suc x) ℕ.* ℕ.pred ((2 ℕ.^ suc y) ℕ.* suc ⟦ xs ⇓⟧≤) ℕ.+
+      suc ((2 ℕ.^ suc x) ℕ.* ℕ.pred ((2 ℕ.^ suc y) ℕ.* suc ⟦ xs ⇓⟧≤) ℕ.+ zero)
   ≡⟨ ℕ-Prop.+-suc _ _ ⟩
-    suc ((2 ℕ.^ suc x) ℕ.* ℕ.pred ⟦ y 1& xs ⇓⟧₁⁺¹ ℕ.+ ((2 ℕ.^ suc x) ℕ.* ℕ.pred ⟦ y 1& xs ⇓⟧₁⁺¹ ℕ.+ zero))
-  ≡⟨⟩
-    suc (2 ℕ.* ((2 ℕ.^ suc x) ℕ.* ℕ.pred ⟦ y 1& xs ⇓⟧₁⁺¹))
+    suc (2 ℕ.* ((2 ℕ.^ suc x) ℕ.* ℕ.pred ((2 ℕ.^ suc y) ℕ.* suc ⟦ xs ⇓⟧≤)))
   ≡⟨ cong suc (sym (ℕ-Prop.*-assoc 2 (2 ℕ.^ suc x) _)) ⟩
-    suc ( 2 ℕ.^ suc (suc x) ℕ.* ℕ.pred ⟦ y 1& xs ⇓⟧₁⁺¹)
+    suc ((2 ℕ.^ suc (suc x)) ℕ.* ℕ.pred ((2 ℕ.^ suc y) ℕ.* suc ⟦ xs ⇓⟧≤))
   ≡⟨⟩
     suc ⟦ suc x 0& y 1& xs ⇓⟧₀
   ∎
@@ -127,49 +123,47 @@ inc-homo (0< B₁ x 1& 0₂) =
   begin
     ⟦ x 0& 0 1& 0₂ ⇓⟧₀
   ≡⟨⟩
-    (2 ℕ.^ suc x) ℕ.* 1
-  ≡⟨ ℕ-Prop.*-identityʳ _ ⟩
-    2 ℕ.^ suc x
-  ≡⟨ sym (ℕ-Prop.m≢0⇒suc[pred[m]]≡m (lemma₄ (suc x))) ⟩
-    suc (ℕ.pred (2 ℕ.^ suc x))
+    ⟦ x 1& 0₂ ⇓⟧₁⁺¹
+  ≡⟨ sym (ℕ-Prop.m≢0⇒suc[pred[m]]≡m (lemma₃ (x 1& 0₂))) ⟩
+    suc (ℕ.pred ⟦ x 1& 0₂ ⇓⟧₁⁺¹)
   ∎
-inc-homo (0< B₁ x 1& 0< zero  0& z 1& 0₂) =
+inc-homo (0< B₁ x 1& 0< zero  0& z 1& xs) =
   begin
-    ⟦ x 0& suc z 1& 0₂ ⇓⟧₀
+    ⟦ x 0& suc z 1& xs ⇓⟧₀
   ≡⟨⟩
-    2 ℕ.^ suc x ℕ.* ℕ.pred (2 ℕ.^ suc (suc z))
-  ≡⟨ {!!} ⟩
-    suc (ℕ.pred (2 ℕ.^ suc x ℕ.* suc ⟦ 0 0& z 1& 0₂ ⇓⟧₀))
+    (2 ℕ.^ suc x) ℕ.* ℕ.pred ((2 ℕ.* 2 ℕ.^ suc z) ℕ.* suc ⟦ xs ⇓⟧≤)
+  ≡⟨ cong ((2 ℕ.^ suc x) ℕ.*_) (cong ℕ.pred (ℕ-Prop.*-assoc 2 (2 ℕ.^ suc z) _)) ⟩
+    (2 ℕ.^ suc x) ℕ.* ℕ.pred (2 ℕ.* (2 ℕ.^ suc z ℕ.* suc ⟦ xs ⇓⟧≤))
+  ≡⟨⟩
+    (2 ℕ.^ suc x) ℕ.* ℕ.pred (2 ℕ.* ⟦ z 1& xs ⇓⟧₁⁺¹)
+  ≡⟨ cong ((2 ℕ.^ suc x) ℕ.*_) (lemma₂ (lemma₃ (z 1& xs))) ⟩
+    (2 ℕ.^ suc x) ℕ.* suc (2 ℕ.* ℕ.pred ⟦ z 1& xs ⇓⟧₁⁺¹)
+  ≡⟨⟩
+    ⟦ x 1& 0< zero 0& z 1& xs ⇓⟧₁⁺¹
+  ≡⟨ sym (ℕ-Prop.m≢0⇒suc[pred[m]]≡m (lemma₃ (x 1& 0< 0 0& z 1& xs))) ⟩
+    suc (ℕ.pred ⟦ x 1& 0< zero 0& z 1& xs ⇓⟧₁⁺¹)
   ∎
-inc-homo (0< B₁ x 1& 0< zero  0& z 1& 0< xs) =
+inc-homo (0< B₁ x 1& 0< suc y 0& z 1& xs) =
   begin
-    ⟦ x 0& suc z 1& 0< xs ⇓⟧₀
+    ⟦ x 0& 0 1& 0< y 0& z 1& xs ⇓⟧₀
   ≡⟨⟩
-    2 ℕ.^ suc x ℕ.* ℕ.pred ⟦ suc z 1& 0< xs ⇓⟧₁⁺¹
-  ≡⟨ {!!} ⟩
-    suc (ℕ.pred ((2 ℕ.^ suc x) ℕ.* suc (2 ℕ.* ℕ.pred ⟦ z 1& 0< xs ⇓⟧₁⁺¹)))
+    2 ℕ.^ suc x ℕ.* ℕ.pred ⟦ 0 1& 0< y 0& z 1& xs ⇓⟧₁⁺¹
+  ≡⟨⟩
+    2 ℕ.^ suc x ℕ.* ℕ.pred (2 ℕ.* suc ⟦ y 0& z 1& xs ⇓⟧₀)
+  ≡⟨ cong ((2 ℕ.^ suc x) ℕ.*_) (lemma₂ {x = suc ⟦ y 0& z 1& xs ⇓⟧₀} λ ()) ⟩
+    2 ℕ.^ suc x ℕ.* suc (2 ℕ.* ⟦ y 0& z 1& xs ⇓⟧₀)
+  ≡⟨ cong ((2 ℕ.^ suc x) ℕ.*_) (cong suc (sym (ℕ-Prop.*-assoc 2 (2 ℕ.^ suc y) _))) ⟩
+    2 ℕ.^ suc x ℕ.* suc (2 ℕ.* 2 ℕ.^ suc y ℕ.* ℕ.pred ⟦ z 1& xs ⇓⟧₁⁺¹)
+  ≡⟨⟩
+    2 ℕ.^ suc x ℕ.* suc (2 ℕ.^ suc (suc y) ℕ.* ℕ.pred ⟦ z 1& xs ⇓⟧₁⁺¹)
+  ≡⟨⟩
+    2 ℕ.^ suc x ℕ.* suc ⟦ suc y 0& z 1& xs ⇓⟧₀
+  ≡⟨⟩
+    ⟦ x 1& 0< suc y 0& z 1& xs ⇓⟧₁⁺¹
+  ≡⟨ sym (ℕ-Prop.m≢0⇒suc[pred[m]]≡m (lemma₃ (x 1& 0< suc y 0& z 1& xs))) ⟩
+    suc (ℕ.pred ⟦ x 1& 0< suc y 0& z 1& xs ⇓⟧₁⁺¹)
   ∎
-inc-homo (0< B₁ x 1& 0< suc y 0& z 1& xs) = {!!}
 
 homo : ∀ n → ⟦ ⟦ n ⇑⟧ ⇓⟧ ≡ n
 homo zero = refl
 homo (suc n) = inc-homo ⟦ n ⇑⟧ ⟨ trans ⟩ cong suc (homo n)
-
-open import Data.List as List using (List; _∷_)
-
-private
-  roundTrip : ℕ → Set
-  roundTrip n = ⟦ ⟦ n ⇑⟧ ⇓⟧  ≡ n
-
-  _ : roundTrip 50
-  _ = refl
-
-  upTo : ∀ {a} {A : Set a} → ℕ → (A → A) → A → List A
-  upTo zero    f x = List.[]
-  upTo (suc n) f x = x ∷ upTo n f (f x)
-
-  suc-correct : ℕ → Set
-  suc-correct n = List.map ⟦_⇓⟧ (upTo n inc 0₂) ≡ List.upTo n
-
-  _ : suc-correct 100
-  _ = refl
