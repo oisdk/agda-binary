@@ -176,9 +176,23 @@ suc-view : ∀ x → Suc-View x
 suc-view 0₂ = zeroᵇ
 suc-view (0< xs) = subst Suc-View (cong 0<_ (inc-dec xs)) (sucᵇ (dec⁺ xs))
 
-⟦inc⇓⟧≢0 : ∀ x → ⟦ inc x ⇓⟧ ≢ 0
-⟦inc⇓⟧≢0 x prf with sym (inc-homo x) ⟨ trans ⟩ prf
-⟦inc⇓⟧≢0 x prf | ()
+⟦x⇓⟧⁺≢0 : ∀ x → ⟦ x ⇓⟧⁺ ≢ 0
+⟦x⇓⟧⁺≢0 x p with suc-view (0< x)
+⟦x⇓⟧⁺≢0 .(inc⁺ x) p | sucᵇ x with sym (inc-homo x) ⟨ trans ⟩ p
+⟦x⇓⟧⁺≢0 .(inc⁺ x) p | sucᵇ x | ()
+
+data Suc-Rec : Bits → Set where
+  zeroʳ : Suc-Rec 0₂
+  sucʳ : ∀ x → Suc-Rec x → Suc-Rec (inc x)
+
+
+suc-rec : ∀ x → Suc-Rec x
+suc-rec x = go _ x (inspect ⟦_⇓⟧ x)
+  where
+  go : ∀ n x → Reveal ⟦_⇓⟧ · x is n → Suc-Rec x
+  go n 0₂ p = zeroʳ
+  go zero (0< x) [ p ] = ⊥-elim (⟦x⇓⟧⁺≢0 x p)
+  go (suc n) (0< xs) [ p ] = subst Suc-Rec (cong 0<_ (inc-dec xs)) (sucʳ (dec⁺ xs) (go n (dec⁺ xs) [ ℕ-Prop.suc-injective (sym (inc-homo (dec⁺ xs)) ⟨ trans ⟩ cong ⟦_⇓⟧⁺ (inc-dec xs)  ⟨ trans ⟩ p) ]))
 
 inc-injective : ∀ x y → inc x ≡ inc y → x ≡ y
 inc-injective 0₂                               0₂                               refl = refl
@@ -218,11 +232,20 @@ inc-injective (0< B₁ _ 1& 0< suc _ 0& _ 1& _ ) (0< B₁ _ 1& 0₂             
 inc-injective (0< B₁ _ 1& 0< suc _ 0& _ 1& _ ) (0< B₁ _ 1& 0< zero  0& _ 1& _ ) ()
 inc-injective (0< B₁ _ 1& 0< suc _ 0& _ 1& _ ) (0< B₁ _ 1& 0< suc _ 0& _ 1& _ ) refl = refl
 
-invol : ∀ x → ⟦ ⟦ x ⇓⟧ ⇑⟧ ≡ x
-invol x = go _ x refl
+inj : ∀ x y → ⟦ x ⇓⟧ ≡ ⟦ y ⇓⟧ → x ≡ y
+inj x y = go (suc-rec x) (suc-rec y)
   where
-  go : ∀ n x → ⟦ x ⇓⟧ ≡ n → ⟦ ⟦ x ⇓⟧ ⇑⟧ ≡ x
-  go n x prf with suc-view x
-  go n .0₂ prf | zeroᵇ = refl
-  go zero .(0< inc⁺ x) prf | sucᵇ x = ⊥-elim (⟦inc⇓⟧≢0 x prf)
-  go (suc n) .(0< inc⁺ x) prf | sucᵇ x = cong ⟦_⇑⟧ (inc-homo x) ⟨ trans ⟩ cong inc (go n x (ℕ-Prop.suc-injective (sym (inc-homo x) ⟨ trans ⟩ prf)))
+  go : ∀ {x y} → Suc-Rec x → Suc-Rec y → ⟦ x ⇓⟧ ≡ ⟦ y ⇓⟧ → x ≡ y
+  go {x} {y} x′ y′ ⟦x⇓⟧≡⟦y⇓⟧ with ⟦ x ⇓⟧ | ⟦ y ⇓⟧ | inspect ⟦_⇓⟧ x | inspect ⟦_⇓⟧ y
+  go zeroʳ zeroʳ ⟦x⇓⟧≡⟦y⇓⟧ | ⟦x⇓⟧ | ⟦y⇓⟧ | [ x≡ ] | [ y≡ ] = refl
+  go (sucʳ x′ xs′) zeroʳ ⟦x⇓⟧≡⟦y⇓⟧ | ⟦x⇓⟧ | ⟦y⇓⟧ | [ x≡ ] | [ y≡ ] with sym (inc-homo x′) ⟨ trans ⟩ x≡ ⟨ trans ⟩ ⟦x⇓⟧≡⟦y⇓⟧ ⟨ trans ⟩ sym y≡
+  go {.(0< inc⁺ x′)} {.0₂} (sucʳ x′ xs′) zeroʳ ⟦x⇓⟧≡⟦y⇓⟧ | ⟦x⇓⟧ | ⟦y⇓⟧ | [ x≡ ] | [ y≡ ] | ()
+  go zeroʳ (sucʳ y′ ys′) ⟦x⇓⟧≡⟦y⇓⟧ | ⟦x⇓⟧ | ⟦y⇓⟧ | [ x≡ ] | [ y≡ ] with sym (inc-homo y′) ⟨ trans ⟩ y≡ ⟨ trans ⟩ sym ⟦x⇓⟧≡⟦y⇓⟧ ⟨ trans ⟩ sym x≡
+  go {.0₂} {.(0< inc⁺ y′)} zeroʳ (sucʳ y′ ys′) ⟦x⇓⟧≡⟦y⇓⟧ | ⟦x⇓⟧ | ⟦y⇓⟧ | [ x≡ ] | [ y≡ ] | ()
+  go (sucʳ x′ xs′) (sucʳ y′ ys′) ⟦x⇓⟧≡⟦y⇓⟧ | ⟦x⇓⟧ | ⟦y⇓⟧ | [ x≡ ] | [ y≡ ] with sym (inc-homo x′) ⟨ trans ⟩ x≡ ⟨ trans ⟩ ⟦x⇓⟧≡⟦y⇓⟧ ⟨ trans ⟩ sym (sym (inc-homo y′) ⟨ trans ⟩ y≡)
+  go (sucʳ x′ xs′) (sucʳ y′ ys′) ⟦x⇓⟧≡⟦y⇓⟧ | ⟦x⇓⟧ | ⟦y⇓⟧ | [ x≡ ] | [ y≡ ] | x′≡y′ = cong inc (go xs′ ys′ (ℕ-Prop.suc-injective x′≡y′))
+
+open import Function.Bijection
+
+𝔹↔ℕ : Bits ⤖ ℕ
+𝔹↔ℕ = bijection ⟦_⇓⟧ ⟦_⇑⟧ (λ {x} {y} → inj x y) homo
