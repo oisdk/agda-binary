@@ -39,3 +39,6 @@ open import Function.Bijection
 
 inc-injective : ∀ x y → inc x ≡ inc y → x ≡ y
 inc-injective x y x+1≡y+1 = inj (ℕ-Prop.suc-injective (sym (inc-homo x) ⟨ trans ⟩ cong ⟦_⇓⟧ x+1≡y+1 ⟨ trans ⟩ inc-homo y))
+
+homo⁻¹ : ∀ x → ⟦ ⟦ x ⇓⟧ ⇑⟧ ≡ x
+homo⁻¹ = Bijection.left-inverse-of 𝔹↔ℕ
