@@ -185,7 +185,6 @@ data Suc-Rec : Bits → Set where
   zeroʳ : Suc-Rec 0₂
   sucʳ : ∀ x → Suc-Rec x → Suc-Rec (inc x)
 
-
 suc-rec : ∀ x → Suc-Rec x
 suc-rec x = go _ x (inspect ⟦_⇓⟧ x)
   where
@@ -193,44 +192,6 @@ suc-rec x = go _ x (inspect ⟦_⇓⟧ x)
   go n 0₂ p = zeroʳ
   go zero (0< x) [ p ] = ⊥-elim (⟦x⇓⟧⁺≢0 x p)
   go (suc n) (0< xs) [ p ] = subst Suc-Rec (cong 0<_ (inc-dec xs)) (sucʳ (dec⁺ xs) (go n (dec⁺ xs) [ ℕ-Prop.suc-injective (sym (inc-homo (dec⁺ xs)) ⟨ trans ⟩ cong ⟦_⇓⟧⁺ (inc-dec xs)  ⟨ trans ⟩ p) ]))
-
-inc-injective : ∀ x y → inc x ≡ inc y → x ≡ y
-inc-injective 0₂                               0₂                               refl = refl
-inc-injective 0₂                               (0< B₀ zero  0& _ 1& _         ) ()
-inc-injective 0₂                               (0< B₀ suc _ 0& _ 1& _         ) ()
-inc-injective 0₂                               (0< B₁ _ 1& 0₂                 ) ()
-inc-injective 0₂                               (0< B₁ _ 1& 0< zero  0& _ 1& _ ) ()
-inc-injective 0₂                               (0< B₁ _ 1& 0< suc _ 0& _ 1& _ ) ()
-inc-injective (0< B₀ zero  0& _ 1& _         ) 0₂                               ()
-inc-injective (0< B₀ zero  0& _ 1& _         ) (0< B₀ zero  0& _ 1& _         ) refl = refl
-inc-injective (0< B₀ zero  0& _ 1& _         ) (0< B₀ suc _ 0& _ 1& _         ) ()
-inc-injective (0< B₀ zero  0& _ 1& _         ) (0< B₁ _ 1& 0₂                 ) ()
-inc-injective (0< B₀ zero  0& _ 1& _         ) (0< B₁ _ 1& 0< zero  0& _ 1& _ ) ()
-inc-injective (0< B₀ zero  0& _ 1& _         ) (0< B₁ _ 1& 0< suc _ 0& _ 1& _ ) ()
-inc-injective (0< B₀ suc _ 0& _ 1& _         ) 0₂                               ()
-inc-injective (0< B₀ suc _ 0& _ 1& _         ) (0< B₀ zero  0& _ 1& _         ) ()
-inc-injective (0< B₀ suc _ 0& _ 1& _         ) (0< B₀ suc _ 0& _ 1& _         ) refl = refl
-inc-injective (0< B₀ suc _ 0& _ 1& _         ) (0< B₁ _ 1& 0₂                 ) ()
-inc-injective (0< B₀ suc _ 0& _ 1& _         ) (0< B₁ _ 1& 0< zero  0& _ 1& _ ) ()
-inc-injective (0< B₀ suc _ 0& _ 1& _         ) (0< B₁ _ 1& 0< suc _ 0& _ 1& _ ) ()
-inc-injective (0< B₁ _ 1& 0₂                 ) 0₂                               ()
-inc-injective (0< B₁ _ 1& 0₂                 ) (0< B₀ zero  0& _ 1& _         ) ()
-inc-injective (0< B₁ _ 1& 0₂                 ) (0< B₀ suc _ 0& _ 1& _         ) ()
-inc-injective (0< B₁ _ 1& 0₂                 ) (0< B₁ _ 1& 0₂                 ) refl = refl
-inc-injective (0< B₁ _ 1& 0₂                 ) (0< B₁ _ 1& 0< zero  0& _ 1& _ ) ()
-inc-injective (0< B₁ _ 1& 0₂                 ) (0< B₁ _ 1& 0< suc _ 0& _ 1& _ ) ()
-inc-injective (0< B₁ _ 1& 0< zero  0& _ 1& _ ) 0₂                               ()
-inc-injective (0< B₁ _ 1& 0< zero  0& _ 1& _ ) (0< B₀ zero  0& _ 1& _         ) ()
-inc-injective (0< B₁ _ 1& 0< zero  0& _ 1& _ ) (0< B₀ suc _ 0& _ 1& _         ) ()
-inc-injective (0< B₁ _ 1& 0< zero  0& _ 1& _ ) (0< B₁ _ 1& 0₂                 ) ()
-inc-injective (0< B₁ _ 1& 0< zero  0& _ 1& _ ) (0< B₁ _ 1& 0< zero  0& _ 1& _ ) refl = refl
-inc-injective (0< B₁ _ 1& 0< zero  0& _ 1& _ ) (0< B₁ _ 1& 0< suc _ 0& _ 1& _ ) ()
-inc-injective (0< B₁ _ 1& 0< suc _ 0& _ 1& _ ) 0₂                               ()
-inc-injective (0< B₁ _ 1& 0< suc _ 0& _ 1& _ ) (0< B₀ zero  0& _ 1& _         ) ()
-inc-injective (0< B₁ _ 1& 0< suc _ 0& _ 1& _ ) (0< B₀ suc _ 0& _ 1& _         ) ()
-inc-injective (0< B₁ _ 1& 0< suc _ 0& _ 1& _ ) (0< B₁ _ 1& 0₂                 ) ()
-inc-injective (0< B₁ _ 1& 0< suc _ 0& _ 1& _ ) (0< B₁ _ 1& 0< zero  0& _ 1& _ ) ()
-inc-injective (0< B₁ _ 1& 0< suc _ 0& _ 1& _ ) (0< B₁ _ 1& 0< suc _ 0& _ 1& _ ) refl = refl
 
 inj : ∀ x y → ⟦ x ⇓⟧ ≡ ⟦ y ⇓⟧ → x ≡ y
 inj x y = go (suc-rec x) (suc-rec y)
