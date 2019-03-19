@@ -92,15 +92,16 @@ mutual
         → ℕ → 𝔹₁
         → 𝔹₀
   add₀? 0₂ y₀ ys = y₀ 0& ys
-  add₀? (0< x₀ 0& xs) y₀ ys = add₀ x₀ xs y₀ ys
+  add₀? (0< x₀ 0& xs) y₀ ys = add₀ 0 x₀ xs y₀ ys
 
-  add₀ : ℕ → 𝔹₁
+  add₀ : ℕ
+       → ℕ → 𝔹₁
        → ℕ → 𝔹₁
        → 𝔹₀
-  add₀ x₀ xs y₀ ys with ℕ.compare x₀ y₀
-  add₀ x₀ (x₁ 1& xs) _  ys         | ℕ.less _ k    = x₀ 0& add₁ 0 x₁ xs k ys
-  add₀ x₀ (x₁ 1& xs) _  (y₁ 1& ys) | ℕ.equal _     = add₂ (suc x₀) x₁ xs y₁ ys
-  add₀ _  xs         y₀ (y₁ 1& ys) | ℕ.greater _ k = y₀ 0& add₁ 0 y₁ ys k xs
+  add₀ c zero     (x₁ 1& xs) zero     (y₁ 1& ys) = add₂ (suc c) x₁ xs y₁ ys
+  add₀ c zero     (x₁ 1& xs) (suc y₀) ys         = c 0& add₁ 0 x₁ xs y₀ ys
+  add₀ c (suc x₀) xs         zero     (y₁ 1& ys) = c 0& add₁ 0 y₁ ys x₀ xs
+  add₀ c (suc x₀) xs         (suc y₀) ys         = add₀ (suc c) x₀ xs y₀ ys
 
   add₁? : ℕ → ℕ → 0≤ 𝔹₀ → 0≤ 𝔹₀ → 𝔹₁
   add₁? c x₁ xs 0₂ = c ℕ.+ x₁ 1& xs
@@ -177,7 +178,7 @@ mutual
 _+_ : 𝔹 → 𝔹 → 𝔹
 0₂ + ys = ys
 (0< xs) + 0₂ = 0< xs
-(0< B₀ x 0& xs) + (0< B₀ y 0& ys) = 0< B₀ add₀ x xs y ys
+(0< B₀ x 0& xs) + (0< B₀ y 0& ys) = 0< B₀ add₀ 0 x xs y ys
 (0< B₀ x 0& xs) + (0< B₁ y₁ 1& ys) = 0< B₁ add₁ 0 y₁ ys x xs
 (0< B₁ x₁ 1& xs) + (0< B₀ y 0& ys) = 0< B₁ add₁ 0 x₁ xs y ys
 (0< B₁ x₁ 1& xs) + (0< B₁ y₁ 1& ys) = 0< B₀ add₂ 0 x₁ xs y₁ ys
