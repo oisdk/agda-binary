@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+{-# OPTIONS --without-K --safe #-}
 
 module Data.Binary.Segmented where
 
@@ -118,9 +118,9 @@ mutual
        → 𝔹₁
        → 𝔹₀
   add₂ x₁ xs (y₁ 1& ys) with ℕ.compare x₁ y₁
+  add₂ x₁ xs (_  1& ys)       | ℕ.equal .x₁   = 0 0& cncOne′ x₁ (add₀′?? xs ys)
   add₂ 0      xs (_  1& ys)   | ℕ.less _ k    = cncZero 0 (add₁′? k ys xs)
   add₂ (suc x₁) xs (_  1& ys) | ℕ.less _ k    = 0 0& x₁ 1& 0< add₁′? k ys xs
-  add₂ x₁ xs (_  1& ys)       | ℕ.equal .x₁   = 0 0& cncOne′ x₁ (add₀′?? xs ys)
   add₂ _  xs (0      1& ys)   | ℕ.greater _ k = cncZero 0 (add₁′? k xs ys)
   add₂ _  xs (suc y₁ 1& ys)   | ℕ.greater _ k = 0 0& y₁ 1& 0< add₁′? k xs ys
 
@@ -136,9 +136,9 @@ mutual
 
   add₀′ : 𝔹₀ → ℕ → 𝔹₁ → 𝔹₁
   add₀′ (x₀ 0& xs) y₀  ys with ℕ.compare x₀ y₀
+  add₀′ (x₀     0& x₁ 1& xs) _       ys         | ℕ.equal _     = 0 1& 0< cncZero′ x₀ (add₂ x₁ xs ys)
   add₀′ (0      0& x₁ 1& xs) _       ys         | ℕ.less _ k    = cncOne 0 (add₁ x₁ xs k ys)
   add₀′ (suc x₀ 0& x₁ 1& xs) _       ys         | ℕ.less _ k    = 0 1& 0< x₀ 0& add₁ x₁ xs k ys
-  add₀′ (x₀     0& x₁ 1& xs) _       ys         | ℕ.equal _     = 0 1& 0< cncZero′ x₀ (add₂ x₁ xs ys)
   add₀′ (_      0& xs)      0        (y₁ 1& ys) | ℕ.greater _ k = cncOne 0 (add₁ y₁ ys k xs)
   add₀′ (_      0& xs)      (suc y₀) (y₁ 1& ys) | ℕ.greater _ k = 0 1& 0< y₀ 0& add₁ y₁ ys k xs
 
