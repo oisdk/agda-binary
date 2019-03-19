@@ -85,71 +85,110 @@ mutual
 ⟦ 0₂ ⇓⟧ = 0
 ⟦ 0< xs ⇓⟧ = ⟦ xs ⇓⟧⁺
 
-open import Data.Maybe as Maybe using (Maybe; just; nothing)
-open import Data.Bool as Bool using (Bool; true; false; _xor_; _∧_; not; _∨_)
-open import Data.List as List using (List; _∷_; [])
-
+{-# TERMINATING #-}
 mutual
-  toList≤ : 0≤ 𝔹₀ → List Bool
-  toList≤ 0₂      = []
-  toList≤ (0< x 0& xs) = toList₀ x xs
+  add₀? : 0≤ 𝔹₀ → 𝔹₀ → 𝔹₀
+  add₀? 0₂ ys = ys
+  add₀? (0< xs) ys = add₀ xs ys
 
-  toList₁ : ℕ → 0≤ 𝔹₀ → List Bool
-  toList₁ zero xs = true ∷ toList≤ xs
-  toList₁ (suc x) xs = true ∷ toList₁ x xs
+  add₀ : 𝔹₀ → 𝔹₀ → 𝔹₀
+  add₀ (x 0& xs) (y 0& ys) with ℕ.compare x y
+  add₀ (x 0& xs) (_ 0& ys) | ℕ.less .x k    = x 0& add₁ xs (k 0& ys)
+  add₀ (x 0& xs) (_ 0& ys) | ℕ.equal .x     = cncZero x (add₂ xs ys)
+  add₀ (_ 0& xs) (y 0& ys) | ℕ.greater .y k = y 0& add₁ ys (k 0& xs)
 
-  toList₀ : ℕ → 𝔹₁ → List Bool
-  toList₀ zero    (x 1& xs) = false ∷ toList₁ x xs
-  toList₀ (suc x) xs = false ∷ toList₀ x xs
+  add₁? : 𝔹₁ → 0≤ 𝔹₀ → 𝔹₁
+  add₁? xs 0₂ = xs
+  add₁? xs (0< ys) = add₁ xs ys
 
-  toList : 𝔹 → List Bool
-  toList 0₂ = []
-  toList (0< B₀ x 0& xs) = toList₀ x xs
-  toList (0< B₁ x 1& xs) = toList₁ x xs
+  add₁ : 𝔹₁ → 𝔹₀ → 𝔹₁
+  add₁ (x₁ 1& xs) (y₀ 0& ys) with ℕ.compare x₁ y₀
+  add₁ (x₁ 1& xs) (_  0& ys) | ℕ.less .x₁ k    = x₁ 1& 0< add₀? xs (k 0& ys)
+  add₁ (x₁ 1& xs) (_  0& ys) | ℕ.equal .x₁     = cncOne x₁ (add₁? ys xs)
+  add₁ (_  1& xs) (y₀ 0& ys) | ℕ.greater .y₀ k = y₀ 1& 0< add₂ (k 1& xs) ys
 
+  add₂ : 𝔹₁ → 𝔹₁ → 𝔹₀
+  add₂ (x₁ 1& xs) (y₁ 1& ys) with ℕ.compare x₁ y₁
+  add₂ (0      1& xs) (_  1& ys) | ℕ.less _ k    = cncZero 0 (add₁′? (k 1& ys) xs)
+  add₂ (suc x₁ 1& xs) (_  1& ys) | ℕ.less _ k    = 0 0& x₁ 1& 0< add₁′? (k 1& ys) xs
+  add₂ (x₁ 1& xs) (_  1& ys) | ℕ.equal .x₁     = 0 0& cncOne′ x₁ (add₀′?? xs ys)
+  add₂ (_  1& xs) (0      1& ys) | ℕ.greater _ k = cncZero 0 (add₁′? (k 1& xs) ys)
+  add₂ (_  1& xs) (suc y₁ 1& ys) | ℕ.greater _ k = 0 0& y₁ 1& 0< add₁′? (k 1& xs) ys
 
-infixr 5 0∷_ 1∷_ _∷𝔹_
-0∷_ : 𝔹 → 𝔹
-0∷ 0₂ = 0₂
-0∷ (0< B₀ x 0& xs) = 0< B₀ suc x 0& xs
-0∷ (0< B₁ xs) = 0< B₀ 0 0& xs
+  add₀′? : 0≤ 𝔹₀ → 𝔹₀ → 𝔹₁
+  add₀′? 0₂ ys = inc₀ ys
+  add₀′? (0< xs) ys = add₀′ xs ys
 
-1∷_ : 𝔹 → 𝔹
-1∷ 0₂ = 0< B₁ 0 1& 0₂
-1∷ 0< B₀ xs = 0< B₁ 0 1& 0< xs
-1∷ 0< B₁ x 1& xs = 0< B₁ suc x 1& xs
+  add₀′?? : 0≤ 𝔹₀ → 0≤ 𝔹₀ → 𝔹₁
+  add₀′?? 0₂ 0₂ = 0 1& 0₂
+  add₀′?? 0₂ (0< xs) = inc₀ xs
+  add₀′?? (0< xs) 0₂ = inc₀ xs
+  add₀′?? (0< xs) (0< ys) = add₀′ xs ys
 
-_∷𝔹_ : Bool → 𝔹 → 𝔹
-false ∷𝔹 xs = 0∷ xs
-true  ∷𝔹 xs = 1∷ xs
+  add₀′ : 𝔹₀ → 𝔹₀ → 𝔹₁
+  add₀′ (x 0& xs) (y 0& ys) with ℕ.compare x y
+  add₀′ (0     0& xs) (_ 0& ys) | ℕ.less _ k    = cncOne 0 (add₁ xs (k 0& ys))
+  add₀′ (suc x 0& xs) (_ 0& ys) | ℕ.less _ k    = 0 1& 0< x 0& add₁ xs (k 0& ys)
+  add₀′ (x 0& xs) (_ 0& ys) | ℕ.equal .x        = 0 1& 0< cncZero′ x (add₂ xs ys)
+  add₀′ (_ 0& xs) (0     0& ys) | ℕ.greater _ k = cncOne 0 (add₁ ys (k 0& xs))
+  add₀′ (_ 0& xs) (suc y 0& ys) | ℕ.greater _ k = 0 1& 0< y 0& add₁ ys (k 0& xs)
 
-fromList : List Bool → 𝔹
-fromList = List.foldr _∷𝔹_ 0₂
+  add₁′? : 𝔹₁ → 0≤ 𝔹₀ → 𝔹₀
+  add₁′? xs 0₂ = inc₁ xs
+  add₁′? xs (0< ys) = add₁′ xs ys
 
-add : Bool → List Bool → List Bool → 𝔹
-add false (x ∷ xs) (y ∷ ys) = (x xor y) ∷𝔹 add (x ∧ y) xs ys
-add false (x ∷ xs) []       = x ∷𝔹 fromList xs
-add false []       (y ∷ ys) = y ∷𝔹 fromList ys
-add false []       []       = 0₂
-add true  (x ∷ xs) (y ∷ ys) = not (x xor y) ∷𝔹 add (x ∨ y) xs ys
-add true  (x ∷ xs) []       = inc (x ∷𝔹 fromList xs)
-add true  []       (y ∷ ys) = inc (y ∷𝔹 fromList ys)
-add true  []       []       = inc 0₂
+  add₁′ : 𝔹₁ → 𝔹₀ → 𝔹₀
+  add₁′ (x₁ 1& xs) (y₀ 0& ys) with ℕ.compare x₁ y₀
+  add₁′ (x₁ 1& xs) (_  0& ys) | ℕ.less .x₁ k    = x₁ 0& (add₀′? xs (k 0& ys))
+  add₁′ (x₁ 1& xs) (_  0& ys) | ℕ.equal .x₁     = cncZero x₁ (add₁′? ys xs)
+  add₁′ (_  1& xs) (y₀ 0& ys) | ℕ.greater .y₀ k = y₀ 0& add₂′ (k 1& xs) ys
+
+  add₂′ : 𝔹₁ → 𝔹₁ → 𝔹₁
+  add₂′ (x₁ 1& xs) (y₁ 1& ys) with ℕ.compare x₁ y₁
+  add₂′ (x₁ 1& xs) (_  1& ys) | ℕ.less _ k    = x₁ 1& 0< add₁′? (k 1& ys) xs
+  add₂′ (x₁ 1& xs) (_  1& ys) | ℕ.equal .x₁   = cncOne x₁ (add₀′?? xs ys)
+  add₂′ (_  1& xs) (y₁ 1& ys) | ℕ.greater _ k = y₁ 1& 0< add₁′? (k 1& xs) ys
+
+  cncZero : ℕ → 𝔹₀ → 𝔹₀
+  cncZero n (x 0& xs) = suc n ℕ.+ x 0& xs
+
+  cncOne : ℕ → 𝔹₁ → 𝔹₁
+  cncOne n (x 1& xs) = suc n ℕ.+ x 1& xs
+
+  cncOne′ : ℕ → 𝔹₁ → 𝔹₁
+  cncOne′ n (x 1& xs) = n ℕ.+ x 1& xs
+
+  cncZero′ : ℕ → 𝔹₀ → 𝔹₀
+  cncZero′ n (x 0& xs) = n ℕ.+ x 0& xs
 
 _+_ : 𝔹 → 𝔹 → 𝔹
-xs + ys = add false (toList xs) (toList ys)
+0₂ + ys = ys
+(0< xs) + 0₂ = 0< xs
+(0< B₀ xs) + (0< B₀ ys) = 0< B₀ add₀ xs ys
+(0< B₀ xs) + (0< B₁ ys) = 0< B₁ add₁ ys xs
+(0< B₁ xs) + (0< B₀ ys) = 0< B₁ add₁ xs ys
+(0< B₁ xs) + (0< B₁ ys) = 0< B₀ add₂ xs ys
 
 open import Relation.Binary.PropositionalEquality
+open import Data.List as List using (List; _∷_; [])
 
 addProp : List (ℕ × ℕ) → Set
 addProp xs = List.map (λ { (x , y) → ⟦ x ⇑⟧ + ⟦ y ⇑⟧ }) xs ≡ List.map (λ { (x , y) →  ⟦ x ℕ.+ y ⇑⟧ } ) xs
 
 select : ∀ {a b} {A : Set a} {B : Set b} → List A → List B → List (A × B)
-select [] ys = []
-select (x ∷ xs) ys = List.foldr (λ y ys → (x , y) ∷ ys) (select xs ys) ys
+select  {A = A} {B = B} xs ys = List.concat (go xs ys)
+  where
+  go : List A → List B → List (List (A × B))
+  go xs [] = []
+  go xs (yh ∷ ys) = List.foldr f [] xs
+    where
+    g : A → B → (List (List (A × B)) → List (List (A × B))) → List (List (A × B)) → List (List (A × B))
+    g x y a (z ∷ zs) = ((x , y) ∷ z) ∷ a zs
+    g x y a [] = ((x , y) ∷ []) ∷ a []
+
+    f : A → List (List (A × B)) → List (List (A × B))
+    f x zs = ((x , yh) ∷ []) ∷ List.foldr (g x) id ys zs
 
 nums : ℕ → List (ℕ × ℕ)
 nums n = select (List.upTo n) (List.upTo n)
 
-_ : addProp (nums 20)
-_ = refl
