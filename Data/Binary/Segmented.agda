@@ -123,13 +123,13 @@ mutual
   add₂″ d c (suc x₁) xs (suc y₁) ys = add₂″ (suc d) c x₁ xs y₁ ys
 
   add₀′? : ℕ → 0≤ 𝔹₀ → ℕ → 𝔹₁ → 𝔹₁
-  add₀′? c 0₂ y₀ ys = cncOne′ c ( (y₀ 0& ys))
+  add₀′? c 0₂ y₀ ys = carry c ( (y₀ 0& ys))
   add₀′? c (0< x₀ 0& xs) y₀ ys = add₀′ c x₀ xs y₀ ys
 
   add₀′?? : ℕ → 0≤ 𝔹₀ → 0≤ 𝔹₀ → 𝔹₁
   add₀′?? c 0₂ 0₂ = c 1& 0₂
-  add₀′?? c 0₂ (0< xs) = cncOne′ c ( xs)
-  add₀′?? c (0< xs) 0₂ = cncOne′ c ( xs)
+  add₀′?? c 0₂ (0< xs) = carry c ( xs)
+  add₀′?? c (0< xs) 0₂ = carry c ( xs)
   add₀′?? c (0< x₀ 0& xs) (0< y₀ 0& ys) = add₀′ c x₀ xs y₀ ys
 
   add₀′ : ℕ → ℕ → 𝔹₁ → ℕ → 𝔹₁ → 𝔹₁
@@ -160,18 +160,16 @@ mutual
   add₂′ c (suc x₁) xs zero     ys = c 1& 0< add₁′? 0 x₁ xs ys
   add₂′ c (suc x₁) xs (suc y₁) ys = add₂′ (suc c) x₁ xs y₁ ys
 
-  cncOne′ : ℕ → 𝔹₀ → 𝔹₁
-  cncOne′ 0 (zero 0& y 1& xs) = suc y 1& xs
-  cncOne′ 0 (suc x 0& y 1& xs) = 0 1& 0< x 0& y 1& xs
-  cncOne′ (suc n) (zero  0& y 1& xs) = suc (suc (n ℕ.+ y)) 1& xs
-  cncOne′ (suc n) (suc x 0& y 1& xs) = suc n 1& 0< x 0& y 1& xs
+  carry : ℕ → 𝔹₀ → 𝔹₁
+  carry n (zero  0& y 1& xs) = suc (n ℕ.+ y) 1& xs
+  carry n (suc x 0& y 1& xs) = n 1& 0< x 0& y 1& xs
 
 _+_ : 𝔹 → 𝔹 → 𝔹
-0₂ + ys = ys
-(0< xs) + 0₂ = 0< xs
-(0< B₀ x 0& xs) + (0< B₀ y 0& ys) = 0< B₀ add₀ 0 x xs y ys
-(0< B₀ x 0& xs) + (0< B₁ y₁ 1& ys) = 0< B₁ add₁ 0 y₁ ys x xs
-(0< B₁ x₁ 1& xs) + (0< B₀ y 0& ys) = 0< B₁ add₁ 0 x₁ xs y ys
+0₂               + ys               = ys
+(0< xs)          + 0₂               = 0< xs
+(0< B₀ x₀ 0& xs) + (0< B₀ y₀ 0& ys) = 0< B₀ add₀ 0 x₀ xs y₀ ys
+(0< B₀ x₀ 0& xs) + (0< B₁ y₁ 1& ys) = 0< B₁ add₁ 0 y₁ ys x₀ xs
+(0< B₁ x₁ 1& xs) + (0< B₀ y₀ 0& ys) = 0< B₁ add₁ 0 x₁ xs y₀ ys
 (0< B₁ x₁ 1& xs) + (0< B₁ y₁ 1& ys) = 0< B₀ add₂ 0 x₁ xs y₁ ys
 
 open import Relation.Binary.PropositionalEquality
