@@ -183,5 +183,5 @@ select (x ∷ xs) ys = List.foldr (λ y zs → (x , y) ∷ zs) (select xs ys) ys
 nums : ℕ → List (ℕ × ℕ)
 nums n = select (List.upTo n) (List.upTo n)
 
-_ : addProp (nums 60)
+_ : addProp (nums 25)
 _ = refl
