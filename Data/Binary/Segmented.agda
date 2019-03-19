@@ -151,15 +151,15 @@ mutual
 
   add₁′ : ℕ → ℕ → 0≤ 𝔹₀ → ℕ → 𝔹₁ → 𝔹₀
   add₁′ c zero     xs zero     (y₁ 1& ys) = add₁′? (suc c) y₁ ys xs
-  add₁′ c zero     xs (suc y₀) ys = c 0& add₀′? 0 xs y₀ ys
-  add₁′ c (suc x₁) xs zero     ys = c 0& add₂′ x₁ xs ys
-  add₁′ c (suc x₁) xs (suc y₀) ys = add₁′ (suc c) x₁ xs y₀ ys
+  add₁′ c zero     xs (suc y₀) ys         = c 0& add₀′? 0 xs y₀ ys
+  add₁′ c (suc x₁) xs zero     (y₁ 1& ys) = c 0& add₂′ 0 x₁ xs y₁ ys
+  add₁′ c (suc x₁) xs (suc y₀) ys         = add₁′ (suc c) x₁ xs y₀ ys
 
-  add₂′ : ℕ → 0≤ 𝔹₀ → 𝔹₁ → 𝔹₁
-  add₂′ x₁ xs (y₁ 1& ys) with ℕ.compare x₁ y₁
-  add₂′ x₁ xs (_  1& ys) | ℕ.less _ k    = x₁ 1& 0< add₁′? 0 k ys xs
-  add₂′ x₁ xs (_  1& ys) | ℕ.equal .x₁   = add₀′?? (suc x₁) xs ys
-  add₂′ _  xs (y₁ 1& ys) | ℕ.greater _ k = y₁ 1& 0< add₁′? 0 k xs ys
+  add₂′ : ℕ → ℕ → 0≤ 𝔹₀ → ℕ → 0≤ 𝔹₀ → 𝔹₁
+  add₂′ c zero     xs zero     ys = add₀′?? (suc c) xs ys
+  add₂′ c zero     xs (suc y₁) ys = c 1& 0< add₁′? 0 y₁ ys xs
+  add₂′ c (suc x₁) xs zero     ys = c 1& 0< add₁′? 0 x₁ xs ys
+  add₂′ c (suc x₁) xs (suc y₁) ys = add₂′ (suc c) x₁ xs y₁ ys
 
   cncZero : ℕ → 𝔹₀ → 𝔹₀
   cncZero n (x 0& xs) = suc (n ℕ.+ x) 0& xs
