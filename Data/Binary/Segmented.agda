@@ -110,10 +110,10 @@ mutual
        → ℕ → 0≤ 𝔹₀
        → ℕ → 𝔹₁
        → 𝔹₁
-  add₁ c x₁ xs y₀ ys with ℕ.compare x₁ y₀
-  add₁ c x₁ xs _  ys         | ℕ.less .x₁ k    = (c ℕ.+ x₁) 1& 0< add₀? xs k ys
-  add₁ c x₁ xs _  (y₁ 1& ys) | ℕ.equal .x₁     = add₁? (suc (c ℕ.+ x₁)) y₁ ys xs
-  add₁ c _  xs y₀ (y₁ 1& ys) | ℕ.greater .y₀ k = (c ℕ.+ y₀) 1& 0< add₂ 0 k xs y₁ ys
+  add₁ c zero     xs zero     (y₁ 1& ys) = add₁? (suc c) y₁ ys xs
+  add₁ c zero     xs (suc y₀) ys         = c 1& 0< add₀? xs y₀ ys
+  add₁ c (suc x₁) xs zero     (y₁ 1& ys) = c 1& 0< add₂ 0 x₁ xs y₁ ys
+  add₁ c (suc x₁) xs (suc y₀) ys         = add₁ (suc c) x₁ xs y₀ ys
 
   add₂ : ℕ
        → ℕ → 0≤ 𝔹₀
@@ -153,10 +153,6 @@ mutual
   add₁′ c zero     xs (suc y₀) ys = c 0& add₀′? 0 xs y₀ ys
   add₁′ c (suc x₁) xs zero     ys = c 0& add₂′ x₁ xs ys
   add₁′ c (suc x₁) xs (suc y₀) ys = add₁′ (suc c) x₁ xs y₀ ys
-  -- add₁′ c x₁ xs y₀ ys with ℕ.compare x₁ y₀
-  -- add₁′ c x₁ xs _  ys         | ℕ.less .x₁ k    = (c ℕ.+ x₁) 0& (add₀′? 0 xs k ys)
-  -- add₁′ c x₁ xs _  (y₁ 1& ys) | ℕ.equal .x₁     = add₁′? (suc (c ℕ.+ x₁)) y₁ ys xs
-  -- add₁′ c _  xs y₀ ys         | ℕ.greater .y₀ k = (c ℕ.+ y₀) 0& add₂′ k xs ys
 
   add₂′ : ℕ → 0≤ 𝔹₀ → 𝔹₁ → 𝔹₁
   add₂′ x₁ xs (y₁ 1& ys) with ℕ.compare x₁ y₁
