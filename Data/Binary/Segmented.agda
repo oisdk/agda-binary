@@ -98,7 +98,7 @@ mutual
   add₀ x xs y ys with ℕ.compare x y
   add₀ x (x₁ 1& xs) _ ys | ℕ.less .x k    = x 0& add₁ x₁ xs k ys
   add₀ x (x₁ 1& xs) _ ys | ℕ.equal .x     = cncZero x (add₂ x₁ xs ys)
-  add₀ _ xs y (y₁ 1& ys) | ℕ.greater .y k = y 0& add₁ y ys k xs
+  add₀ _ xs y (y₁ 1& ys) | ℕ.greater .y k = y 0& add₁ y₁ ys k xs
 
   add₁? : ℕ → 0≤ 𝔹₀ → 0≤ 𝔹₀ → 𝔹₁
   add₁? x xs 0₂ = x 1& xs
@@ -117,8 +117,8 @@ mutual
        → 𝔹₀
   add₂ x₁ xs (y₁ 1& ys) with ℕ.compare x₁ y₁
   add₂ 0      xs (_  1& ys) | ℕ.less _ k    = cncZero 0 (add₁′? k ys xs)
-  add₂ (suc x₁) xs (_  1& ys) | ℕ.less _ k    = 0 0& x₁ 1& 0< add₁′? k ys xs
-  add₂ x₁ xs (_  1& ys) | ℕ.equal .x₁     = 0 0& cncOne′ x₁ (add₀′?? xs ys)
+  add₂ (suc x₁) xs (_  1& ys) | ℕ.less _ k  = 0 0& x₁ 1& 0< add₁′? k ys xs
+  add₂ x₁ xs (_  1& ys) | ℕ.equal .x₁       = 0 0& cncOne′ x₁ (add₀′?? xs ys)
   add₂ _  xs (0      1& ys) | ℕ.greater _ k = cncZero 0 (add₁′? k xs ys)
   add₂ _  xs (suc y₁ 1& ys) | ℕ.greater _ k = 0 0& y₁ 1& 0< add₁′? k xs ys
 
@@ -146,9 +146,9 @@ mutual
 
   add₁′ : ℕ → 0≤ 𝔹₀ → 𝔹₀ → 𝔹₀
   add₁′ x₁ xs (y₀ 0& ys) with ℕ.compare x₁ y₀
-  add₁′ x₁ xs (_  0& ys) | ℕ.less .x₁ k    = x₁ 0& (add₀′? xs k ys)
-  add₁′ x₁ xs (_  0& y₁ 1& ys) | ℕ.equal .x₁     = cncZero x₁ (add₁′? y₁ ys xs)
-  add₁′ _  xs (y₀ 0& ys) | ℕ.greater .y₀ k = y₀ 0& add₂′ k xs ys
+  add₁′ x₁ xs (_  0& ys) | ℕ.less .x₁ k      = x₁ 0& (add₀′? xs k ys)
+  add₁′ x₁ xs (_  0& y₁ 1& ys) | ℕ.equal .x₁ = cncZero x₁ (add₁′? y₁ ys xs)
+  add₁′ _  xs (y₀ 0& ys) | ℕ.greater .y₀ k   = y₀ 0& add₂′ k xs ys
 
   add₂′ : ℕ → 0≤ 𝔹₀ → 𝔹₁ → 𝔹₁
   add₂′ x₁ xs (y₁ 1& ys) with ℕ.compare x₁ y₁
@@ -183,19 +183,17 @@ addProp : List (ℕ × ℕ) → Set
 addProp xs = List.map (λ { (x , y) → ⟦ x ⇑⟧ + ⟦ y ⇑⟧ }) xs ≡ List.map (λ { (x , y) →  ⟦ x ℕ.+ y ⇑⟧ } ) xs
 
 select : ∀ {a b} {A : Set a} {B : Set b} → List A → List B → List (A × B)
-select  {A = A} {B = B} xs ys = List.concat (go xs ys)
-  where
-  go : List A → List B → List (List (A × B))
-  go xs [] = []
-  go xs (yh ∷ ys) = List.foldr f [] xs
-    where
-    g : A → B → (List (List (A × B)) → List (List (A × B))) → List (List (A × B)) → List (List (A × B))
-    g x y a (z ∷ zs) = ((x , y) ∷ z) ∷ a zs
-    g x y a [] = ((x , y) ∷ []) ∷ a []
-
-    f : A → List (List (A × B)) → List (List (A × B))
-    f x zs = ((x , yh) ∷ []) ∷ List.foldr (g x) id ys zs
+select [] ys = []
+select (x ∷ xs) ys = List.foldr (λ y zs → (x , y) ∷ zs) (select xs ys) ys
 
 nums : ℕ → List (ℕ × ℕ)
 nums n = select (List.upTo n) (List.upTo n)
 
+e : 𝔹
+e = ⟦ 6 ⇑⟧ + ⟦ 4 ⇑⟧
+
+-- 0< B₀ 0 0& 1 1& 0₂
+-- 0< B₀ 0 0& 0 1& 0< 0 0& 0 1& 0₂
+
+_ : addProp (nums 20)
+_ = refl
