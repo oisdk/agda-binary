@@ -120,12 +120,20 @@ mutual
        → ℕ → 0≤ 𝔹₀
        → ℕ → 0≤ 𝔹₀
        → 𝔹₀
-  add₂ c x₁       xs y₁ ys with ℕ.compare x₁ y₁
-  add₂ c x₁       xs _        ys | ℕ.equal .x₁   = c 0& add₀′?? x₁ xs ys
-  add₂ c 0        xs _        ys | ℕ.less _ k    = add₁′? (suc c) k ys xs
-  add₂ c (suc x₁) xs _        ys | ℕ.less _ k    = c 0& x₁ 1& 0< add₁′? 0 k ys xs
-  add₂ c _        xs 0        ys | ℕ.greater _ k = add₁′? (suc c) k xs ys
-  add₂ c _        xs (suc y₁) ys | ℕ.greater _ k = c 0& y₁ 1& 0< add₁′? 0 k xs ys
+  add₂ c zero     xs zero     ys = c 0& add₀′?? 0 xs ys
+  add₂ c zero     xs (suc y₁) ys = add₁′? (suc c) y₁ ys xs
+  add₂ c (suc x₁) xs zero     ys = add₁′? (suc c) x₁ xs ys
+  add₂ c (suc x₁) xs (suc y₁) ys = add₂″ 0 c x₁ xs y₁ ys
+
+  add₂″ : ℕ
+        → ℕ
+        → ℕ → 0≤ 𝔹₀
+        → ℕ → 0≤ 𝔹₀
+        → 𝔹₀
+  add₂″ d c zero     xs zero     ys = c 0& add₀′?? (suc d) xs ys
+  add₂″ d c zero     xs (suc y₁) ys = c 0& d 1& 0< add₁′? 0 y₁ ys xs
+  add₂″ d c (suc x₁) xs zero     ys = c 0& d 1& 0< add₁′? 0 x₁ xs ys
+  add₂″ d c (suc x₁) xs (suc y₁) ys = add₂″ (suc d) c x₁ xs y₁ ys
 
   add₀′? : ℕ → 0≤ 𝔹₀ → ℕ → 𝔹₁ → 𝔹₁
   add₀′? c 0₂ y₀ ys = cncOne′ c (inc₀ (y₀ 0& ys))
