@@ -87,14 +87,26 @@ mutual
 
 open import Data.Maybe as Maybe using (Maybe; just; nothing)
 open import Data.Bool as Bool using (Bool; true; false; _xor_; _∧_; not; _∨_)
+open import Data.List as List using (List; _∷_; [])
 
-uncons : 𝔹 → Maybe (Bool × 𝔹)
-uncons 0₂ = nothing
-uncons (0< B₀ zero 0& xs) = just (false , 0< B₁ xs)
-uncons (0< B₀ suc x 0& xs) = just (false , 0< B₀ x 0& xs)
-uncons (0< B₁ zero 1& 0₂) = just (true , 0₂)
-uncons (0< B₁ zero 1& 0< xs) = just (true , 0< B₀ xs)
-uncons (0< B₁ suc x 1& xs) = just (true , 0< B₁ x 1& xs)
+mutual
+  toList≤ : 0≤ 𝔹₀ → List Bool
+  toList≤ 0₂      = []
+  toList≤ (0< x 0& xs) = toList₀ x xs
+
+  toList₁ : ℕ → 0≤ 𝔹₀ → List Bool
+  toList₁ zero xs = true ∷ toList≤ xs
+  toList₁ (suc x) xs = true ∷ toList₁ x xs
+
+  toList₀ : ℕ → 𝔹₁ → List Bool
+  toList₀ zero    (x 1& xs) = false ∷ toList₁ x xs
+  toList₀ (suc x) xs = false ∷ toList₀ x xs
+
+  toList : 𝔹 → List Bool
+  toList 0₂ = []
+  toList (0< B₀ x 0& xs) = toList₀ x xs
+  toList (0< B₁ x 1& xs) = toList₁ x xs
+
 
 infixr 5 0∷_ 1∷_ _∷𝔹_
 0∷_ : 𝔹 → 𝔹
@@ -111,21 +123,22 @@ _∷𝔹_ : Bool → 𝔹 → 𝔹
 false ∷𝔹 xs = 0∷ xs
 true  ∷𝔹 xs = 1∷ xs
 
-{-# TERMINATING #-}
-add : Bool → Maybe (Bool × 𝔹) → Maybe (Bool × 𝔹) → 𝔹
-add false (just (x , xs)) (just (y , ys)) = (x xor y) ∷𝔹 add (x ∧ y) (uncons xs) (uncons ys)
-add false (just (x , xs)) nothing         = x ∷𝔹 xs
-add false nothing         (just (y , ys)) = y ∷𝔹 ys
-add false nothing         nothing         = 0₂
-add true  (just (x , xs)) (just (y , ys)) = not (x xor y) ∷𝔹 add (x ∨ y) (uncons xs) (uncons ys)
-add true  (just (x , xs)) nothing         = inc (x ∷𝔹 xs)
-add true  nothing         (just (y , ys)) = inc (y ∷𝔹 ys)
-add true  nothing         nothing         = inc 0₂
+fromList : List Bool → 𝔹
+fromList = List.foldr _∷𝔹_ 0₂
+
+add : Bool → List Bool → List Bool → 𝔹
+add false (x ∷ xs) (y ∷ ys) = (x xor y) ∷𝔹 add (x ∧ y) xs ys
+add false (x ∷ xs) []       = x ∷𝔹 fromList xs
+add false []       (y ∷ ys) = y ∷𝔹 fromList ys
+add false []       []       = 0₂
+add true  (x ∷ xs) (y ∷ ys) = not (x xor y) ∷𝔹 add (x ∨ y) xs ys
+add true  (x ∷ xs) []       = inc (x ∷𝔹 fromList xs)
+add true  []       (y ∷ ys) = inc (y ∷𝔹 fromList ys)
+add true  []       []       = inc 0₂
 
 _+_ : 𝔹 → 𝔹 → 𝔹
-xs + ys = add false (uncons xs) (uncons ys)
+xs + ys = add false (toList xs) (toList ys)
 
-open import Data.List as List using (List; _∷_; [])
 open import Relation.Binary.PropositionalEquality
 
 addProp : List (ℕ × ℕ) → Set
