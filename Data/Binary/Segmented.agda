@@ -98,65 +98,71 @@ mutual
        → ℕ → 𝔹₁
        → 𝔹₀
   add₀ x₀ xs y₀ ys with ℕ.compare x₀ y₀
-  add₀ x₀ (x₁ 1& xs) _  ys         | ℕ.less _ k    = x₀ 0& add₁ x₁ xs k ys
-  add₀ x₀ (x₁ 1& xs) _  ys         | ℕ.equal _     = cncZero x₀ (add₂ x₁ xs ys)
-  add₀ _  xs         y₀ (y₁ 1& ys) | ℕ.greater _ k = y₀ 0& add₁ y₁ ys k xs
+  add₀ x₀ (x₁ 1& xs) _  ys         | ℕ.less _ k    = x₀ 0& add₁ 0 x₁ xs k ys
+  add₀ x₀ (x₁ 1& xs) _  (y₁ 1& ys) | ℕ.equal _     = add₂ (suc x₀) x₁ xs y₁ ys
+  add₀ _  xs         y₀ (y₁ 1& ys) | ℕ.greater _ k = y₀ 0& add₁ 0 y₁ ys k xs
 
-  add₁? : ℕ → 0≤ 𝔹₀ → 0≤ 𝔹₀ → 𝔹₁
-  add₁? x₁ xs 0₂ = x₁ 1& xs
-  add₁? x₁ xs (0< y₀ 0& ys) = add₁ x₁ xs y₀ ys
+  add₁? : ℕ → ℕ → 0≤ 𝔹₀ → 0≤ 𝔹₀ → 𝔹₁
+  add₁? c x₁ xs 0₂ = c ℕ.+ x₁ 1& xs
+  add₁? c x₁ xs (0< y₀ 0& ys) = add₁ c x₁ xs y₀ ys
 
-  add₁ : ℕ → 0≤ 𝔹₀
+  add₁ : ℕ
+       → ℕ → 0≤ 𝔹₀
        → ℕ → 𝔹₁
        → 𝔹₁
-  add₁ x₁ xs y₀ ys with ℕ.compare x₁ y₀
-  add₁ x₁ xs _  ys         | ℕ.less .x₁ k    = x₁ 1& 0< add₀? xs k ys
-  add₁ x₁ xs _  (y₁ 1& ys) | ℕ.equal .x₁     = cncOne x₁ (add₁? y₁ ys xs)
-  add₁ _  xs y₀ ys         | ℕ.greater .y₀ k = y₀ 1& 0< add₂ k xs ys
+  add₁ c x₁ xs y₀ ys with ℕ.compare x₁ y₀
+  add₁ c x₁ xs _  ys         | ℕ.less .x₁ k    = (c ℕ.+ x₁) 1& 0< add₀? xs k ys
+  add₁ c x₁ xs _  (y₁ 1& ys) | ℕ.equal .x₁     = add₁? (suc (c ℕ.+ x₁)) y₁ ys xs
+  add₁ c _  xs y₀ (y₁ 1& ys) | ℕ.greater .y₀ k = (c ℕ.+ y₀) 1& 0< add₂ 0 k xs y₁ ys
 
-  add₂ : ℕ → 0≤ 𝔹₀
-       → 𝔹₁
+  add₂ : ℕ
+       → ℕ → 0≤ 𝔹₀
+       → ℕ → 0≤ 𝔹₀
        → 𝔹₀
-  add₂ x₁ xs (y₁ 1& ys) with ℕ.compare x₁ y₁
-  add₂ x₁ xs (_  1& ys)       | ℕ.equal .x₁   = 0 0& cncOne′ x₁ (add₀′?? xs ys)
-  add₂ 0      xs (_  1& ys)   | ℕ.less _ k    = cncZero 0 (add₁′? k ys xs)
-  add₂ (suc x₁) xs (_  1& ys) | ℕ.less _ k    = 0 0& x₁ 1& 0< add₁′? k ys xs
-  add₂ _  xs (0      1& ys)   | ℕ.greater _ k = cncZero 0 (add₁′? k xs ys)
-  add₂ _  xs (suc y₁ 1& ys)   | ℕ.greater _ k = 0 0& y₁ 1& 0< add₁′? k xs ys
+  add₂ c x₁       xs y₁ ys with ℕ.compare x₁ y₁
+  add₂ c x₁       xs _        ys | ℕ.equal .x₁   = c 0& add₀′?? x₁ xs ys
+  add₂ c 0        xs _        ys | ℕ.less _ k    = add₁′? (suc c) k ys xs
+  add₂ c (suc x₁) xs _        ys | ℕ.less _ k    = c 0& x₁ 1& 0< add₁′? 0 k ys xs
+  add₂ c _        xs 0        ys | ℕ.greater _ k = add₁′? (suc c) k xs ys
+  add₂ c _        xs (suc y₁) ys | ℕ.greater _ k = c 0& y₁ 1& 0< add₁′? 0 k xs ys
 
-  add₀′? : 0≤ 𝔹₀ → ℕ → 𝔹₁ → 𝔹₁
-  add₀′? 0₂ y₀ ys = inc₀ (y₀ 0& ys)
-  add₀′? (0< xs) y₀ ys = add₀′ xs y₀ ys
+  add₀′? : ℕ → 0≤ 𝔹₀ → ℕ → 𝔹₁ → 𝔹₁
+  add₀′? c 0₂ y₀ ys = cncOne′ c (inc₀ (y₀ 0& ys))
+  add₀′? c (0< xs) y₀ ys = add₀′ c xs y₀ ys
 
-  add₀′?? : 0≤ 𝔹₀ → 0≤ 𝔹₀ → 𝔹₁
-  add₀′?? 0₂ 0₂ = 0 1& 0₂
-  add₀′?? 0₂ (0< xs) = inc₀ xs
-  add₀′?? (0< xs) 0₂ = inc₀ xs
-  add₀′?? (0< xs) (0< y₀ 0& ys) = add₀′ xs y₀ ys
+  add₀′?? : ℕ → 0≤ 𝔹₀ → 0≤ 𝔹₀ → 𝔹₁
+  add₀′?? c 0₂ 0₂ = c 1& 0₂
+  add₀′?? c 0₂ (0< xs) = cncOne′ c (inc₀ xs)
+  add₀′?? c (0< xs) 0₂ = cncOne′ c (inc₀ xs)
+  add₀′?? c (0< xs) (0< y₀ 0& ys) = add₀′ c xs y₀ ys
 
-  add₀′ : 𝔹₀ → ℕ → 𝔹₁ → 𝔹₁
-  add₀′ (x₀ 0& xs) y₀  ys with ℕ.compare x₀ y₀
-  add₀′ (x₀     0& x₁ 1& xs) _       ys         | ℕ.equal _     = 0 1& 0< cncZero′ x₀ (add₂ x₁ xs ys)
-  add₀′ (0      0& x₁ 1& xs) _       ys         | ℕ.less _ k    = cncOne 0 (add₁ x₁ xs k ys)
-  add₀′ (suc x₀ 0& x₁ 1& xs) _       ys         | ℕ.less _ k    = 0 1& 0< x₀ 0& add₁ x₁ xs k ys
-  add₀′ (_      0& xs)      0        (y₁ 1& ys) | ℕ.greater _ k = cncOne 0 (add₁ y₁ ys k xs)
-  add₀′ (_      0& xs)      (suc y₀) (y₁ 1& ys) | ℕ.greater _ k = 0 1& 0< y₀ 0& add₁ y₁ ys k xs
+  add₀′ : ℕ → 𝔹₀ → ℕ → 𝔹₁ → 𝔹₁
+  add₀′ c (x₀ 0& xs) y₀  ys with ℕ.compare x₀ y₀
+  add₀′ c (x₀     0& x₁ 1& xs) _       (y₁ 1& ys) | ℕ.equal _     = c 1& 0< add₂ x₀ x₁ xs y₁ ys
+  add₀′ c (0      0& x₁ 1& xs) _       (      ys) | ℕ.less _ k    = add₁ (suc c) x₁ xs k ys
+  add₀′ c (suc x₀ 0& x₁ 1& xs) _       (      ys) | ℕ.less _ k    = c 1& 0< x₀ 0& add₁ 0 x₁ xs k ys
+  add₀′ c (_      0& xs)      0        (y₁ 1& ys) | ℕ.greater _ k = add₁ (suc c) y₁ ys k xs
+  add₀′ c (_      0& xs)      (suc y₀) (y₁ 1& ys) | ℕ.greater _ k = c 1& 0< y₀ 0& add₁ 0 y₁ ys k xs
 
-  add₁′? : ℕ → 0≤ 𝔹₀ → 0≤ 𝔹₀ → 𝔹₀
-  add₁′? x xs 0₂ = inc₁ (x 1& xs)
-  add₁′? x xs (0< ys) = add₁′ x xs ys
+  add₁′? : ℕ → ℕ → 0≤ 𝔹₀ → 0≤ 𝔹₀ → 𝔹₀
+  add₁′? c x xs 0₂ = cncZero′ c (inc₁ (x 1& xs))
+  add₁′? c x xs (0< y₀ 0& ys) = add₁′ c x xs y₀ ys
 
-  add₁′ : ℕ → 0≤ 𝔹₀ → 𝔹₀ → 𝔹₀
-  add₁′ x₁ xs (y₀ 0& ys) with ℕ.compare x₁ y₀
-  add₁′ x₁ xs (_  0& ys)       | ℕ.less .x₁ k    = x₁ 0& (add₀′? xs k ys)
-  add₁′ x₁ xs (_  0& y₁ 1& ys) | ℕ.equal .x₁     = cncZero x₁ (add₁′? y₁ ys xs)
-  add₁′ _  xs (y₀ 0& ys)       | ℕ.greater .y₀ k = y₀ 0& add₂′ k xs ys
+  add₁′ : ℕ → ℕ → 0≤ 𝔹₀ → ℕ → 𝔹₁ → 𝔹₀
+  add₁′ c zero     xs zero     (y₁ 1& ys) = add₁′? (suc c) y₁ ys xs
+  add₁′ c zero     xs (suc y₀) ys = c 0& add₀′? 0 xs y₀ ys
+  add₁′ c (suc x₁) xs zero     ys = c 0& add₂′ x₁ xs ys
+  add₁′ c (suc x₁) xs (suc y₀) ys = add₁′ (suc c) x₁ xs y₀ ys
+  -- add₁′ c x₁ xs y₀ ys with ℕ.compare x₁ y₀
+  -- add₁′ c x₁ xs _  ys         | ℕ.less .x₁ k    = (c ℕ.+ x₁) 0& (add₀′? 0 xs k ys)
+  -- add₁′ c x₁ xs _  (y₁ 1& ys) | ℕ.equal .x₁     = add₁′? (suc (c ℕ.+ x₁)) y₁ ys xs
+  -- add₁′ c _  xs y₀ ys         | ℕ.greater .y₀ k = (c ℕ.+ y₀) 0& add₂′ k xs ys
 
   add₂′ : ℕ → 0≤ 𝔹₀ → 𝔹₁ → 𝔹₁
   add₂′ x₁ xs (y₁ 1& ys) with ℕ.compare x₁ y₁
-  add₂′ x₁ xs (_  1& ys) | ℕ.less _ k    = x₁ 1& 0< add₁′? k ys xs
-  add₂′ x₁ xs (_  1& ys) | ℕ.equal .x₁   = cncOne x₁ (add₀′?? xs ys)
-  add₂′ _  xs (y₁ 1& ys) | ℕ.greater _ k = y₁ 1& 0< add₁′? k xs ys
+  add₂′ x₁ xs (_  1& ys) | ℕ.less _ k    = x₁ 1& 0< add₁′? 0 k ys xs
+  add₂′ x₁ xs (_  1& ys) | ℕ.equal .x₁   = add₀′?? (suc x₁) xs ys
+  add₂′ _  xs (y₁ 1& ys) | ℕ.greater _ k = y₁ 1& 0< add₁′? 0 k xs ys
 
   cncZero : ℕ → 𝔹₀ → 𝔹₀
   cncZero n (x 0& xs) = suc (n ℕ.+ x) 0& xs
@@ -176,9 +182,9 @@ _+_ : 𝔹 → 𝔹 → 𝔹
 0₂ + ys = ys
 (0< xs) + 0₂ = 0< xs
 (0< B₀ x 0& xs) + (0< B₀ y 0& ys) = 0< B₀ add₀ x xs y ys
-(0< B₀ x 0& xs) + (0< B₁ y₁ 1& ys) = 0< B₁ add₁ y₁ ys x xs
-(0< B₁ x₁ 1& xs) + (0< B₀ y 0& ys) = 0< B₁ add₁ x₁ xs y ys
-(0< B₁ x₁ 1& xs) + (0< B₁ ys) = 0< B₀ add₂ x₁ xs ys
+(0< B₀ x 0& xs) + (0< B₁ y₁ 1& ys) = 0< B₁ add₁ 0 y₁ ys x xs
+(0< B₁ x₁ 1& xs) + (0< B₀ y 0& ys) = 0< B₁ add₁ 0 x₁ xs y ys
+(0< B₁ x₁ 1& xs) + (0< B₁ y₁ 1& ys) = 0< B₀ add₂ 0 x₁ xs y₁ ys
 
 open import Relation.Binary.PropositionalEquality
 open import Data.List as List using (List; _∷_; [])
@@ -193,5 +199,5 @@ select (x ∷ xs) ys = List.foldr (λ y zs → (x , y) ∷ zs) (select xs ys) ys
 nums : ℕ → List (ℕ × ℕ)
 nums n = select (List.upTo n) (List.upTo n)
 
-_ : addProp (nums 60)
-_ = refl
+-- _ : addProp (nums 60)
+-- _ = refl
