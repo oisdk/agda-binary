@@ -78,8 +78,8 @@ mutual
   1→⟨1+1⟩ c (suc x₁) xs (suc y₁) ys = 1→⟨1+1⟩ (suc c) x₁ xs y₁ ys
 
   carry : ℕ → 𝔹₀ → 𝔹₁
-  carry n (zero  0& y 1& xs) = suc (n ℕ.+ y) 1& xs
-  carry n (suc x 0& y 1& xs) = n 1& 0< x 0& y 1& xs
+  carry c (zero   0& x₁ 1& xs) = suc (c ℕ.+ x₁) 1& xs
+  carry c (suc x₀ 0& x₁ 1& xs) = c 1& 0< x₀ 0& x₁ 1& xs
 
 infixl 6 _+_
 _+_ : 𝔹 → 𝔹 → 𝔹
