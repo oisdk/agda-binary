@@ -1,9 +1,11 @@
 {-# OPTIONS --without-K --safe #-}
 
-module Data.Binary.Segmented.Properties where
+module Data.Binary.Proofs.Semantics where
 
 open import Relation.Binary.PropositionalEquality
-open import Data.Binary.Segmented
+open import Data.Binary.Definitions
+open import Data.Binary.Operations.Unary
+open import Data.Binary.Operations.Semantics
 open import Data.Nat as ℕ using (ℕ; suc; zero)
 open import Level using (_⊔_)
 open import Relation.Binary
@@ -11,9 +13,8 @@ open import Relation.Nullary
 open import Function
 import Data.Nat.Properties as ℕ-Prop
 
-open import Data.Binary.Segmented.Properties.Homomorphism
-open import Data.Binary.Segmented.Properties.IncDec
-open import Data.Binary.Segmented.Properties.Views
+open import Data.Binary.Proofs.Unary
+open import Data.Binary.Views
 
 homo : ∀ n → ⟦ ⟦ n ⇑⟧ ⇓⟧ ≡ n
 homo zero = refl
@@ -42,4 +43,3 @@ inc-injective x y x+1≡y+1 = inj (ℕ-Prop.suc-injective (sym (inc-homo x) ⟨ 
 
 homo⁻¹ : ∀ x → ⟦ ⟦ x ⇓⟧ ⇑⟧ ≡ x
 homo⁻¹ = Bijection.left-inverse-of 𝔹↔ℕ
-

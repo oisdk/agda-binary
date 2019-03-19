@@ -1,10 +1,10 @@
 {-# OPTIONS --without-K --safe #-}
 
-module Data.Binary.Segmented.Properties.DecEq where
+module Data.Binary.Proofs.Decidability where
 
 open import Relation.Binary
 open import Relation.Binary.PropositionalEquality
-open import Data.Binary.Segmented
+open import Data.Binary.Definitions
 open import Data.Nat as ℕ using (ℕ; suc; zero)
 open import Relation.Nullary
 

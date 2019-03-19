@@ -1,14 +1,31 @@
 {-# OPTIONS --without-K --safe #-}
 
-module Data.Binary.Segmented.Properties.Homomorphism where
+module Data.Binary.Proofs.Unary where
 
 open import Relation.Binary.PropositionalEquality
-open import Data.Binary.Segmented
+open import Data.Binary.Operations.Unary
+open import Data.Binary.Definitions
 open import Data.Nat as ℕ using (ℕ; suc; zero)
-
-open ≡-Reasoning
-import Data.Nat.Properties as ℕ-Prop
 open import Data.Empty
+open import Relation.Binary.PropositionalEquality.FasterReasoning
+open import Data.Nat.Properties as ℕ-Prop
+open import Data.Binary.Operations.Semantics
+
+dec-inc : ∀ x → dec⁺ (inc⁺ x) ≡ x
+dec-inc 0₂                         = refl
+dec-inc (0< B₁ _ 1& 0₂           ) = refl
+dec-inc (0< B₁ _ 1& 0< zero  0& _) = refl
+dec-inc (0< B₁ _ 1& 0< suc _ 0& _) = refl
+dec-inc (0< B₀ zero  0& _        ) = refl
+dec-inc (0< B₀ suc _ 0& _        ) = refl
+
+inc-dec : ∀ x → inc⁺ (dec⁺ x) ≡ x
+inc-dec (     B₁ zero  1& 0₂  ) = refl
+inc-dec (     B₁ zero  1& 0< _) = refl
+inc-dec (     B₁ suc _ 1& _   ) = refl
+inc-dec (B₀ _ 0& zero  1& 0₂  ) = refl
+inc-dec (B₀ _ 0& zero  1& 0< _) = refl
+inc-dec (B₀ _ 0& suc _ 1& _   ) = refl
 
 lemma₁ : ∀ x {y} → x ≢ 0 → x ℕ.+ y ≢ 0
 lemma₁ zero = λ z _ → z refl
@@ -56,7 +73,7 @@ inc-homo (0< B₀ suc x 0& y 1& xs) =
       suc ((2 ℕ.^ suc x) ℕ.* ℕ.pred ((2 ℕ.^ suc y) ℕ.* suc ⟦ xs ⇓⟧≤) ℕ.+ zero)
   ≡⟨ ℕ-Prop.+-suc _ _ ⟩
     suc (2 ℕ.* ((2 ℕ.^ suc x) ℕ.* ℕ.pred ((2 ℕ.^ suc y) ℕ.* suc ⟦ xs ⇓⟧≤)))
-  ≡⟨ cong suc (sym (ℕ-Prop.*-assoc 2 (2 ℕ.^ suc x) _)) ⟩
+  ≡˘⟨ cong suc (ℕ-Prop.*-assoc 2 (2 ℕ.^ suc x) _) ⟩
     suc ((2 ℕ.^ suc (suc x)) ℕ.* ℕ.pred ((2 ℕ.^ suc y) ℕ.* suc ⟦ xs ⇓⟧≤))
   ≡⟨⟩
     suc ⟦ suc x 0& y 1& xs ⇓⟧₀
@@ -82,7 +99,7 @@ inc-homo (0< B₁ x 1& 0< zero  0& z 1& xs) =
     (2 ℕ.^ suc x) ℕ.* suc (2 ℕ.* ℕ.pred ⟦ z 1& xs ⇓⟧₁⁺¹)
   ≡⟨⟩
     ⟦ x 1& 0< zero 0& z 1& xs ⇓⟧₁⁺¹
-  ≡⟨ sym (ℕ-Prop.m≢0⇒suc[pred[m]]≡m (lemma₃ (x 1& 0< 0 0& z 1& xs))) ⟩
+  ≡˘⟨ ℕ-Prop.m≢0⇒suc[pred[m]]≡m (lemma₃ (x 1& 0< 0 0& z 1& xs)) ⟩
     suc (ℕ.pred ⟦ x 1& 0< zero 0& z 1& xs ⇓⟧₁⁺¹)
   ∎
 inc-homo (0< B₁ x 1& 0< suc y 0& z 1& xs) =
@@ -94,7 +111,7 @@ inc-homo (0< B₁ x 1& 0< suc y 0& z 1& xs) =
     2 ℕ.^ suc x ℕ.* ℕ.pred (2 ℕ.* suc ⟦ y 0& z 1& xs ⇓⟧₀)
   ≡⟨ cong ((2 ℕ.^ suc x) ℕ.*_) (lemma₂ {x = suc ⟦ y 0& z 1& xs ⇓⟧₀} λ ()) ⟩
     2 ℕ.^ suc x ℕ.* suc (2 ℕ.* ⟦ y 0& z 1& xs ⇓⟧₀)
-  ≡⟨ cong ((2 ℕ.^ suc x) ℕ.*_) (cong suc (sym (ℕ-Prop.*-assoc 2 (2 ℕ.^ suc y) _))) ⟩
+  ≡˘⟨ cong ((2 ℕ.^ suc x) ℕ.*_) (cong suc (ℕ-Prop.*-assoc 2 (2 ℕ.^ suc y) _)) ⟩
     2 ℕ.^ suc x ℕ.* suc (2 ℕ.* 2 ℕ.^ suc y ℕ.* ℕ.pred ⟦ z 1& xs ⇓⟧₁⁺¹)
   ≡⟨⟩
     2 ℕ.^ suc x ℕ.* suc (2 ℕ.^ suc (suc y) ℕ.* ℕ.pred ⟦ z 1& xs ⇓⟧₁⁺¹)
@@ -102,6 +119,6 @@ inc-homo (0< B₁ x 1& 0< suc y 0& z 1& xs) =
     2 ℕ.^ suc x ℕ.* suc ⟦ suc y 0& z 1& xs ⇓⟧₀
   ≡⟨⟩
     ⟦ x 1& 0< suc y 0& z 1& xs ⇓⟧₁⁺¹
-  ≡⟨ sym (ℕ-Prop.m≢0⇒suc[pred[m]]≡m (lemma₃ (x 1& 0< suc y 0& z 1& xs))) ⟩
+  ≡˘⟨ ℕ-Prop.m≢0⇒suc[pred[m]]≡m (lemma₃ (x 1& 0< suc y 0& z 1& xs)) ⟩
     suc (ℕ.pred ⟦ x 1& 0< suc y 0& z 1& xs ⇓⟧₁⁺¹)
   ∎
