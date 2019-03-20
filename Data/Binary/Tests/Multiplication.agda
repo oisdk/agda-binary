@@ -8,7 +8,7 @@ open import Data.Binary.Tests.Helpers
 import Data.Nat as ℕ
 open import Relation.Binary.PropositionalEquality
 
-_ : ∀⟨ℕ⟩₂< 25 ∶ _*_ ≐ ℕ._*_
+_ : ∀⟨ℕ⟩₂< 40 ∶ _*_ ≐ ℕ._*_
 _ = refl
 
 _ : ⟦ ⟦ 1000 ⇑⟧ * ⟦ 531 ⇑⟧ ⇓⟧ ≡ 1000 ℕ.* 531
