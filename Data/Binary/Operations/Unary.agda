@@ -6,13 +6,13 @@ open import Data.Binary.Definitions
 open import Data.Nat as ℕ using (ℕ; suc; zero)
 
 inc₁ : 0≤ 𝔹₀ → 𝔹₁
-inc₁ (0₂                 ) = 0     1& 0₂
-inc₁ (0< zero  0& z 1& xs) = suc z 1& xs
-inc₁ (0< suc y 0& z 1& xs) = 0     1& 0< y 0& z 1& xs
+inc₁ (0₂            ) = 0 1& 0₂
+inc₁ (0< zero  0& xs) = suc₁ xs
+inc₁ (0< suc y 0& xs) = 0 1& 0< y 0& xs
 
 inc₀ : 𝔹₀ → 𝔹₁
-inc₀ (zero  0& y 1& xs) = suc y 1& xs
-inc₀ (suc x 0& y 1& xs) = 0     1& 0< x 0& y 1& xs
+inc₀ (zero  0& xs) = suc₁ xs
+inc₀ (suc x 0& xs) = 0 1& 0< x 0& xs
 
 inc⁺ : 𝔹 → 𝔹⁺
 inc⁺ 0₂              = B₁ 0 1& 0₂

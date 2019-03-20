@@ -17,15 +17,15 @@ mutual
     constructor _0&_
     inductive
     field
-      zeroes : ℕ
-      tail₁ : 𝔹₁
+      H₀ : ℕ
+      T₀ : 𝔹₁
 
   record 𝔹₁ : Set where
     constructor _1&_
     inductive
     field
-      ones : ℕ
-      tail₀ : 0≤  𝔹₀
+      H₁ : ℕ
+      T₁ : 0≤  𝔹₀
 open 𝔹₀ public
 open 𝔹₁ public
 
@@ -38,9 +38,9 @@ data 𝔹⁺ : Set where
 
 infixr 5 suc₀_ suc₁_
 suc₀_ : 𝔹₀ → 𝔹₀
-zeroes (suc₀ xs) = suc (zeroes xs)
-tail₁  (suc₀ xs) = tail₁ xs
+H₀ (suc₀ xs) = suc (H₀ xs)
+T₀ (suc₀ xs) = T₀ xs
 
 suc₁_ : 𝔹₁ → 𝔹₁
-ones  (suc₁ xs) = suc (ones xs)
-tail₀ (suc₁ xs) = tail₀ xs
+H₁ (suc₁ xs) = suc (H₁ xs)
+T₁ (suc₁ xs) = T₁ xs
