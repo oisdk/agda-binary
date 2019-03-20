@@ -26,8 +26,8 @@ mutual
     field
       ones : ℕ
       tail₀ : 0≤  𝔹₀
-open 𝔹₀
-open 𝔹₁
+open 𝔹₀ public
+open 𝔹₁ public
 
 data 𝔹⁺ : Set where
   B₀_ : 𝔹₀ → 𝔹⁺
@@ -35,3 +35,12 @@ data 𝔹⁺ : Set where
 
 𝔹 : Set
 𝔹 = 0≤ 𝔹⁺
+
+infixr 5 suc₀_ suc₁_
+suc₀_ : 𝔹₀ → 𝔹₀
+zeroes (suc₀ xs) = suc (zeroes xs)
+tail₁  (suc₀ xs) = tail₁ xs
+
+suc₁_ : 𝔹₁ → 𝔹₁
+ones  (suc₁ xs) = suc (ones xs)
+tail₀ (suc₁ xs) = tail₀ xs
