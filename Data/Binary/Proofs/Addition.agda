@@ -24,9 +24,44 @@ suc₁-homo xs = ℕ-Prop.*-assoc 2 (2^ H₁ xs +1) _
 mutual
   0→⟨0+0⟩-homo : ∀ x₀ xs y₀ ys
                → ⟦ 0< B₀ 0→⟨0+0⟩ x₀ xs y₀ ys ⇓⟧ ≡ ⟦ 0< B₀ x₀ 0& xs ⇓⟧ ℕ.+ ⟦ 0< B₀ y₀ 0& ys ⇓⟧
-  0→⟨0+0⟩-homo zero xs zero ys = {!!}
-  0→⟨0+0⟩-homo zero xs (suc y₀) ys = {!!}
-  0→⟨0+0⟩-homo (suc x₀) xs zero ys = {!!}
+  0→⟨0+0⟩-homo zero (x₁ 1& xs) zero (y₁ 1& ys) =
+    begin
+      ⟦ suc₀ 0→⟨1+1⟩ x₁ xs y₁ ys ⇓⟧₀
+    ≡⟨ suc₀-homo (0→⟨1+1⟩ x₁ xs y₁ ys) ⟩
+      2 ℕ.* ⟦ 0→⟨1+1⟩ x₁ xs y₁ ys ⇓⟧₀
+    ≡⟨ 2 *≫ 0→⟨1+1⟩-homo x₁ xs y₁ ys ⟩
+      2 ℕ.* (⟦ 0< B₁ x₁ 1& xs ⇓⟧ ℕ.+ ⟦ 0< B₁ y₁ 1& ys ⇓⟧)
+    ≡⟨ ℕ-Prop.*-distribˡ-+ 2 ⟦ 0< B₁ x₁ 1& xs ⇓⟧ ⟦ 0< B₁ y₁ 1& ys ⇓⟧ ⟩
+      2 ℕ.* ⟦ 0< B₁ x₁ 1& xs ⇓⟧ ℕ.+ 2 ℕ.* ⟦ 0< B₁ y₁ 1& ys ⇓⟧
+    ≡⟨⟩
+      ⟦ zero 0& x₁ 1& xs ⇓⟧₀ ℕ.+ ⟦ zero 0& y₁ 1& ys ⇓⟧₀
+    ∎
+  0→⟨0+0⟩-homo zero (x₁ 1& xs) (suc y₀) ys =
+    begin
+      ⟦ 0 0& 0→⟨1+0⟩ x₁ xs y₀ ys ⇓⟧₀
+    ≡⟨⟩
+      2 ℕ.* ⟦ 0< B₁ 0→⟨1+0⟩ x₁ xs y₀ ys ⇓⟧
+    ≡⟨ 2 *≫ 0→⟨1+0⟩-homo x₁ xs y₀ ys ⟩
+      2 ℕ.* (⟦ 0< B₁ x₁ 1& xs ⇓⟧ ℕ.+ ⟦ 0< B₀ y₀ 0& ys ⇓⟧)
+    ≡⟨ ℕ-Prop.*-distribˡ-+ 2 ⟦ 0< B₁ x₁ 1& xs ⇓⟧ _ ⟩
+      2 ℕ.* ⟦ 0< B₁ x₁ 1& xs ⇓⟧ ℕ.+ 2 ℕ.* ⟦ 0< B₀ y₀ 0& ys ⇓⟧
+    ≡˘⟨ (2 ℕ.* ⟦ 0< B₁ x₁ 1& xs ⇓⟧) +≫ suc₀-homo (y₀ 0& ys) ⟩
+      ⟦ zero 0& x₁ 1& xs ⇓⟧₀ ℕ.+ ⟦ suc y₀ 0& ys ⇓⟧₀
+    ∎
+  0→⟨0+0⟩-homo (suc y₀) ys zero (x₁ 1& xs) =
+    begin
+      ⟦ 0 0& 0→⟨1+0⟩ x₁ xs y₀ ys ⇓⟧₀
+    ≡⟨⟩
+      2 ℕ.* ⟦ 0< B₁ 0→⟨1+0⟩ x₁ xs y₀ ys ⇓⟧
+    ≡⟨ 2 *≫ 0→⟨1+0⟩-homo x₁ xs y₀ ys ⟩
+      2 ℕ.* (⟦ 0< B₁ x₁ 1& xs ⇓⟧ ℕ.+ ⟦ 0< B₀ y₀ 0& ys ⇓⟧)
+    ≡⟨ ℕ-Prop.*-distribˡ-+ 2 ⟦ 0< B₁ x₁ 1& xs ⇓⟧ _ ⟩
+      2 ℕ.* ⟦ 0< B₁ x₁ 1& xs ⇓⟧ ℕ.+ 2 ℕ.* ⟦ 0< B₀ y₀ 0& ys ⇓⟧
+    ≡˘⟨ (2 ℕ.* ⟦ 0< B₁ x₁ 1& xs ⇓⟧) +≫ suc₀-homo (y₀ 0& ys) ⟩
+      ⟦ zero 0& x₁ 1& xs ⇓⟧₀ ℕ.+ ⟦ suc y₀ 0& ys ⇓⟧₀
+    ≡⟨ ℕ-Prop.+-comm ⟦ 0 0& x₁ 1& xs ⇓⟧₀ _ ⟩
+      ⟦ suc y₀ 0& ys ⇓⟧₀ ℕ.+ ⟦ zero 0& x₁ 1& xs ⇓⟧₀
+    ∎
   0→⟨0+0⟩-homo (suc x₀) xs (suc y₀) ys =
     begin
       ⟦ suc₀ 0→⟨0+0⟩ x₀ xs y₀ ys ⇓⟧₀
@@ -42,9 +77,36 @@ mutual
       ⟦ suc x₀ 0& xs ⇓⟧₀ ℕ.+ ⟦ suc y₀ 0& ys ⇓⟧₀
     ∎
 
+  0→⟨1+0?⟩-homo : ∀ ys xs → ℕ.pred ⟦ 0→⟨1+0?⟩ ys xs ⇓⟧₁⁺¹ ≡ ⟦ xs ⇓⟧≤ ℕ.+ ℕ.pred ⟦ ys ⇓⟧₁⁺¹
+  0→⟨1+0?⟩-homo ys 0₂ = refl
+  0→⟨1+0?⟩-homo (y₁ 1& ys) (0< x₀ 0& xs) = 0→⟨1+0⟩-homo y₁ ys x₀ xs ⟨ trans ⟩ ℕ-Prop.+-comm _ ⟦ 0< x₀ 0& xs ⇓⟧≤
+
   0→⟨1+0⟩-homo : ∀ x₁ xs y₀ ys
         → ⟦ 0< B₁ 0→⟨1+0⟩ x₁ xs y₀ ys ⇓⟧ ≡ ⟦ 0< B₁ x₁ 1& xs ⇓⟧ ℕ.+ ⟦ 0< B₀ y₀ 0& ys ⇓⟧
-  0→⟨1+0⟩-homo zero xs zero ys = {!!}
+  0→⟨1+0⟩-homo zero xs zero ys =
+    begin
+      ℕ.pred ⟦ suc₁ 0→⟨1+0?⟩ ys xs ⇓⟧₁⁺¹
+    ≡⟨ cong ℕ.pred (suc₁-homo (0→⟨1+0?⟩ ys xs)) ⟩
+      ℕ.pred (2 ℕ.* ⟦ 0→⟨1+0?⟩ ys xs ⇓⟧₁⁺¹)
+    ≡⟨ pred-distrib-2* (⟦x⇓⟧₁⁺¹≢0 (0→⟨1+0?⟩ ys xs)) ⟩
+      suc (2 ℕ.* ℕ.pred ⟦ 0→⟨1+0?⟩ ys xs ⇓⟧₁⁺¹)
+    ≡⟨ cong suc (2 *≫ 0→⟨1+0?⟩-homo ys xs)  ⟩
+      suc (2 ℕ.* (⟦ xs ⇓⟧≤ ℕ.+ ℕ.pred ⟦ ys ⇓⟧₁⁺¹))
+    ≡⟨ cong suc (ℕ-Prop.*-distribˡ-+ 2 ⟦ xs ⇓⟧≤ _) ⟩
+      suc ((2 ℕ.* ⟦ xs ⇓⟧≤) ℕ.+ (2 ℕ.* ℕ.pred ⟦ ys ⇓⟧₁⁺¹))
+    ≡⟨⟩
+      1 ℕ.+ ((2 ℕ.* ⟦ xs ⇓⟧≤) ℕ.+ (2 ℕ.* ℕ.pred ⟦ ys ⇓⟧₁⁺¹))
+    ≡˘⟨ ℕ-Prop.+-assoc 1 (2 ℕ.* ⟦ xs ⇓⟧≤) _ ⟩
+      1 ℕ.+ (2 ℕ.* ⟦ xs ⇓⟧≤) ℕ.+ (2 ℕ.* ℕ.pred ⟦ ys ⇓⟧₁⁺¹)
+    ≡⟨⟩
+      suc (2 ℕ.* ⟦ xs ⇓⟧≤) ℕ.+ (2 ℕ.* ℕ.pred ⟦ ys ⇓⟧₁⁺¹)
+    ≡⟨⟩
+      suc (2 ℕ.* ℕ.pred (suc ⟦ xs ⇓⟧≤)) ℕ.+ (2 ℕ.* ℕ.pred ⟦ ys ⇓⟧₁⁺¹)
+    ≡˘⟨ (2 ℕ.* ℕ.pred ⟦ ys ⇓⟧₁⁺¹) ≪+ pred-distrib-2* {suc ⟦ xs ⇓⟧≤} (λ ()) ⟩
+      ℕ.pred (2 ℕ.* suc ⟦ xs ⇓⟧≤) ℕ.+ (2 ℕ.* ℕ.pred ⟦ ys ⇓⟧₁⁺¹)
+    ≡⟨⟩
+      ⟦ 0< B₁ 0 1& xs ⇓⟧ ℕ.+ ⟦ 0 0& ys ⇓⟧₀
+    ∎
   0→⟨1+0⟩-homo zero xs (suc y₀) ys = {!!}
   0→⟨1+0⟩-homo (suc x₁) xs zero ys = {!!}
   0→⟨1+0⟩-homo (suc x₁) xs (suc y₀) ys =
