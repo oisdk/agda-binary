@@ -203,6 +203,8 @@ mutual
     ∎
   ⟨1*s⟩-homo (suc x₁) xs y₁ ys =
     let zs = ⟨1*s⟩ x₁ xs y₁ ys
+        x′ = ⟦ x₁ 1& xs ⇓⟧₁
+        y′ = ⟦ y₁ 1& ys ⇓⟧₁
     in
     begin
       ⟦ ⟨1*s⟩ (suc x₁) xs y₁ ys ⇓⟧₁
@@ -218,7 +220,23 @@ mutual
       suc (2 ℕ.* (⟦ x₁ 1& xs ⇓⟧₁ ℕ.* ⟦ suc y₁ 1& ys ⇓⟧₁ ℕ.+ ⟦ y₁ 1& ys ⇓⟧₁))
     ≡⟨ cong suc (ℕ-Prop.*-distribˡ-+ 2 (⟦ x₁ 1& xs ⇓⟧₁ ℕ.* ⟦ suc y₁ 1& ys ⇓⟧₁) ⟦ y₁ 1& ys ⇓⟧₁) ⟩
       suc (2 ℕ.* (⟦ x₁ 1& xs ⇓⟧₁ ℕ.* ⟦ suc y₁ 1& ys ⇓⟧₁) ℕ.+ 2 ℕ.* ⟦ y₁ 1& ys ⇓⟧₁)
-    ≡⟨ {!!} ⟩
+    ≡⟨⟩
+      suc (2 ℕ.* (x′ ℕ.* suc (2* y′)) ℕ.+ 2 ℕ.* y′)
+    ≡˘⟨ ℕ-Prop.+-suc (2 ℕ.* (x′ ℕ.* suc (2* y′))) (2 ℕ.* y′) ⟩
+      2 ℕ.* (x′ ℕ.* suc (2* y′)) ℕ.+ suc (2 ℕ.* y′)
+    ≡˘⟨ suc (2 ℕ.* y′) ≪+ ℕ-Prop.*-assoc 2 x′ (suc (2* y′)) ⟩
+      (2 ℕ.* x′) ℕ.* suc (2* y′) ℕ.+ suc (2 ℕ.* y′)
+    ≡˘⟨ (2 ℕ.* x′) ℕ.* suc (2* y′) +≫ cong suc (2*-homo y′) ⟩
+      (2 ℕ.* x′) ℕ.* suc (2* y′) ℕ.+ suc (2* y′)
+    ≡˘⟨ (2 ℕ.* x′) ℕ.* suc (2* y′) +≫ ℕ-Prop.*-identityˡ _ ⟩
+      (2 ℕ.* x′) ℕ.* suc (2* y′) ℕ.+ 1 ℕ.* suc (2* y′)
+    ≡˘⟨ ℕ-Prop.*-distribʳ-+ (suc (2* y′)) (2 ℕ.* x′) 1 ⟩
+      (2 ℕ.* x′ ℕ.+ 1) ℕ.* suc (2* y′)
+    ≡⟨ suc (2* y′) ≪* ℕ-Prop.+-comm (2 ℕ.* x′) 1 ⟩
+      suc (2 ℕ.* x′) ℕ.* suc (2* y′)
+    ≡˘⟨ suc (2* y′) ≪* cong suc (2*-homo x′) ⟩
+      suc (2* x′) ℕ.* suc (2* y′)
+    ≡⟨⟩
       ⟦ suc x₁ 1& xs ⇓⟧₁ ℕ.* ⟦ suc y₁ 1& ys ⇓⟧₁
     ∎
 
