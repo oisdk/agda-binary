@@ -119,18 +119,36 @@ mutual
       suc (2* ⟦ x₁ 1& xs ⇓⟧₁) ℕ.* ⟦ 0 1& ys ⇓⟧₁
     ∎
 
-  ⟨0*s⟩-homo : ∀ xs y₁ ys → ⟦ ⟨0*s⟩ xs y₁ ys ⇓⟧₁ ≡ suc ⟦ xs ⇓⟧≤ ℕ.* ⟦ y₁ 1& ys ⇓⟧₁
-  ⟨0*s⟩-homo 0₂ y₁ ys = sym (ℕ-Prop.+-identityʳ _)
-  ⟨0*s⟩-homo (0< xs) y₁ ys = {!!}
-
   ⟨1*s⟩-homo : ∀ x₁ xs y₁ ys → ⟦ ⟨1*s⟩ x₁ xs y₁ ys ⇓⟧₁ ≡ ⟦ x₁ 1& xs ⇓⟧₁ ℕ.* ⟦ suc y₁ 1& ys ⇓⟧₁
-  ⟨1*s⟩-homo zero xs y₁ ys =
+  ⟨1*s⟩-homo zero 0₂ y₁ ys =
     begin
-      ⟦ ⟨1*s⟩ 0 xs y₁ ys ⇓⟧₁
-    ≡⟨ cong suc (cong 2*_ (⟨0*s⟩-homo xs y₁ ys)) ⟩
-      suc (2* suc ⟦ xs ⇓⟧≤ ℕ.* ⟦ y₁ 1& ys ⇓⟧₁)
+      ⟦ ⟨1*s⟩ zero 0₂ y₁ ys ⇓⟧₁
+    ≡⟨⟩
+      ⟦ suc₁ (⟨0*s⟩ 0₂ y₁ ys) ⇓⟧₁
+    ≡⟨⟩
+      ⟦ suc₁ (y₁ 1& ys) ⇓⟧₁
+    ≡⟨⟩
+      ⟦ suc y₁ 1& ys ⇓⟧₁
+    ≡˘⟨ ℕ-Prop.*-identityˡ _ ⟩
+      1 ℕ.* ⟦ suc y₁ 1& ys ⇓⟧₁
+    ≡⟨⟩
+      ⟦ zero 1& 0₂ ⇓⟧₁ ℕ.* ⟦ suc y₁ 1& ys ⇓⟧₁
+    ∎
+  ⟨1*s⟩-homo zero (0< x₀ 0& x₁ 1& xs) y₁ ys =
+    begin
+      ⟦ ⟨1*s⟩ zero (0< x₀ 0& x₁ 1& xs) y₁ ys ⇓⟧₁
+    ≡⟨⟩
+      ⟦ suc₁ (0→⟨1+0⟩ y₁ ys x₀ (⟨1*s⟩ x₁ xs y₁ ys)) ⇓⟧₁
+    ≡⟨⟩
+      suc (2* ⟦ 0→⟨1+0⟩ y₁ ys x₀ (⟨1*s⟩ x₁ xs y₁ ys) ⇓⟧₁)
+    ≡⟨ cong suc (cong 2*_ (0→⟨1+0⟩-homo y₁ ys x₀ (⟨1*s⟩ x₁ xs y₁ ys))) ⟩
+      suc (2* ⟦ y₁ 1& ys ⇓⟧₁ ℕ.+ ⟦ x₀ 0& (⟨1*s⟩ x₁ xs y₁ ys) ⇓⟧₀)
+    ≡⟨⟩
+      suc (2* ⟦ y₁ 1& ys ⇓⟧₁ ℕ.+ (2^ suc x₀ * ⟦ ⟨1*s⟩ x₁ xs y₁ ys ⇓⟧₁))
+    ≡⟨ cong suc (cong 2*_ (⟦ y₁ 1& ys ⇓⟧₁ +≫ cong (2^ suc x₀ *_) (⟨1*s⟩-homo x₁ xs y₁ ys))) ⟩
+      suc (2* ⟦ y₁ 1& ys ⇓⟧₁ ℕ.+ (2^ suc x₀ * ⟦ x₁ 1& xs ⇓⟧₁ ℕ.* ⟦ suc y₁ 1& ys ⇓⟧₁))
     ≡⟨ {!!} ⟩
-      ⟦ zero 1& xs ⇓⟧₁ ℕ.* ⟦ suc y₁ 1& ys ⇓⟧₁
+      ⟦ zero 1& 0< x₀ 0& x₁ 1& xs ⇓⟧₁ ℕ.* ⟦ suc y₁ 1& ys ⇓⟧₁
     ∎
   ⟨1*s⟩-homo (suc x₁) xs y₁ ys =
     let zs = ⟨1*s⟩ x₁ xs y₁ ys
