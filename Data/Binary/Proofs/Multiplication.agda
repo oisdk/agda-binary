@@ -157,6 +157,9 @@ mutual
       ⟦ zero 1& 0₂ ⇓⟧₁ ℕ.* ⟦ suc y₁ 1& ys ⇓⟧₁
     ∎
   ⟨1*s⟩-homo zero (0< x₀ 0& x₁ 1& xs) y₁ ys =
+    let x′ = ⟦ x₁ 1& xs ⇓⟧₁
+        y′ = ⟦ y₁ 1& ys ⇓⟧₁
+    in
     begin
       ⟦ ⟨1*s⟩ zero (0< x₀ 0& x₁ 1& xs) y₁ ys ⇓⟧₁
     ≡⟨⟩
@@ -168,8 +171,34 @@ mutual
     ≡⟨⟩
       suc (2* ⟦ y₁ 1& ys ⇓⟧₁ ℕ.+ (2^ suc x₀ * ⟦ ⟨1*s⟩ x₁ xs y₁ ys ⇓⟧₁))
     ≡⟨ cong suc (cong 2*_ (⟦ y₁ 1& ys ⇓⟧₁ +≫ cong (2^ suc x₀ *_) (⟨1*s⟩-homo x₁ xs y₁ ys))) ⟩
-      suc (2* ⟦ y₁ 1& ys ⇓⟧₁ ℕ.+ (2^ suc x₀ * ⟦ x₁ 1& xs ⇓⟧₁ ℕ.* ⟦ suc y₁ 1& ys ⇓⟧₁))
-    ≡⟨ {!!} ⟩
+      suc (2* y′ ℕ.+ (2^ suc x₀ * ⟦ x₁ 1& xs ⇓⟧₁ ℕ.* ⟦ suc y₁ 1& ys ⇓⟧₁))
+    ≡⟨⟩
+      suc (2* y′ ℕ.+ (2^ suc x₀ * x′ ℕ.* suc (2* y′)))
+    ≡⟨ cong suc (cong 2*_ (y′ +≫ 2^-homo (suc x₀) _)) ⟩
+      suc (2* (y′ ℕ.+ (2 ℕ.^ suc x₀ ℕ.* (x′ ℕ.* suc (2* y′)))))
+    ≡˘⟨ cong suc (cong 2*_ (y′ +≫ ℕ-Prop.*-assoc (2 ℕ.^ suc x₀) x′ _)) ⟩
+      suc (2* (y′ ℕ.+ (2 ℕ.^ suc x₀ ℕ.* x′ ℕ.* suc (2* y′))))
+    ≡˘⟨ cong suc (cong 2*_ (y′ +≫ suc (2* y′) ≪* 2^-homo (suc x₀) x′)) ⟩
+      suc (2* (y′ ℕ.+ ((2^ suc x₀ * x′) ℕ.* suc (2* y′))))
+    ≡⟨ cong suc (double-distrib-+ y′ _) ⟩
+      suc ((2* y′) ℕ.+ (2* ((2^ suc x₀ * x′) ℕ.* suc (2* y′))))
+    ≡⟨⟩
+      1 ℕ.+ ((2* y′) ℕ.+ (2* ((2^ suc x₀ * x′) ℕ.* (1 ℕ.+ (2* y′)))))
+    ≡˘⟨ ℕ-Prop.+-assoc 1 (2* y′) _ ⟩
+      1 ℕ.+ (2* y′) ℕ.+ (2* ((2^ suc x₀ * x′) ℕ.* (1 ℕ.+ (2* y′))))
+    ≡⟨ (1 ℕ.+ (2* y′) +≫ 2*-homo ((2^ suc x₀ * x′) ℕ.* (1 ℕ.+ (2* y′)))) ⟩
+      1 ℕ.+ (2* y′) ℕ.+ (2 ℕ.* ((2^ suc x₀ * x′) ℕ.* (1 ℕ.+ (2* y′))))
+    ≡˘⟨ (1 ℕ.+ (2* y′)) +≫ ℕ-Prop.*-assoc 2 (2^ suc x₀ * x′) _ ⟩
+      1 ℕ.+ (2* y′) ℕ.+ ((2 ℕ.* (2^ suc x₀ * x′)) ℕ.* (1 ℕ.+ (2* y′)))
+    ≡˘⟨ _ ≪+ ℕ-Prop.*-identityˡ (1 ℕ.+ (2* y′)) ⟩
+      1 ℕ.* (1 ℕ.+ (2* y′)) ℕ.+ ((2 ℕ.* (2^ suc x₀ * x′)) ℕ.* (1 ℕ.+ (2* y′)))
+    ≡˘⟨ ℕ-Prop.*-distribʳ-+ (1 ℕ.+ (2* y′)) 1 (2 ℕ.* (2^ suc x₀ * x′)) ⟩
+      (1 ℕ.+ (2 ℕ.* (2^ suc x₀ * x′))) ℕ.* (1 ℕ.+ (2* y′))
+    ≡⟨⟩
+      suc (2 ℕ.* (2^ suc x₀ * x′)) ℕ.* (suc (2* y′))
+    ≡˘⟨ suc (2* y′) ≪* cong suc (2*-homo (2^ suc x₀ * x′)) ⟩
+      suc (2* (2^ suc x₀ * x′)) ℕ.* suc (2* y′)
+    ≡⟨⟩
       ⟦ zero 1& 0< x₀ 0& x₁ 1& xs ⇓⟧₁ ℕ.* ⟦ suc y₁ 1& ys ⇓⟧₁
     ∎
   ⟨1*s⟩-homo (suc x₁) xs y₁ ys =
