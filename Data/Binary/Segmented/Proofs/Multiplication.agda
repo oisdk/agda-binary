@@ -1,21 +1,21 @@
 {-# OPTIONS --without-K --safe #-}
 
-module Data.Binary.Proofs.Multiplication where
+module Data.Binary.Segmented.Proofs.Multiplication where
 
 open import Relation.Binary.PropositionalEquality
 open import Relation.Binary.PropositionalEquality.FasterReasoning
-open import Data.Binary.Definitions
-open import Data.Binary.Operations.Addition
-open import Data.Binary.Operations.Semantics as Bin
+open import Data.Binary.Segmented.Definitions
+open import Data.Binary.Segmented.Operations.Addition
+open import Data.Binary.Segmented.Operations.Semantics as Bin
 open import Data.Nat as ℕ using (ℕ; suc; zero)
 import Data.Nat.Properties as ℕ-Prop
 open import Function
-open import Data.Binary.Operations.Unary
-open import Data.Binary.Operations.Multiplication
-open import Data.Binary.Proofs.Unary
+open import Data.Binary.Segmented.Operations.Unary
+open import Data.Binary.Segmented.Operations.Multiplication
+open import Data.Binary.Segmented.Proofs.Unary
 open import Data.Nat.Reasoning
-open import Data.Binary.Proofs.Lemmas
-open import Data.Binary.Proofs.Addition
+open import Data.Binary.Segmented.Proofs.Lemmas
+open import Data.Binary.Segmented.Proofs.Addition
 
 2^-homo : ∀ n x → 2^ n * x ≡ 2 ℕ.^ n ℕ.* x
 2^-homo zero x = sym (ℕ-Prop.*-identityˡ x)

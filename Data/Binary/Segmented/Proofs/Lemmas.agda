@@ -1,13 +1,13 @@
 {-# OPTIONS --without-K --safe #-}
 
-module Data.Binary.Proofs.Lemmas where
+module Data.Binary.Segmented.Proofs.Lemmas where
 
 open import Relation.Binary.PropositionalEquality
 open import Data.Nat as ℕ using (ℕ; suc; zero)
 open import Data.Empty
 import Data.Nat.Properties as ℕ-Prop
-open import Data.Binary.Operations.Semantics
-open import Data.Binary.Definitions
+open import Data.Binary.Segmented.Operations.Semantics
+open import Data.Binary.Segmented.Definitions
 open import Relation.Binary.PropositionalEquality.FasterReasoning
 open import Data.Nat.Reasoning
 

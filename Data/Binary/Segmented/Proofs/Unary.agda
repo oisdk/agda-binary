@@ -1,16 +1,16 @@
 {-# OPTIONS --without-K --safe #-}
 
-module Data.Binary.Proofs.Unary where
+module Data.Binary.Segmented.Proofs.Unary where
 
 open import Relation.Binary.PropositionalEquality
-open import Data.Binary.Operations.Unary
-open import Data.Binary.Definitions
+open import Data.Binary.Segmented.Operations.Unary
+open import Data.Binary.Segmented.Definitions
 open import Data.Nat as ℕ using (ℕ; suc; zero)
 open import Data.Empty
 open import Relation.Binary.PropositionalEquality.FasterReasoning
 open import Data.Nat.Properties as ℕ-Prop
-open import Data.Binary.Operations.Semantics
-open import Data.Binary.Proofs.Lemmas
+open import Data.Binary.Segmented.Operations.Semantics
+open import Data.Binary.Segmented.Proofs.Lemmas
 open import Function
 
 dec-inc : ∀ x → dec⁺ (inc⁺ x) ≡ x

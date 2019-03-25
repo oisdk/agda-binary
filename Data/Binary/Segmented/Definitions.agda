@@ -1,6 +1,6 @@
 {-# OPTIONS --without-K --safe #-}
 
-module Data.Binary.Definitions where
+module Data.Binary.Segmented.Definitions where
 
 open import Data.Nat as ℕ using (ℕ; suc; zero)
 

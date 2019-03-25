@@ -1,8 +1,8 @@
 {-# OPTIONS --without-K --safe #-}
 
-module Data.Binary.Operations.Unary where
+module Data.Binary.Segmented.Operations.Unary where
 
-open import Data.Binary.Definitions
+open import Data.Binary.Segmented.Definitions
 open import Data.Nat as ℕ using (ℕ; suc; zero)
 
 inc₁ : ℕ → 𝔹₁ → 𝔹₁

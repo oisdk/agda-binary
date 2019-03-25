@@ -1,13 +1,13 @@
 {-# OPTIONS --without-K --safe #-}
 
-module Data.Binary.Views where
+module Data.Binary.Segmented.Views where
 
 open import Relation.Binary.PropositionalEquality
-open import Data.Binary.Definitions
-open import Data.Binary.Operations.Unary
-open import Data.Binary.Operations.Semantics
+open import Data.Binary.Segmented.Definitions
+open import Data.Binary.Segmented.Operations.Unary
+open import Data.Binary.Segmented.Operations.Semantics
 open import Data.Nat as ℕ using (ℕ; suc; zero)
-open import Data.Binary.Proofs.Unary
+open import Data.Binary.Segmented.Proofs.Unary
 open import Function
 open import Data.Empty
 

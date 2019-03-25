@@ -1,9 +1,9 @@
 {-# OPTIONS --without-K --safe #-}
 
-module Data.Binary.Operations.Multiplication where
+module Data.Binary.Segmented.Operations.Multiplication where
 
-open import Data.Binary.Definitions
-open import Data.Binary.Operations.Addition
+open import Data.Binary.Segmented.Definitions
+open import Data.Binary.Segmented.Operations.Addition
 open import Data.Nat as ℕ using (ℕ; suc; zero)
 
 mutual

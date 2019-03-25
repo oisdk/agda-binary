@@ -1,19 +1,19 @@
 {-# OPTIONS --without-K --safe #-}
 
-module Data.Binary.Proofs.Addition where
+module Data.Binary.Segmented.Proofs.Addition where
 
 open import Relation.Binary.PropositionalEquality
 open import Relation.Binary.PropositionalEquality.FasterReasoning
-open import Data.Binary.Definitions
-open import Data.Binary.Operations.Addition
-open import Data.Binary.Operations.Semantics
+open import Data.Binary.Segmented.Definitions
+open import Data.Binary.Segmented.Operations.Addition
+open import Data.Binary.Segmented.Operations.Semantics
 open import Data.Nat as ℕ using (ℕ; suc; zero)
 import Data.Nat.Properties as ℕ-Prop
 open import Function
-open import Data.Binary.Operations.Unary
-open import Data.Binary.Proofs.Unary
+open import Data.Binary.Segmented.Operations.Unary
+open import Data.Binary.Segmented.Proofs.Unary
 open import Data.Nat.Reasoning
-open import Data.Binary.Proofs.Lemmas
+open import Data.Binary.Segmented.Proofs.Lemmas
 
 mutual
   0→⟨0+0⟩-homo : ∀ x₀ xs y₀ ys
