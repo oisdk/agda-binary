@@ -1,3 +1,5 @@
+{-# OPTIONS --without-K --safe #-}
+
 module Data.Binary.Proofs.Lemmas where
 
 open import Relation.Binary.PropositionalEquality

@@ -14,6 +14,8 @@ open import Data.Binary.Operations.Multiplication using (_*_)
 open import Data.Binary.Operations.Addition       using (_+_)
 open import Data.Binary.Operations.Semantics      using (⟦_⇓⟧)
 open import Function.Bijection
+open import Relation.Binary.PropositionalEquality.FasterReasoning
+open import Data.Nat.Reasoning
 
 open Bijection 𝔹↔ℕ
 
@@ -25,3 +27,22 @@ open import Function
 +-comm x y = injective (+-homo x y ⟨ trans ⟩
                         ℕ.+-comm ⟦ x ⇓⟧ ⟦ y ⇓⟧ ⟨ trans ⟩
                         sym (+-homo y x))
+
++-assoc : ∀ x y z → (x + y) + z ≡ x + (y + z)
++-assoc x y z = injective $
+  begin
+    ⟦ (x + y) + z ⇓⟧
+  ≡⟨ +-homo (x + y) z ⟩
+    ⟦ x + y ⇓⟧ ℕ.+ ⟦ z ⇓⟧
+  ≡⟨ ⟦ z ⇓⟧ ≪+ +-homo x y ⟩
+    ⟦ x ⇓⟧ ℕ.+ ⟦ y ⇓⟧ ℕ.+ ⟦ z ⇓⟧
+  ≡⟨ ℕ.+-assoc ⟦ x ⇓⟧ ⟦ y ⇓⟧ ⟦ z ⇓⟧ ⟩
+    ⟦ x ⇓⟧ ℕ.+ (⟦ y ⇓⟧ ℕ.+ ⟦ z ⇓⟧)
+  ≡⟨ +-homo x () ⟩
+    ⟦ x + y ⇓⟧ ℕ.+ ⟦ z ⇓⟧
+  ≡⟨ ⟦ z ⇓⟧ ≪+ +-homo x y ⟩
+  ≡⟨ {!!} ⟩
+    ⟦ x + (y + z) ⇓⟧
+  ∎
+
+
