@@ -1,6 +1,6 @@
 {-# OPTIONS --without-K --safe #-}
 
-module Data.Binary.Segmented.Bits where
+module Data.Binary.Bits where
 
 open import Data.Binary.Segmented.Definitions
 open import Data.List.Kleene
