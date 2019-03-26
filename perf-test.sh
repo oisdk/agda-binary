@@ -1,5 +1,15 @@
 #!/bin/bash
-find . -name '*.agda' | xargs -n1 -L1 agda
+echo "module Everything where" > Everything
+find . -type f -name '*.agda' | while read -r file
+do
+    dots="$(echo "$file" | sed 's/\//\./g')"
+    pref=${dots:2}
+    modn="$(basename $pref '.agda')"
+    echo "open import $modn" >> 'Everything'
+done
+mv Everything 'Everything.agda'
+agda Everything.agda
+rm Everything.agda
 
 recompile () {
     echo $1
