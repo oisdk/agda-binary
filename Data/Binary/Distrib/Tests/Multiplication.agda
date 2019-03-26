@@ -1,6 +1,6 @@
 {-# OPTIONS --without-K --safe #-}
 
-module Data.Binary.NonZero.Tests.Multiplication where
+module Data.Binary.Distrib.Tests.Multiplication where
 
 import Data.Binary.NonZero.Operations.Multiplication as 𝔹
 open import Data.Binary.NonZero.Tests.Helpers

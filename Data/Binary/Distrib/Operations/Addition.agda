@@ -5,6 +5,7 @@ module Data.Binary.Distrib.Operations.Addition where
 open import Data.Binary.Distrib.Definitions
 open import Data.Binary.Distrib.Operations.Unary
 
+infixl 6 _+_
 _+_ : 𝔹 → 𝔹 → 𝔹
 0ᵇ + ys = ys
 (2*s xs) + 0ᵇ = 2*s xs
