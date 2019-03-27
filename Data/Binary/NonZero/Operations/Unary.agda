@@ -3,23 +3,25 @@
 module Data.Binary.NonZero.Operations.Unary where
 
 open import Data.Binary.NonZero.Definitions
+open import Data.Maybe using (maybe)
+open import Function
 
-inc″ : 𝔹⁺ → 𝔹⁺
-inc″ 1⁺ = 0⁺∷ 1⁺
-inc″ (0⁺∷ xs) = 1⁺∷ xs
-inc″ (1⁺∷ xs) = 0⁺∷ inc″ xs
+mutual
+  inc⁺⁺ : Bit ⁺ → Bit ⁺
+  inc⁺⁺ (O & xs) = I & xs
+  inc⁺⁺ (I & xs) = O & ∹ inc⁺ xs
 
-inc⁺ : 𝔹 → 𝔹⁺
-inc⁺ 0ᵇ = 1⁺
-inc⁺ (0< x) = inc″ x
+  inc⁺ : 𝔹⁺ → Bit ⁺
+  inc⁺ [] = O & []
+  inc⁺ (∹ xs) = inc⁺⁺ xs
 
 inc : 𝔹 → 𝔹
-inc x = 0< inc⁺ x
+inc x = 0< maybe (∹_ ∘ inc⁺) [] x
 
 dec⁺ : 𝔹⁺ → 𝔹
-dec⁺ 1⁺ = 0ᵇ
-dec⁺ (0⁺∷ xs) = 1ᵇ∷ dec⁺ xs
-dec⁺ (1⁺∷ xs) = 0< 0⁺∷ xs
+dec⁺ [] = 0ᵇ
+dec⁺ (O ∷ xs) = 1ᵇ∷ dec⁺ xs
+dec⁺ (I ∷ xs) = 0< O ∷ xs
 
 dec : 𝔹 → 𝔹
 dec 0ᵇ = 0ᵇ
