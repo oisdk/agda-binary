@@ -10,14 +10,15 @@ open import Data.Nat as ℕ using (ℕ; suc; zero)
 open import Relation.Binary.PropositionalEquality.FasterReasoning
 import Data.Nat.Properties as ℕ
 open import Function
+open import Data.Maybe as Maybe using (Maybe; just; nothing; maybe)
 
-inc″-homo : ∀ xs → ⟦ inc″ xs ⇓⟧⁺ ≡ suc ⟦ xs ⇓⟧⁺
-inc″-homo 1⁺ = refl
-inc″-homo (0⁺∷ xs) = refl
-inc″-homo (1⁺∷ xs) =
+inc⁺-homo : ∀ xs → ⟦ inc⁺ xs ⇓⟧⁺ ≡ suc ⟦ xs ⇓⟧⁺
+inc⁺-homo 1⁺ = refl
+inc⁺-homo (0⁺∷ xs) = refl
+inc⁺-homo (1⁺∷ xs) =
   begin
-    2* ⟦ inc″ xs ⇓⟧⁺
-  ≡⟨ cong 2*_ (inc″-homo xs) ⟩
+    2* ⟦ inc⁺ xs ⇓⟧⁺
+  ≡⟨ cong 2*_ (inc⁺-homo xs) ⟩
     2* (suc ⟦ xs ⇓⟧⁺)
   ≡⟨⟩
     (suc ⟦ xs ⇓⟧⁺) ℕ.+ suc ⟦ xs ⇓⟧⁺
@@ -27,7 +28,7 @@ inc″-homo (1⁺∷ xs) =
 
 inc-homo : ∀ x → ⟦ inc x ⇓⟧ ≡ suc ⟦ x ⇓⟧
 inc-homo 0ᵇ = refl
-inc-homo (0< xs) = inc″-homo xs
+inc-homo (0< xs) = inc⁺-homo xs
 
 data IncView : 𝔹 → Set where
   𝔹zero : IncView 0ᵇ
@@ -48,12 +49,12 @@ open import Data.Product
 
 open import Data.Empty
 
-inc-dec : ∀ xs → inc⁺ (dec⁺ xs) ≡ xs
+inc-dec : ∀ xs → maybe inc⁺ [] (dec⁺ xs) ≡ xs
 inc-dec 1⁺ = refl
 inc-dec (1⁺∷ xs) = refl
 inc-dec (0⁺∷ xs) with inc-dec xs | dec⁺ xs | inspect dec⁺ xs
-inc-dec (0⁺∷ xs) | prf | 0ᵇ | [ prf₂ ] = cong 0⁺∷_ (sym (cong inc⁺ prf₂) ⟨ trans ⟩ prf)
-inc-dec (0⁺∷ xs) | prf | 0< x | [ prf₂ ] = cong 0⁺∷_ (sym (cong inc⁺ prf₂) ⟨ trans ⟩ prf)
+inc-dec (0⁺∷ xs) | prf | 0ᵇ | [ prf₂ ] = cong 0⁺∷_ (sym (cong (maybe inc⁺ []) prf₂) ⟨ trans ⟩ prf)
+inc-dec (0⁺∷ xs) | prf | 0< x | [ prf₂ ] = cong 0⁺∷_ (sym (cong (maybe inc⁺ []) prf₂) ⟨ trans ⟩ prf)
 
 inc-view : ∀ xs → IncView xs
 inc-view xs = go _ xs (inspect ⟦_⇓⟧ xs)

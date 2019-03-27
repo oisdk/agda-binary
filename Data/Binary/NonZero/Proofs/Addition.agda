@@ -34,11 +34,11 @@ mutual
   add₀-homo : ∀ xs ys → ⟦ add₀ xs ys ⇓⟧⁺ ≡ ⟦ xs ⇓⟧⁺ ℕ.+ ⟦ ys ⇓⟧⁺
   add₀-homo 1⁺ 1⁺ = refl
   add₀-homo 1⁺ (0⁺∷ ys) = refl
-  add₀-homo 1⁺ (1⁺∷ ys) = cong 2*_ (inc″-homo ys) ⟨ trans ⟩ ℕ.+-suc (suc ⟦ ys ⇓⟧⁺) _
+  add₀-homo 1⁺ (1⁺∷ ys) = cong 2*_ (inc⁺-homo ys) ⟨ trans ⟩ ℕ.+-suc (suc ⟦ ys ⇓⟧⁺) _
   add₀-homo (0⁺∷ xs) 1⁺ = ℕ.+-comm 1 _
   add₀-homo (0⁺∷ xs) (0⁺∷ ys) = cong 2*_ (add₀-homo xs ys) ⟨ trans ⟩ 2*-distrib ⟦ xs ⇓⟧⁺ ⟦ ys ⇓⟧⁺
   add₀-homo (0⁺∷ xs) (1⁺∷ ys) = cong suc (cong 2*_ (add₀-homo xs ys) ⟨ trans ⟩ 2*-distrib ⟦ xs ⇓⟧⁺ ⟦ ys ⇓⟧⁺) ⟨ trans ⟩ sym (ℕ.+-suc (2* ⟦ xs ⇓⟧⁺) (2* ⟦ ys ⇓⟧⁺))
-  add₀-homo (1⁺∷ xs) 1⁺ = inc″-homo (1⁺∷ xs) ⟨ trans ⟩ cong suc (ℕ.+-comm 1 _)
+  add₀-homo (1⁺∷ xs) 1⁺ = inc⁺-homo (1⁺∷ xs) ⟨ trans ⟩ cong suc (ℕ.+-comm 1 _)
   add₀-homo (1⁺∷ xs) (0⁺∷ ys) = cong suc (cong 2*_ (add₀-homo xs ys) ⟨ trans ⟩ 2*-distrib ⟦ xs ⇓⟧⁺ ⟦ ys ⇓⟧⁺)
   add₀-homo (1⁺∷ xs) (1⁺∷ ys) = cong 2*_ (add₁-homo xs ys) ⟨ trans ⟩ (ℕ.+-suc (suc (⟦ xs ⇓⟧⁺ ℕ.+ ⟦ ys ⇓⟧⁺)) _ ⟨ trans ⟩
                                 cong suc (cong suc (2*-distrib ⟦ xs ⇓⟧⁺ ⟦ ys ⇓⟧⁺))) ⟨ trans ⟩
@@ -46,12 +46,12 @@ mutual
 
   add₁-homo : ∀ xs ys → ⟦ add₁ xs ys ⇓⟧⁺ ≡ suc (⟦ xs ⇓⟧⁺ ℕ.+ ⟦ ys ⇓⟧⁺)
   add₁-homo 1⁺ 1⁺ = refl
-  add₁-homo 1⁺ (0⁺∷ ys) = cong 2*_ (inc″-homo ys) ⟨ trans ⟩ ℕ.+-suc (suc ⟦ ys ⇓⟧⁺) _
-  add₁-homo 1⁺ (1⁺∷ ys) = cong suc (cong 2*_ (inc″-homo ys) ⟨ trans ⟩ ℕ.+-suc (suc ⟦ ys ⇓⟧⁺) _)
-  add₁-homo (0⁺∷ xs) 1⁺ = cong 2*_ (inc″-homo xs) ⟨ trans ⟩ (ℕ.+-suc (suc ⟦ xs ⇓⟧⁺) _ ⟨ trans ⟩ cong suc (ℕ.+-comm 1 _))
+  add₁-homo 1⁺ (0⁺∷ ys) = cong 2*_ (inc⁺-homo ys) ⟨ trans ⟩ ℕ.+-suc (suc ⟦ ys ⇓⟧⁺) _
+  add₁-homo 1⁺ (1⁺∷ ys) = cong suc (cong 2*_ (inc⁺-homo ys) ⟨ trans ⟩ ℕ.+-suc (suc ⟦ ys ⇓⟧⁺) _)
+  add₁-homo (0⁺∷ xs) 1⁺ = cong 2*_ (inc⁺-homo xs) ⟨ trans ⟩ (ℕ.+-suc (suc ⟦ xs ⇓⟧⁺) _ ⟨ trans ⟩ cong suc (ℕ.+-comm 1 _))
   add₁-homo (0⁺∷ xs) (0⁺∷ ys) = cong suc (cong 2*_ (add₀-homo xs ys) ⟨ trans ⟩ 2*-distrib ⟦ xs ⇓⟧⁺ ⟦ ys ⇓⟧⁺)
   add₁-homo (0⁺∷ xs) (1⁺∷ ys) = cong 2*_ (add₁-homo xs ys) ⟨ trans ⟩ (ℕ.+-suc (suc (⟦ xs ⇓⟧⁺ ℕ.+ ⟦ ys ⇓⟧⁺)) _ ⟨ trans ⟩ (cong suc (cong suc ((2*-distrib ⟦ xs ⇓⟧⁺ ⟦ ys ⇓⟧⁺))) ⟨ trans ⟩ cong suc (sym (ℕ.+-suc (2* ⟦ xs ⇓⟧⁺) _)) ))
-  add₁-homo (1⁺∷ xs) 1⁺ = cong suc (cong 2*_ (inc″-homo xs) ⟨ trans ⟩ cong suc (ℕ.+-suc ⟦ xs ⇓⟧⁺ _ ⟨ trans ⟩ ℕ.+-comm 1 _))
+  add₁-homo (1⁺∷ xs) 1⁺ = cong suc (cong 2*_ (inc⁺-homo xs) ⟨ trans ⟩ cong suc (ℕ.+-suc ⟦ xs ⇓⟧⁺ _ ⟨ trans ⟩ ℕ.+-comm 1 _))
   add₁-homo (1⁺∷ xs) (0⁺∷ ys) = cong 2*_ (add₁-homo xs ys) ⟨ trans ⟩ (ℕ.+-suc (suc (⟦ xs ⇓⟧⁺ ℕ.+ ⟦ ys ⇓⟧⁺)) _ ⟨ trans ⟩ cong suc (cong suc (2*-distrib ⟦ xs ⇓⟧⁺ ⟦ ys ⇓⟧⁺)))
   add₁-homo (1⁺∷ xs) (1⁺∷ ys) = cong suc (cong 2*_ (add₁-homo xs ys) ⟨ trans ⟩ (ℕ.+-suc (suc (⟦ xs ⇓⟧⁺ ℕ.+ ⟦ ys ⇓⟧⁺) ) _ ⟨ trans ⟩ cong suc (cong suc (2*-distrib ⟦ xs ⇓⟧⁺ ⟦ ys ⇓⟧⁺)) ⟨ trans ⟩ cong suc (sym (ℕ.+-suc (2* ⟦ xs ⇓⟧⁺) _)) ))
 
