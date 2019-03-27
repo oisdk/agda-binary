@@ -11,13 +11,13 @@ open import Relation.Binary.PropositionalEquality.FasterReasoning
 import Data.Nat.Properties as ℕ
 open import Function
 
-inc″-homo : ∀ xs → ⟦ inc″ xs ⇓⟧⁺ ≡ suc ⟦ xs ⇓⟧⁺
-inc″-homo 1⁺ = refl
-inc″-homo (0⁺∷ xs) = refl
-inc″-homo (1⁺∷ xs) =
+inc⁺⁺-homo : ∀ xs → ⟦ inc⁺⁺ xs ⇓⟧⁺ ≡ suc ⟦ xs ⇓⟧⁺
+inc⁺⁺-homo 1⁺ = refl
+inc⁺⁺-homo (0⁺∷ xs) = refl
+inc⁺⁺-homo (1⁺∷ xs) =
   begin
-    2* ⟦ inc″ xs ⇓⟧⁺
-  ≡⟨ cong 2*_ (inc″-homo xs) ⟩
+    2* ⟦ inc⁺⁺ xs ⇓⟧⁺
+  ≡⟨ cong 2*_ (inc⁺⁺-homo xs) ⟩
     2* (suc ⟦ xs ⇓⟧⁺)
   ≡⟨⟩
     (suc ⟦ xs ⇓⟧⁺) ℕ.+ suc ⟦ xs ⇓⟧⁺
@@ -27,7 +27,7 @@ inc″-homo (1⁺∷ xs) =
 
 inc-homo : ∀ x → ⟦ inc x ⇓⟧ ≡ suc ⟦ x ⇓⟧
 inc-homo 0ᵇ = refl
-inc-homo (0< xs) = inc″-homo xs
+inc-homo (0< xs) = inc⁺⁺-homo xs
 
 data IncView : 𝔹 → Set where
   𝔹zero : IncView 0ᵇ
