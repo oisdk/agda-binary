@@ -3,21 +3,18 @@
 module Data.Binary.NonZero.Definitions where
 
 open import Function
-open import Data.List.Kleene using (∹_; _&_; []; head; tail; _⋆; _⁺) public
+open import Data.List as List using (List; _∷_; [])
 open import Data.Maybe as Maybe using (Maybe; just; nothing; maybe)
 
 data Bit : Set where O I : Bit
 
 infixr 5 0⁺∷_ 1⁺∷_
 𝔹⁺ : Set
-𝔹⁺ = Bit ⋆
+𝔹⁺ = List Bit
 
 pattern 1⁺ = []
-pattern 0⁺∷_ xs = ∹ O & xs
-pattern 1⁺∷_ xs = ∹ I & xs
-
-infixr 5 _∷_
-pattern _∷_ x xs = ∹ x & xs
+pattern 0⁺∷_ xs = O ∷ xs
+pattern 1⁺∷_ xs = I ∷ xs
 
 infixr 5 0<_
 

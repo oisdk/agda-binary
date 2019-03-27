@@ -6,33 +6,27 @@ open import Data.Binary.NonZero.Definitions
 open import Data.Binary.NonZero.Operations.Unary
 
 mutual
-  add₀ : 𝔹⁺ → 𝔹⁺ → Bit ⁺
-  add₀ [] ys = inc⁺ ys
-  add₀ (∹ xs) ys = add₀⁺ xs ys
+  add₀ : 𝔹⁺ → 𝔹⁺ → 𝔹⁺
+  add₀ 1⁺ ys = inc″ ys
+  add₀ (0⁺∷ xs) 1⁺ = 1⁺∷ xs
+  add₀ (0⁺∷ xs) (0⁺∷ ys) = 0⁺∷ add₀ xs ys
+  add₀ (0⁺∷ xs) (1⁺∷ ys) = 1⁺∷ add₀ xs ys
+  add₀ (1⁺∷ xs) 1⁺ = 0⁺∷ inc″ xs
+  add₀ (1⁺∷ xs) (0⁺∷ ys) = 1⁺∷ add₀ xs ys
+  add₀ (1⁺∷ xs) (1⁺∷ ys) = 0⁺∷ add₁ xs ys
 
-  add₀⁺ : Bit ⁺ → 𝔹⁺ → Bit ⁺
-  add₀⁺ xs (∹ ys) = add₀⁺⁺ xs ys
-  add₀⁺ xs [] = inc⁺⁺ xs
+  add₁ : 𝔹⁺ → 𝔹⁺ → 𝔹⁺
+  add₁ 1⁺ 1⁺ = 1⁺∷ 1⁺
+  add₁ 1⁺ (0⁺∷ ys) = 0⁺∷ inc″ ys
+  add₁ 1⁺ (1⁺∷ ys) = 1⁺∷ inc″ ys
+  add₁ (0⁺∷ xs) 1⁺ = 0⁺∷ inc″ xs
+  add₁ (0⁺∷ xs) (0⁺∷ ys) = 1⁺∷ add₀ xs ys
+  add₁ (0⁺∷ xs) (1⁺∷ ys) = 0⁺∷ add₁ xs ys
+  add₁ (1⁺∷ xs) 1⁺ = 1⁺∷ inc″ xs
+  add₁ (1⁺∷ xs) (0⁺∷ ys) = 0⁺∷ add₁ xs ys
+  add₁ (1⁺∷ xs) (1⁺∷ ys) = 1⁺∷ add₁ xs ys
 
-  add₀⁺⁺ : Bit ⁺ → Bit ⁺ → Bit ⁺
-  head (add₀⁺⁺ (O & xs) (y & ys)) = y
-  tail (add₀⁺⁺ (O & xs) (y & ys)) = ∹ add₀ xs ys
-  head (add₀⁺⁺ (I & xs) (O & ys)) = I
-  tail (add₀⁺⁺ (I & xs) (O & ys)) = ∹ add₀ xs ys
-  head (add₀⁺⁺ (I & xs) (I & ys)) = O
-  tail (add₀⁺⁺ (I & xs) (I & ys)) = ∹ add₁ xs ys
-
-  add₁ : 𝔹⁺ → 𝔹⁺ → Bit ⁺
-  add₁ []       []       = I & []
-  add₁ []       (y ∷ ys) = y & ∹ inc⁺ ys
-  add₁ (O ∷ xs) []       = O & ∹ inc⁺ xs
-  add₁ (O ∷ xs) (O ∷ ys) = I & ∹ add₀ xs ys
-  add₁ (O ∷ xs) (I ∷ ys) = O & ∹ add₁ xs ys
-  add₁ (I ∷ xs) []       = I & ∹ inc⁺ xs
-  add₁ (I ∷ xs) (y ∷ ys) = y & ∹ add₁ xs ys
-
-infixl 6 _+_
 _+_ : 𝔹 → 𝔹 → 𝔹
 0ᵇ + ys = ys
 (0< xs) + 0ᵇ = 0< xs
-(0< xs) + (0< ys) = 0< ∹ add₀ xs ys
+(0< xs) + (0< ys) = 0< add₀ xs ys
