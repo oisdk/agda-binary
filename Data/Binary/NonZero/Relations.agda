@@ -6,6 +6,7 @@ open import Data.Binary.NonZero.Definitions
 open import Relation.Nullary
 open import Relation.Binary
 open import Relation.Nullary.Decidable
+open import Relation.Binary.PropositionalEquality
 
 infix 4 _<⁺_ _<_ _≤⁺_ _≤_
 mutual
@@ -60,3 +61,27 @@ mutual
   1⁺ <⁺? (1⁺∷ ys) = yes 1⁺<1∷
   (0⁺∷ xs) <⁺? (1⁺∷ ys) = map′ 0∷<1∷ (λ { (0∷<1∷ zs) → zs }) (xs ≤⁺? ys)
   (1⁺∷ xs) <⁺? (1⁺∷ ys) = map′ 1∷<1∷ (λ { (1∷<1∷ zs) → zs }) (xs <⁺? ys)
+
+mutual
+  ≤-irrel : Irrelevant _≤_
+  ≤-irrel 0≤n 0≤n = refl
+  ≤-irrel (⁺≤⁺ xs) (⁺≤⁺ ys) = cong ⁺≤⁺ (≤⁺-irrel xs ys)
+
+  ≤⁺-irrel : Irrelevant _≤⁺_
+  ≤⁺-irrel 1⁺≤n 1⁺≤n = refl
+  ≤⁺-irrel (0∷≤0∷ xs) (0∷≤0∷ ys) = cong 0∷≤0∷ (≤⁺-irrel xs ys)
+  ≤⁺-irrel (0∷≤1∷ xs) (0∷≤1∷ ys) = cong 0∷≤1∷ (≤⁺-irrel xs ys)
+  ≤⁺-irrel (1∷≤0∷ xs) (1∷≤0∷ ys) = cong 1∷≤0∷ (<⁺-irrel xs ys)
+  ≤⁺-irrel (1∷≤1∷ xs) (1∷≤1∷ ys) = cong 1∷≤1∷ (≤⁺-irrel xs ys)
+
+  <-irrel : Irrelevant _<_
+  <-irrel 0<⁺ 0<⁺ = refl
+  <-irrel (⁺<⁺ xs) (⁺<⁺ ys) = cong ⁺<⁺ (<⁺-irrel xs ys)
+
+  <⁺-irrel : Irrelevant _<⁺_
+  <⁺-irrel 1⁺<1∷ 1⁺<1∷ = refl
+  <⁺-irrel 1⁺<0∷ 1⁺<0∷ = refl
+  <⁺-irrel (0∷<0∷ xs) (0∷<0∷ ys) = cong 0∷<0∷ (<⁺-irrel xs ys)
+  <⁺-irrel (0∷<1∷ xs) (0∷<1∷ ys) = cong 0∷<1∷ (≤⁺-irrel xs ys)
+  <⁺-irrel (1∷<0∷ xs) (1∷<0∷ ys) = cong 1∷<0∷ (<⁺-irrel xs ys)
+  <⁺-irrel (1∷<1∷ xs) (1∷<1∷ ys) = cong 1∷<1∷ (<⁺-irrel xs ys)
