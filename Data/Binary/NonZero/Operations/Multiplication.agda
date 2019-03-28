@@ -6,9 +6,9 @@ open import Data.Binary.NonZero.Definitions
 open import Data.Binary.NonZero.Operations.Addition
 
 mul : 𝔹⁺ → 𝔹⁺ → 𝔹⁺
-mul 1⁺ ys = ys
-mul (0⁺∷ xs) ys = 0⁺∷ (mul xs ys)
-mul (1⁺∷ xs) ys = add₀ (0⁺∷ mul ys xs) ys
+mul 1ᵇ ys = ys
+mul (O ∷ xs) ys = O ∷ (mul xs ys)
+mul (I ∷ xs) ys = add₀ (O ∷ mul ys xs) ys
 
 _*_ :  𝔹 → 𝔹 → 𝔹
 0ᵇ * ys = 0ᵇ

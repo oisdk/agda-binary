@@ -17,12 +17,12 @@ open import Function
 open import Data.Nat.Reasoning
 
 mul-homo : ∀ xs ys → ⟦ mul xs ys ⇓⟧⁺ ≡ ⟦ xs ⇓⟧⁺ ℕ.* ⟦ ys ⇓⟧⁺
-mul-homo 1⁺ ys = sym (ℕ.+-identityʳ _)
-mul-homo (0⁺∷ xs) ys = cong 2*_ (mul-homo xs ys) ⟨ trans ⟩ sym (ℕ.*-distribʳ-+ ⟦ ys ⇓⟧⁺ ⟦ xs ⇓⟧⁺ _)
-mul-homo (1⁺∷ xs) ys =
+mul-homo 1ᵇ ys = sym (ℕ.+-identityʳ _)
+mul-homo (O ∷ xs) ys = cong 2*_ (mul-homo xs ys) ⟨ trans ⟩ sym (ℕ.*-distribʳ-+ ⟦ ys ⇓⟧⁺ ⟦ xs ⇓⟧⁺ _)
+mul-homo (I ∷ xs) ys =
   begin
-    ⟦ add₀ (0⁺∷ mul ys xs) ys ⇓⟧⁺
-  ≡⟨ add₀-homo (0⁺∷ mul ys xs) ys ⟩
+    ⟦ add₀ (O ∷ mul ys xs) ys ⇓⟧⁺
+  ≡⟨ add₀-homo (O ∷ mul ys xs) ys ⟩
     2* ⟦ mul ys xs ⇓⟧⁺ ℕ.+ ⟦ ys ⇓⟧⁺
   ≡⟨ ⟦ ys ⇓⟧⁺ ≪+ cong 2*_ (mul-homo ys xs) ⟩
     2* (⟦ ys ⇓⟧⁺ ℕ.* ⟦ xs ⇓⟧⁺) ℕ.+ ⟦ ys ⇓⟧⁺

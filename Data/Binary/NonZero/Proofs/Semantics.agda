@@ -18,17 +18,11 @@ homo (suc n) = inc-homo ⟦ n ⇑⟧ ⟨ trans ⟩ cong suc (homo n)
 
 
 inj : ∀ {x y} → ⟦ x ⇓⟧ ≡ ⟦ y ⇓⟧ → x ≡ y
-inj {x} {y} = go (inc-view x) (inc-view y)
+inj {xs} {ys} eq = go (subst (NatView xs) eq (nat-view xs)) (nat-view ys)
   where
-  go : ∀ {x y} → IncView x → IncView y → ⟦ x ⇓⟧ ≡ ⟦ y ⇓⟧ → x ≡ y
-  go {x} {y} x′ y′ ⟦x⇓⟧≡⟦y⇓⟧ with ⟦ x ⇓⟧ | ⟦ y ⇓⟧ | inspect ⟦_⇓⟧ x | inspect ⟦_⇓⟧ y
-  go 𝔹zero 𝔹zero ⟦x⇓⟧≡⟦y⇓⟧ | ⟦x⇓⟧ | ⟦y⇓⟧ | [ x≡ ] | [ y≡ ] = refl
-  go (𝔹suc x′ xs′) 𝔹zero ⟦x⇓⟧≡⟦y⇓⟧ | ⟦x⇓⟧ | ⟦y⇓⟧ | [ x≡ ] | [ y≡ ] with sym (inc-homo x′) ⟨ trans ⟩ x≡ ⟨ trans ⟩ ⟦x⇓⟧≡⟦y⇓⟧ ⟨ trans ⟩ sym y≡
-  go {.(0< inc⁺ x′)} {.0ᵇ} (𝔹suc x′ xs′) 𝔹zero ⟦x⇓⟧≡⟦y⇓⟧ | ⟦x⇓⟧ | ⟦y⇓⟧ | [ x≡ ] | [ y≡ ] | ()
-  go 𝔹zero (𝔹suc y′ ys′) ⟦x⇓⟧≡⟦y⇓⟧ | ⟦x⇓⟧ | ⟦y⇓⟧ | [ x≡ ] | [ y≡ ] with sym (inc-homo y′) ⟨ trans ⟩ y≡ ⟨ trans ⟩ sym ⟦x⇓⟧≡⟦y⇓⟧ ⟨ trans ⟩ sym x≡
-  go {.0ᵇ} {.(0< inc⁺ y′)} 𝔹zero (𝔹suc y′ ys′) ⟦x⇓⟧≡⟦y⇓⟧ | ⟦x⇓⟧ | ⟦y⇓⟧ | [ x≡ ] | [ y≡ ] | ()
-  go (𝔹suc x′ xs′) (𝔹suc y′ ys′) ⟦x⇓⟧≡⟦y⇓⟧ | ⟦x⇓⟧ | ⟦y⇓⟧ | [ x≡ ] | [ y≡ ] with sym (inc-homo x′) ⟨ trans ⟩ x≡ ⟨ trans ⟩ ⟦x⇓⟧≡⟦y⇓⟧ ⟨ trans ⟩ sym (sym (inc-homo y′) ⟨ trans ⟩ y≡)
-  go (𝔹suc x′ xs′) (𝔹suc y′ ys′) ⟦x⇓⟧≡⟦y⇓⟧ | ⟦x⇓⟧ | ⟦y⇓⟧ | [ x≡ ] | [ y≡ ] | x′≡y′ = cong inc (go xs′ ys′ (ℕ.suc-injective x′≡y′))
+  go : ∀ {n xs ys} → NatView xs n → NatView ys n → xs ≡ ys
+  go ℕzero ℕzero = refl
+  go (ℕsuc xs) (ℕsuc ys) = cong inc (go xs ys)
 
 open import Function.Bijection
 
