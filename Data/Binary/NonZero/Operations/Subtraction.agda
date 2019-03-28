@@ -9,32 +9,32 @@ import Data.Maybe as Maybe
 import Data.Binary.NonZero.Operations.Addition as +
 open import Data.Binary.NonZero.Operations.Unary
 
-infixr 5 I_∷_ O∷_
-I_∷_ : Bit → 𝔹± → 𝔹±
-I s ∷ xs = 0< Maybe.maybe′ (map₂ (I ⁺∷_)) (s , 1⁺) xs
+infixr 5 Is_∷_ O∷_
+Is_∷_ : Bit → 𝔹± → 𝔹±
+Is s ∷ xs = 0< Maybe.maybe′ (map₂ (I ∷_)) (s , 1ᵇ) xs
 
 O∷_ : 𝔹± → 𝔹±
-O∷_ = Maybe.map (map₂ (O ⁺∷_))
+O∷_ = Maybe.map (map₂ (O ∷_))
 
 mutual
   sub₀ : 𝔹⁺ → 𝔹⁺ → 𝔹±
-  sub₀ 1⁺ ys = Maybe.map (I ,_) (dec⁺ ys)
-  sub₀ (x ⁺∷ xs) 1⁺ = Maybe.map (O ,_) (dec⁺ (x ⁺∷ xs))
-  sub₀ (0⁺∷ xs) (0⁺∷ ys) = O∷ sub₀ xs ys
-  sub₀ (0⁺∷ xs) (1⁺∷ ys) = I I ∷ sub₁ xs ys
-  sub₀ (1⁺∷ xs) (0⁺∷ ys) = I O ∷ sub₀ xs ys
-  sub₀ (1⁺∷ xs) (1⁺∷ ys) = O∷ sub₀ xs ys
+  sub₀ 1ᵇ ys = Maybe.map (I ,_) (dec⁺ ys)
+  sub₀ (x ∷ xs) 1ᵇ = Maybe.map (O ,_) (dec⁺ (x ∷ xs))
+  sub₀ (O ∷ xs) (O ∷ ys) = O∷ sub₀ xs ys
+  sub₀ (O ∷ xs) (I ∷ ys) = Is I ∷ sub₁ xs ys
+  sub₀ (I ∷ xs) (O ∷ ys) = Is O ∷ sub₀ xs ys
+  sub₀ (I ∷ xs) (I ∷ ys) = O∷ sub₀ xs ys
 
   sub₁ : 𝔹⁺ → 𝔹⁺ → 𝔹±
-  sub₁ 1⁺ ys = 0< (I , ys)
-  sub₁ (0⁺∷ xs) (0⁺∷ ys) = I I ∷ sub₁ xs ys
-  sub₁ (0⁺∷ xs) (1⁺∷ ys) = O∷ sub₁ xs ys
-  sub₁ (0⁺∷ 1⁺) 1⁺ = 0ᵇ
-  sub₁ (0⁺∷ x ⁺∷ xs) 1⁺ = 0< (O , 0⁺∷ dec⁺⁺ x xs)
-  sub₁ (1⁺∷ xs) (0⁺∷ ys) = O∷ sub₀ xs ys
-  sub₁ (1⁺∷ xs) (1⁺∷ ys) = I I ∷ sub₁ xs ys
-  sub₁ (1⁺∷ 1⁺) 1⁺ = 0< (O , 1⁺)
-  sub₁ (1⁺∷ x ⁺∷ xs) 1⁺ = 0< (O , 1⁺∷ dec⁺⁺ x xs)
+  sub₁ 1ᵇ ys = 0< (I , ys)
+  sub₁ (O ∷ xs) (O ∷ ys) = Is I ∷ sub₁ xs ys
+  sub₁ (O ∷ xs) (I ∷ ys) = O∷ sub₁ xs ys
+  sub₁ (O ∷ 1ᵇ) 1ᵇ = 0ᵇ
+  sub₁ (O ∷ x ∷ xs) 1ᵇ = 0< (O , O ∷ dec⁺⁺ x xs)
+  sub₁ (I ∷ xs) (O ∷ ys) = O∷ sub₀ xs ys
+  sub₁ (I ∷ xs) (I ∷ ys) = Is I ∷ sub₁ xs ys
+  sub₁ (I ∷ 1ᵇ) 1ᵇ = 0< (O , 1ᵇ)
+  sub₁ (I ∷ x ∷ xs) 1ᵇ = 0< (O , I ∷ dec⁺⁺ x xs)
 
 _+_ : 𝔹± → 𝔹± → 𝔹±
 0ᵇ + ys = ys

@@ -19,10 +19,10 @@ pattern ≼ = I
 ⟅ p ⟆ O ≺ᵇ q = q ∨ p
 
 ⟅_⟆_≺⁺_ : Bit → 𝔹⁺ → 𝔹⁺ → Set
-⟅ p ⟆ 1⁺        ≺⁺ (y ⁺∷ ys) = ⊤
-⟅ p ⟆ 1⁺        ≺⁺ 1⁺ = T p
-⟅ p ⟆ (x ⁺∷ xs) ≺⁺ 1⁺ = ⊥
-⟅ p ⟆ (x ⁺∷ xs) ≺⁺ (y ⁺∷ ys) = ⟅ ⟅ p ⟆ x ≺ᵇ y ⟆ xs ≺⁺ ys
+⟅ p ⟆ 1ᵇ        ≺⁺ (y ∷ ys) = ⊤
+⟅ p ⟆ 1ᵇ        ≺⁺ 1ᵇ = T p
+⟅ p ⟆ (x ∷ xs) ≺⁺ 1ᵇ = ⊥
+⟅ p ⟆ (x ∷ xs) ≺⁺ (y ∷ ys) = ⟅ ⟅ p ⟆ x ≺ᵇ y ⟆ xs ≺⁺ ys
 
 ⟅_⟆_≺_ : Bit → 𝔹 → 𝔹 → Set
 ⟅ p ⟆ 0ᵇ ≺ 0ᵇ = T p
@@ -32,43 +32,43 @@ pattern ≼ = I
 
 weaken : ∀ x xs ys → ⟅ x ⟆ xs ≺⁺ ys → ⟅ I ⟆ xs ≺⁺ ys
 weaken I xs ys xs<ys = xs<ys
-weaken O 1⁺ 1⁺ xs<ys = tt
-weaken O 1⁺ (x ⁺∷ ys) xs<ys = tt
-weaken O (x ⁺∷ xs) 1⁺ xs<ys = xs<ys
-weaken O (0⁺∷ xs) (0⁺∷ ys) xs<ys = weaken O xs ys xs<ys
-weaken O (0⁺∷ xs) (1⁺∷ ys) xs<ys = xs<ys
-weaken O (1⁺∷ xs) (0⁺∷ ys) xs<ys = xs<ys
-weaken O (1⁺∷ xs) (1⁺∷ ys) xs<ys = weaken O xs ys xs<ys
+weaken O 1ᵇ 1ᵇ xs<ys = tt
+weaken O 1ᵇ (x ∷ ys) xs<ys = tt
+weaken O (x ∷ xs) 1ᵇ xs<ys = xs<ys
+weaken O (O ∷ xs) (O ∷ ys) xs<ys = weaken O xs ys xs<ys
+weaken O (O ∷ xs) (I ∷ ys) xs<ys = xs<ys
+weaken O (I ∷ xs) (O ∷ ys) xs<ys = xs<ys
+weaken O (I ∷ xs) (I ∷ ys) xs<ys = weaken O xs ys xs<ys
 
 ≺⁺-trans : ∀ x y xs ys zs → ⟅ x ⟆ xs ≺⁺ ys → ⟅ y ⟆ ys ≺⁺ zs → ⟅ x ∧ y ⟆ xs ≺⁺ zs
-≺⁺-trans xc yc (x ⁺∷ xs) 1⁺ (z ⁺∷ zs) () ys<zs
-≺⁺-trans xc yc (0⁺∷ xs) (0⁺∷ ys) (0⁺∷ zs) xs<ys ys<zs = ≺⁺-trans xc yc xs ys zs xs<ys ys<zs
-≺⁺-trans O yc (0⁺∷ xs) (0⁺∷ ys) (1⁺∷ zs) xs<ys ys<zs = weaken O xs zs (≺⁺-trans O I xs ys zs xs<ys ys<zs)
-≺⁺-trans I yc (0⁺∷ xs) (0⁺∷ ys) (1⁺∷ zs) xs<ys ys<zs = ≺⁺-trans I I xs ys zs xs<ys ys<zs
-≺⁺-trans xc yc (0⁺∷ xs) (1⁺∷ ys) (1⁺∷ zs) xs<ys ys<zs = weaken yc xs zs (≺⁺-trans I yc xs ys zs xs<ys ys<zs)
-≺⁺-trans O yc (0⁺∷ xs) (1⁺∷ ys) (0⁺∷ zs) xs<ys ys<zs = ≺⁺-trans I O xs ys zs xs<ys ys<zs
-≺⁺-trans I O (0⁺∷ xs) (1⁺∷ ys) (0⁺∷ zs) xs<ys ys<zs = ≺⁺-trans I O xs ys zs xs<ys ys<zs
-≺⁺-trans I I (0⁺∷ xs) (1⁺∷ ys) (0⁺∷ zs) xs<ys ys<zs = weaken O xs zs (≺⁺-trans I O xs ys zs xs<ys ys<zs)
-≺⁺-trans xc yc (1⁺∷ xs) (0⁺∷ ys) (0⁺∷ zs) xs<ys ys<zs = ≺⁺-trans O yc xs ys zs xs<ys ys<zs
-≺⁺-trans O yc (1⁺∷ xs) (0⁺∷ ys) (1⁺∷ zs) xs<ys ys<zs = ≺⁺-trans O I xs ys zs xs<ys ys<zs
-≺⁺-trans I O (1⁺∷ xs) (0⁺∷ ys) (1⁺∷ zs) xs<ys ys<zs = ≺⁺-trans O I xs ys zs xs<ys ys<zs
-≺⁺-trans I I (1⁺∷ xs) (0⁺∷ ys) (1⁺∷ zs) xs<ys ys<zs = weaken O xs zs (≺⁺-trans O I xs ys zs xs<ys ys<zs)
-≺⁺-trans xc yc (1⁺∷ xs) (1⁺∷ ys) (1⁺∷ zs) xs<ys ys<zs = ≺⁺-trans xc yc xs ys zs xs<ys ys<zs
-≺⁺-trans O yc (1⁺∷ xs) (1⁺∷ ys) (0⁺∷ zs) xs<ys ys<zs = ≺⁺-trans O O xs ys zs xs<ys ys<zs
-≺⁺-trans I yc (1⁺∷ xs) (1⁺∷ ys) (0⁺∷ zs) xs<ys ys<zs = ≺⁺-trans I O xs ys zs xs<ys ys<zs
-≺⁺-trans xc yc (x ⁺∷ xs) 1⁺ 1⁺ () ys<zs
-≺⁺-trans xc yc (x ⁺∷ xs) (x₁ ⁺∷ ys) 1⁺ xs<ys ()
-≺⁺-trans O O 1⁺ ys (z ⁺∷ zs) xs<ys ys<zs = tt
-≺⁺-trans O O 1⁺ 1⁺ 1⁺ ()
-≺⁺-trans O O 1⁺ (y ⁺∷ ys) 1⁺ xs<ys ()
-≺⁺-trans O I 1⁺ ys (z ⁺∷ zs) xs<ys ys<zs = tt
-≺⁺-trans O I 1⁺ 1⁺ 1⁺ () ys<zs
-≺⁺-trans O I 1⁺ (x ⁺∷ ys) 1⁺ xs<ys ()
-≺⁺-trans I O 1⁺ ys (x ⁺∷ zs) xs<ys ys<zs = tt
-≺⁺-trans I O 1⁺ 1⁺ 1⁺ xs<ys ()
-≺⁺-trans I O 1⁺ (x ⁺∷ ys) 1⁺ xs<ys ()
-≺⁺-trans I I 1⁺ ys 1⁺ xs<ys ys<zs = tt
-≺⁺-trans I I 1⁺ ys (x ⁺∷ zs) xs<ys ys<zs = tt
+≺⁺-trans xc yc (x ∷ xs) 1ᵇ (z ∷ zs) () ys<zs
+≺⁺-trans xc yc (O ∷ xs) (O ∷ ys) (O ∷ zs) xs<ys ys<zs = ≺⁺-trans xc yc xs ys zs xs<ys ys<zs
+≺⁺-trans O yc (O ∷ xs) (O ∷ ys) (I ∷ zs) xs<ys ys<zs = weaken O xs zs (≺⁺-trans O I xs ys zs xs<ys ys<zs)
+≺⁺-trans I yc (O ∷ xs) (O ∷ ys) (I ∷ zs) xs<ys ys<zs = ≺⁺-trans I I xs ys zs xs<ys ys<zs
+≺⁺-trans xc yc (O ∷ xs) (I ∷ ys) (I ∷ zs) xs<ys ys<zs = weaken yc xs zs (≺⁺-trans I yc xs ys zs xs<ys ys<zs)
+≺⁺-trans O yc (O ∷ xs) (I ∷ ys) (O ∷ zs) xs<ys ys<zs = ≺⁺-trans I O xs ys zs xs<ys ys<zs
+≺⁺-trans I O (O ∷ xs) (I ∷ ys) (O ∷ zs) xs<ys ys<zs = ≺⁺-trans I O xs ys zs xs<ys ys<zs
+≺⁺-trans I I (O ∷ xs) (I ∷ ys) (O ∷ zs) xs<ys ys<zs = weaken O xs zs (≺⁺-trans I O xs ys zs xs<ys ys<zs)
+≺⁺-trans xc yc (I ∷ xs) (O ∷ ys) (O ∷ zs) xs<ys ys<zs = ≺⁺-trans O yc xs ys zs xs<ys ys<zs
+≺⁺-trans O yc (I ∷ xs) (O ∷ ys) (I ∷ zs) xs<ys ys<zs = ≺⁺-trans O I xs ys zs xs<ys ys<zs
+≺⁺-trans I O (I ∷ xs) (O ∷ ys) (I ∷ zs) xs<ys ys<zs = ≺⁺-trans O I xs ys zs xs<ys ys<zs
+≺⁺-trans I I (I ∷ xs) (O ∷ ys) (I ∷ zs) xs<ys ys<zs = weaken O xs zs (≺⁺-trans O I xs ys zs xs<ys ys<zs)
+≺⁺-trans xc yc (I ∷ xs) (I ∷ ys) (I ∷ zs) xs<ys ys<zs = ≺⁺-trans xc yc xs ys zs xs<ys ys<zs
+≺⁺-trans O yc (I ∷ xs) (I ∷ ys) (O ∷ zs) xs<ys ys<zs = ≺⁺-trans O O xs ys zs xs<ys ys<zs
+≺⁺-trans I yc (I ∷ xs) (I ∷ ys) (O ∷ zs) xs<ys ys<zs = ≺⁺-trans I O xs ys zs xs<ys ys<zs
+≺⁺-trans xc yc (x ∷ xs) 1ᵇ 1ᵇ () ys<zs
+≺⁺-trans xc yc (x ∷ xs) (x₁ ∷ ys) 1ᵇ xs<ys ()
+≺⁺-trans O O 1ᵇ ys (z ∷ zs) xs<ys ys<zs = tt
+≺⁺-trans O O 1ᵇ 1ᵇ 1ᵇ ()
+≺⁺-trans O O 1ᵇ (y ∷ ys) 1ᵇ xs<ys ()
+≺⁺-trans O I 1ᵇ ys (z ∷ zs) xs<ys ys<zs = tt
+≺⁺-trans O I 1ᵇ 1ᵇ 1ᵇ () ys<zs
+≺⁺-trans O I 1ᵇ (x ∷ ys) 1ᵇ xs<ys ()
+≺⁺-trans I O 1ᵇ ys (x ∷ zs) xs<ys ys<zs = tt
+≺⁺-trans I O 1ᵇ 1ᵇ 1ᵇ xs<ys ()
+≺⁺-trans I O 1ᵇ (x ∷ ys) 1ᵇ xs<ys ()
+≺⁺-trans I I 1ᵇ ys 1ᵇ xs<ys ys<zs = tt
+≺⁺-trans I I 1ᵇ ys (x ∷ zs) xs<ys ys<zs = tt
 
 
 -- -- -- infix 4 _<⁺_ _<_ _≤⁺_ _≤_ _≤ᵇ_
@@ -97,18 +97,18 @@ weaken O (1⁺∷ xs) (1⁺∷ ys) xs<ys = weaken O xs ys xs<ys
 
 -- -- -- mutual
 -- -- --   _≤⁺?_ : Decidable _≤⁺_
--- -- --   1⁺ ≤⁺? ys = yes 1⁺≤n
--- -- --   (x ⁺∷ xs) ≤⁺? 1⁺ = no λ ()
--- -- --   (0⁺∷ xs) ≤⁺? (y ⁺∷ ys) = map′ (0≤b ∷≤_) (λ { (x ∷≤ xs) → xs}) (xs ≤⁺? ys)
--- -- --   (1⁺∷ xs) ≤⁺? (0⁺∷ ys) = map′ >∷≤_ (λ { (>∷≤ zs) → zs}) (xs <⁺? ys)
--- -- --   (1⁺∷ xs) ≤⁺? (1⁺∷ ys) = map′ (I≤I ∷≤_) (λ { (x ∷≤ zs) → zs}) (xs ≤⁺? ys)
+-- -- --   1ᵇ ≤⁺? ys = yes 1ᵇ≤n
+-- -- --   (x ∷ xs) ≤⁺? 1ᵇ = no λ ()
+-- -- --   (O ∷ xs) ≤⁺? (y ∷ ys) = map′ (0≤b ∷≤_) (λ { (x ∷≤ xs) → xs}) (xs ≤⁺? ys)
+-- -- --   (I ∷ xs) ≤⁺? (O ∷ ys) = map′ >∷≤_ (λ { (>∷≤ zs) → zs}) (xs <⁺? ys)
+-- -- --   (I ∷ xs) ≤⁺? (I ∷ ys) = map′ (I≤I ∷≤_) (λ { (x ∷≤ zs) → zs}) (xs ≤⁺? ys)
 
 -- -- --   _<⁺?_ : Decidable _<⁺_
--- -- --   xs <⁺? 1⁺ = no λ ()
--- -- --   1⁺ <⁺? (y ⁺∷ ys) = yes 1⁺<∷
--- -- --   (x ⁺∷ xs) <⁺? (0⁺∷ ys) = map′ (0≤b ∷<_) (λ { (x ∷< zs) → zs}) (xs <⁺? ys)
--- -- --   (0⁺∷ xs) <⁺? (1⁺∷ ys) = map′ <∷<_ (λ { (<∷< zs) → zs}) (xs ≤⁺? ys)
--- -- --   (1⁺∷ xs) <⁺? (1⁺∷ ys) = map′ (I≤I ∷<_) (λ { (x ∷< zs) → zs}) (xs <⁺? ys)
+-- -- --   xs <⁺? 1ᵇ = no λ ()
+-- -- --   1ᵇ <⁺? (y ∷ ys) = yes 1ᵇ<∷
+-- -- --   (x ∷ xs) <⁺? (O ∷ ys) = map′ (0≤b ∷<_) (λ { (x ∷< zs) → zs}) (xs <⁺? ys)
+-- -- --   (O ∷ xs) <⁺? (I ∷ ys) = map′ <∷<_ (λ { (<∷< zs) → zs}) (xs ≤⁺? ys)
+-- -- --   (I ∷ xs) <⁺? (I ∷ ys) = map′ (I≤I ∷<_) (λ { (x ∷< zs) → zs}) (xs <⁺? ys)
 
 -- -- -- _≤?_ : Decidable _≤_
 -- -- -- 0ᵇ ≤? ys = yes 0≤n
@@ -126,12 +126,12 @@ weaken O (1⁺∷ xs) (1⁺∷ ys) xs<ys = weaken O xs ys xs<ys
 
 -- -- -- mutual
 -- -- --   ≤⁺-irrel : Irrelevant _≤⁺_
--- -- --   ≤⁺-irrel 1⁺≤n 1⁺≤n = refl
+-- -- --   ≤⁺-irrel 1ᵇ≤n 1ᵇ≤n = refl
 -- -- --   ≤⁺-irrel (>∷≤ xs) (>∷≤ ys) = cong >∷≤_ (<⁺-irrel xs ys)
 -- -- --   ≤⁺-irrel (x ∷≤ xs) (y ∷≤ ys) = cong₂ _∷≤_ (≤ᵇ-irrel x y) (≤⁺-irrel xs ys)
 
 -- -- --   <⁺-irrel : Irrelevant _<⁺_
--- -- --   <⁺-irrel 1⁺<∷ 1⁺<∷ = refl
+-- -- --   <⁺-irrel 1ᵇ<∷ 1ᵇ<∷ = refl
 -- -- --   <⁺-irrel (<∷< xs) (<∷< ys) = cong <∷<_ (≤⁺-irrel xs ys)
 -- -- --   <⁺-irrel (x ∷< xs) (y ∷< ys) = cong₂ _∷<_ (≤ᵇ-irrel x y) (<⁺-irrel xs ys)
 
@@ -148,8 +148,8 @@ weaken O (1⁺∷ xs) (1⁺∷ ys) xs<ys = weaken O xs ys xs<ys
 -- -- -- ≤ᵇ-refl {I} = I≤I
 
 -- -- -- ≤⁺-refl : Reflexive _≤⁺_
--- -- -- ≤⁺-refl {1⁺} = 1⁺≤n
--- -- -- ≤⁺-refl {x ⁺∷ xs} = ≤ᵇ-refl ∷≤ ≤⁺-refl
+-- -- -- ≤⁺-refl {1ᵇ} = 1ᵇ≤n
+-- -- -- ≤⁺-refl {x ∷ xs} = ≤ᵇ-refl ∷≤ ≤⁺-refl
 
 -- -- -- ≤-refl : Reflexive _≤_
 -- -- -- ≤-refl {0ᵇ} = 0≤n
@@ -173,7 +173,7 @@ weaken O (1⁺∷ xs) (1⁺∷ ys) xs<ys = weaken O xs ys xs<ys
 -- -- --   ≤∙<⇒≤ i≤j j<k = {!!}
 
 -- -- --   ≤⁺-trans : Transitive _≤⁺_
--- -- --   ≤⁺-trans 1⁺≤n j≤k = 1⁺≤n
+-- -- --   ≤⁺-trans 1ᵇ≤n j≤k = 1ᵇ≤n
 -- -- --   ≤⁺-trans (>∷≤ i<j) (_∷≤_ {y = O} x j≤k) = >∷≤ <∙≤⇒< i<j j≤k
 -- -- --   ≤⁺-trans (>∷≤ i<j) (_∷≤_ {y = I} x j≤k) = I≤I ∷≤ <∙≤⇒≤ i<j j≤k
 -- -- --   ≤⁺-trans (x ∷≤ i≤j) (y ∷≤ j≤k) = ≤ᵇ-trans x y ∷≤ ≤⁺-trans i≤j j≤k
@@ -181,8 +181,8 @@ weaken O (1⁺∷ xs) (1⁺∷ ys) xs<ys = weaken O xs ys xs<ys
 -- -- --   ≤⁺-trans (I≤I ∷≤ i≤j) (>∷≤ j<k) = >∷≤ ≤∙<⇒< i≤j j<k
 
 -- -- --   <⁺-trans : Transitive _<⁺_
--- -- --   <⁺-trans 1⁺<∷ (<∷< x) = 1⁺<∷
--- -- --   <⁺-trans 1⁺<∷ (x ∷< j<k) = 1⁺<∷
+-- -- --   <⁺-trans 1ᵇ<∷ (<∷< x) = 1ᵇ<∷
+-- -- --   <⁺-trans 1ᵇ<∷ (x ∷< j<k) = 1ᵇ<∷
 -- -- --   <⁺-trans (<∷< i≤j) (0≤b ∷< j<k) = 0≤b ∷< ≤∙<⇒< i≤j j<k
 -- -- --   <⁺-trans (<∷< i≤j) (I≤I ∷< j<k) = <∷< ≤∙<⇒≤ i≤j j<k
 -- -- --   <⁺-trans (x ∷< i<j) (y ∷< j<k) = ≤ᵇ-trans y x ∷< <⁺-trans i<j j<k
