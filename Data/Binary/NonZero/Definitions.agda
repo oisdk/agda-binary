@@ -3,16 +3,10 @@
 module Data.Binary.NonZero.Definitions where
 
 open import Function
-open import Data.Bool as Bool using (Bool; true; false)
+open import Data.Binary.Bits public
 open import Data.List using (_∷_) renaming ([] to 1ᵇ) public
 open import Data.Maybe
 open import Data.Product
-
-Bit : Set
-Bit = Bool
-
-pattern O = false
-pattern I = true
 
 𝔹⁺ : Set
 𝔹⁺ = Data.List.List Bit
