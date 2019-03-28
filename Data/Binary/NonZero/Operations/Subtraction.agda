@@ -19,7 +19,7 @@ O∷_ = Maybe.map (map₂ (O ∷_))
 mutual
   sub₀ : 𝔹⁺ → 𝔹⁺ → 𝔹±
   sub₀ 1ᵇ ys = Maybe.map (I ,_) (dec⁺ ys)
-  sub₀ (x ∷ xs) 1ᵇ = Maybe.map (O ,_) (dec⁺ (x ∷ xs))
+  sub₀ (x ∷ xs) 1ᵇ = 0< (O , dec⁺⁺ x xs)
   sub₀ (O ∷ xs) (O ∷ ys) = O∷ sub₀ xs ys
   sub₀ (O ∷ xs) (I ∷ ys) = Is I ∷ sub₁ xs ys
   sub₀ (I ∷ xs) (O ∷ ys) = Is O ∷ sub₀ xs ys
@@ -39,7 +39,7 @@ mutual
 _+_ : 𝔹± → 𝔹± → 𝔹±
 0ᵇ + ys = ys
 (0< xs) + 0ᵇ = 0< xs
-(0< (O , xs)) + (0< (O , ys)) = 0< (O , +.add₀ xs ys)
+(0< (O , xs)) + (0< (O , ys)) = 0< (O , +.add O xs ys)
 (0< (O , xs)) + (0< (I , ys)) = sub₀ xs ys
 (0< (I , xs)) + (0< (O , ys)) = sub₀ ys xs
-(0< (I , xs)) + (0< (I , ys)) = 0< (I , +.add₀ xs ys)
+(0< (I , xs)) + (0< (I , ys)) = 0< (I , +.add O xs ys)
