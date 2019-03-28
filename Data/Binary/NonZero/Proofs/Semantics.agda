@@ -16,13 +16,12 @@ homo : ∀ n → ⟦ ⟦ n ⇑⟧ ⇓⟧ ≡ n
 homo zero = refl
 homo (suc n) = inc-homo ⟦ n ⇑⟧ ⟨ trans ⟩ cong suc (homo n)
 
-
 inj : ∀ {x y} → ⟦ x ⇓⟧ ≡ ⟦ y ⇓⟧ → x ≡ y
-inj {xs} {ys} eq = go (subst (NatView xs) eq (nat-view xs)) (nat-view ys)
+inj {xs} {ys} eq = go (subst (IncView xs) eq (inc-view xs)) (inc-view ys)
   where
-  go : ∀ {n xs ys} → NatView xs n → NatView ys n → xs ≡ ys
-  go ℕzero ℕzero = refl
-  go (ℕsuc xs) (ℕsuc ys) = cong inc (go xs ys)
+  go : ∀ {n xs ys} → IncView xs n → IncView ys n → xs ≡ ys
+  go Izero Izero = refl
+  go (Isuc refl xs) (Isuc refl ys) = cong inc (go xs ys)
 
 open import Function.Bijection
 
