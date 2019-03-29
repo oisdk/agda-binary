@@ -11,9 +11,9 @@ open import Data.Unit using (⊤; tt)
 open import Data.Empty using (⊥; ⊥-elim)
 open import Data.Bool using (not; _∧_; _∨_; T)
 open import Data.Bool.Properties using (T?)
-open import Data.Sum as Sum using (inj₁; inj₂)
+open import Data.Sum as Sum using (inj₁; inj₂; _⊎_)
 
-infix 4 ⟅_⟆_≺ᵇ_ ⟅_⟆_≺⁺_ ⟅_⟆_≺_ _!_≺⁺?_ _!_≺?_
+infix 4 ⟅_⟆_≺ᵇ_ ⟅_⟆_≺⁺_ ⟅_⟆_≺_ _!_≺⁺?_ _!_≺?_ _≺_ _≼_ _≺⁺_ _≼⁺_
 
 ⟅_⟆_≺ᵇ_ : Bit → Bit → Bit → Bit
 ⟅ p ⟆ I ≺ᵇ q = q ∧ p
@@ -31,7 +31,12 @@ infix 4 ⟅_⟆_≺ᵇ_ ⟅_⟆_≺⁺_ ⟅_⟆_≺_ _!_≺⁺?_ _!_≺?_
 ⟅ p ⟆ 0< xs ≺ 0ᵇ = ⊥
 ⟅ p ⟆ 0< xs ≺ (0< ys) = ⟅ p ⟆ xs ≺⁺ ys
 
-weaken : ∀ x xs ys → ⟅ x ⟆ xs ≺⁺ ys → ⟅ I ⟆ xs ≺⁺ ys
+_≺_ = ⟅ O ⟆_≺_
+_≼_ = ⟅ I ⟆_≺_
+_≺⁺_ = ⟅ O ⟆_≺⁺_
+_≼⁺_ = ⟅ I ⟆_≺⁺_
+
+weaken : ∀ x xs ys → ⟅ x ⟆ xs ≺⁺ ys → xs ≼⁺ ys
 weaken x (O ∷ xs) 1ᵇ xs<ys = xs<ys
 weaken x (O ∷ xs) (y ∷ ys) xs<ys = weaken (x ∨ y) xs ys xs<ys
 weaken x (I ∷ xs) 1ᵇ xs<ys = xs<ys
@@ -41,7 +46,7 @@ weaken O 1ᵇ 1ᵇ xs<ys = tt
 weaken O 1ᵇ (x ∷ xs) xs<ys = tt
 weaken I 1ᵇ ys xs<ys = xs<ys
 
-weaken′ : ∀ xs ys → ⟅ O ⟆ xs ≺ ys → ⟅ I ⟆ xs ≺ ys
+weaken′ : ∀ xs ys → ⟅ O ⟆ xs ≺ ys → xs ≼ ys
 weaken′ (0< xs) (0< ys) xs<ys = weaken O xs ys xs<ys
 weaken′ (0< x) 0ᵇ xs<ys = xs<ys
 weaken′ 0ᵇ (0< x) xs<ys = tt
@@ -89,56 +94,81 @@ weaken′ 0ᵇ 0ᵇ xs<ys = tt
 ≺-trans I O 0ᵇ 0ᵇ 0ᵇ xs<ys ys<zs = ys<zs
 ≺-trans I I 0ᵇ 0ᵇ 0ᵇ xs<ys ys<zs = tt
 
-≼⁺⇒¬≺⁺ : ∀ xs ys → ⟅ I ⟆ xs ≺⁺ ys → ¬ (⟅ O ⟆ ys ≺⁺ xs)
-≼⁺⇒¬≺⁺ 1ᵇ 1ᵇ xs≤ys ys<xs = ys<xs
-≼⁺⇒¬≺⁺ 1ᵇ (x ∷ xs) xs≤ys ys<xs = ys<xs
-≼⁺⇒¬≺⁺ (O ∷ xs) 1ᵇ xs≤ys ys<xs = xs≤ys
-≼⁺⇒¬≺⁺ (O ∷ xs) (O ∷ ys) xs≤ys ys<xs = ≼⁺⇒¬≺⁺ xs ys xs≤ys ys<xs
-≼⁺⇒¬≺⁺ (O ∷ xs) (I ∷ ys) xs≤ys ys<xs = ≼⁺⇒¬≺⁺ xs ys xs≤ys ys<xs
-≼⁺⇒¬≺⁺ (I ∷ xs) 1ᵇ xs≤ys ys<xs = xs≤ys
-≼⁺⇒¬≺⁺ (I ∷ xs) (O ∷ ys) xs≤ys ys<xs = ≼⁺⇒¬≺⁺ ys xs ys<xs xs≤ys
-≼⁺⇒¬≺⁺ (I ∷ xs) (I ∷ ys) xs≤ys ys<xs = ≼⁺⇒¬≺⁺ xs ys xs≤ys ys<xs
-
-≺⁺⇒¬≼⁺ : ∀ xs ys → ⟅ O ⟆ xs ≺⁺ ys → ¬ ⟅ I ⟆ ys ≺⁺ xs
-≺⁺⇒¬≼⁺ 1ᵇ 1ᵇ xs<ys ys≤xs = xs<ys
-≺⁺⇒¬≼⁺ 1ᵇ (x ∷ xs) xs<ys ys≤xs = ys≤xs
-≺⁺⇒¬≼⁺ (O ∷ xs) 1ᵇ xs<ys ys≤xs = xs<ys
-≺⁺⇒¬≼⁺ (O ∷ xs) (O ∷ ys) xs<ys ys≤xs = ≺⁺⇒¬≼⁺ xs ys xs<ys ys≤xs
-≺⁺⇒¬≼⁺ (O ∷ xs) (I ∷ ys) xs<ys ys≤xs = ≺⁺⇒¬≼⁺ ys xs ys≤xs xs<ys
-≺⁺⇒¬≼⁺ (I ∷ xs) 1ᵇ xs<ys ys≤xs = xs<ys
-≺⁺⇒¬≼⁺ (I ∷ xs) (O ∷ ys) xs<ys ys≤xs = ≺⁺⇒¬≼⁺ xs ys xs<ys ys≤xs
-≺⁺⇒¬≼⁺ (I ∷ xs) (I ∷ ys) xs<ys ys≤xs = ≺⁺⇒¬≼⁺ xs ys xs<ys ys≤xs
-
 _!_≺⁺?_ : ∀ x xs ys → Dec (⟅ x ⟆ xs ≺⁺ ys)
 c ! 1ᵇ ≺⁺? x ∷ xs = yes tt
 c ! 1ᵇ ≺⁺? 1ᵇ = T? c
 c ! x ∷ xs ≺⁺? 1ᵇ = no (λ z → z)
 c ! x ∷ xs ≺⁺? y ∷ ys = (⟅ c ⟆ x ≺ᵇ y) ! xs ≺⁺? ys
 
-mutual
-  ¬≼⁺⇒≺⁺ : ∀ xs ys → ¬ ⟅ I ⟆ ys ≺⁺ xs → ⟅ O ⟆ xs ≺⁺ ys
-  ¬≼⁺⇒≺⁺ 1ᵇ 1ᵇ ys≰xs = ys≰xs tt
-  ¬≼⁺⇒≺⁺ 1ᵇ (x ∷ ys) ys≰xs = tt
-  ¬≼⁺⇒≺⁺ (x ∷ xs) 1ᵇ ys≰xs = ys≰xs tt
-  ¬≼⁺⇒≺⁺ (O ∷ xs) (O ∷ ys) ys≰xs = ¬≼⁺⇒≺⁺ xs ys ys≰xs
-  ¬≼⁺⇒≺⁺ (O ∷ xs) (I ∷ ys) ys≰xs = ¬≺⁺⇒≼⁺ xs ys ys≰xs
-  ¬≼⁺⇒≺⁺ (I ∷ xs) (O ∷ ys) ys≰xs = ¬≼⁺⇒≺⁺ xs ys ys≰xs
-  ¬≼⁺⇒≺⁺ (I ∷ xs) (I ∷ ys) ys≰xs = ¬≼⁺⇒≺⁺ xs ys ys≰xs
+asym-≺⁺ : ∀ c xs ys → ⟅ c ⟆ ys ≺⁺ xs → ¬ ⟅ not c ⟆ xs ≺⁺ ys
+asym-≺⁺ O 1ᵇ 1ᵇ ys<xs xs<ys = ys<xs
+asym-≺⁺ O 1ᵇ (x ∷ xs) ys<xs xs<ys = ys<xs
+asym-≺⁺ O (O ∷ xs) 1ᵇ ys<xs xs<ys = xs<ys
+asym-≺⁺ O (O ∷ xs) (O ∷ ys) ys<xs xs<ys = asym-≺⁺ I ys xs xs<ys ys<xs
+asym-≺⁺ O (O ∷ xs) (I ∷ ys) ys<xs xs<ys = asym-≺⁺ I ys xs xs<ys ys<xs
+asym-≺⁺ O (I ∷ xs) 1ᵇ ys<xs xs<ys = xs<ys
+asym-≺⁺ O (I ∷ xs) (O ∷ ys) ys<xs xs<ys = asym-≺⁺ O ys xs xs<ys ys<xs
+asym-≺⁺ O (I ∷ xs) (I ∷ ys) ys<xs xs<ys = asym-≺⁺ I ys xs xs<ys ys<xs
+asym-≺⁺ I 1ᵇ 1ᵇ ys<xs xs<ys = xs<ys
+asym-≺⁺ I 1ᵇ (x ∷ xs) ys<xs xs<ys = ys<xs
+asym-≺⁺ I (O ∷ xs) 1ᵇ ys<xs xs<ys = xs<ys
+asym-≺⁺ I (O ∷ xs) (O ∷ ys) ys<xs xs<ys = asym-≺⁺ O ys xs xs<ys ys<xs
+asym-≺⁺ I (O ∷ xs) (I ∷ ys) ys<xs xs<ys = asym-≺⁺ I ys xs xs<ys ys<xs
+asym-≺⁺ I (I ∷ xs) 1ᵇ ys<xs xs<ys = xs<ys
+asym-≺⁺ I (I ∷ xs) (O ∷ ys) ys<xs xs<ys = asym-≺⁺ O ys xs xs<ys ys<xs
+asym-≺⁺ I (I ∷ xs) (I ∷ ys) ys<xs xs<ys = asym-≺⁺ O ys xs xs<ys ys<xs
 
-  ¬≺⁺⇒≼⁺ : ∀ xs ys → ¬ ⟅ O ⟆ ys ≺⁺ xs → ⟅ I ⟆ xs ≺⁺ ys
-  ¬≺⁺⇒≼⁺ 1ᵇ 1ᵇ ys≮xs = tt
-  ¬≺⁺⇒≼⁺ 1ᵇ (y ∷ ys) ys≮xs = tt
-  ¬≺⁺⇒≼⁺ (x ∷ xs) 1ᵇ ys≮xs = ys≮xs tt
-  ¬≺⁺⇒≼⁺ (O ∷ xs) (O ∷ ys) ys≮xs = ¬≺⁺⇒≼⁺ xs ys ys≮xs
-  ¬≺⁺⇒≼⁺ (O ∷ xs) (I ∷ ys) ys≮xs = ¬≺⁺⇒≼⁺ xs ys ys≮xs
-  ¬≺⁺⇒≼⁺ (I ∷ xs) (I ∷ ys) ys≮xs = ¬≺⁺⇒≼⁺ xs ys ys≮xs
-  ¬≺⁺⇒≼⁺ (I ∷ xs) (O ∷ ys) ys≮xs = ¬≼⁺⇒≺⁺ xs ys ys≮xs
+asym-≺ : ∀ c xs ys → ⟅ c ⟆ ys ≺ xs → ¬ ⟅ not c ⟆ xs ≺ ys
+asym-≺ c (0< xs) (0< ys) ys<xs xs<ys = asym-≺⁺ c xs ys ys<xs xs<ys
+asym-≺ c (0< x) 0ᵇ ys<xs xs<ys = xs<ys
+asym-≺ c 0ᵇ (0< x) ys<xs xs<ys = ys<xs
+asym-≺ c 0ᵇ 0ᵇ ys<xs xs<ys = asym-≺⁺ c 1ᵇ 1ᵇ ys<xs xs<ys
+
+pos-asym-≺⁺ : ∀ c xs ys → ¬ ⟅ c ⟆ ys ≺⁺ xs → ⟅ not c ⟆ xs ≺⁺ ys
+pos-asym-≺⁺ c 1ᵇ (x ∷ ys) ys≺xs = tt
+pos-asym-≺⁺ c (x ∷ xs) 1ᵇ ys≺xs = ys≺xs tt
+pos-asym-≺⁺ c (I ∷ xs) (I ∷ ys) ys≺xs = pos-asym-≺⁺ c xs ys ys≺xs
+pos-asym-≺⁺ O (O ∷ xs) (O ∷ ys) ys≺xs = pos-asym-≺⁺ O xs ys ys≺xs
+pos-asym-≺⁺ I (O ∷ xs) (O ∷ ys) ys≺xs = pos-asym-≺⁺ I xs ys ys≺xs
+pos-asym-≺⁺ O (O ∷ xs) (I ∷ ys) ys≺xs = pos-asym-≺⁺ O xs ys ys≺xs
+pos-asym-≺⁺ I (O ∷ xs) (I ∷ ys) ys≺xs = pos-asym-≺⁺ O xs ys ys≺xs
+pos-asym-≺⁺ O (I ∷ xs) (O ∷ ys) ys≺xs = pos-asym-≺⁺ I xs ys ys≺xs
+pos-asym-≺⁺ I (I ∷ xs) (O ∷ ys) ys≺xs = pos-asym-≺⁺ I xs ys ys≺xs
+pos-asym-≺⁺ O 1ᵇ 1ᵇ ys≺xs = tt
+pos-asym-≺⁺ I 1ᵇ 1ᵇ ys≺xs = ys≺xs tt
+
+pos-asym-≺ : ∀ c xs ys → ¬ ⟅ c ⟆ ys ≺ xs → ⟅ not c ⟆ xs ≺ ys
+pos-asym-≺ c (0< xs) (0< ys) ys≮xs = pos-asym-≺⁺ c xs ys ys≮xs
+pos-asym-≺ c (0< x) 0ᵇ ys≮xs = ys≮xs tt
+pos-asym-≺ c 0ᵇ (0< x) ys≮xs = tt
+pos-asym-≺ O 0ᵇ 0ᵇ ys≮xs = tt
+pos-asym-≺ I 0ᵇ 0ᵇ ys≮xs = ys≮xs tt
 
 _!_≺?_ : ∀ x xs ys → Dec (⟅ x ⟆ xs ≺ ys)
 c ! 0< xs ≺? 0< ys = c ! xs ≺⁺? ys
 c ! 0< xs ≺? 0ᵇ = no (λ z → z)
 c ! 0ᵇ ≺? 0< _ = yes tt
 c ! 0ᵇ ≺? 0ᵇ = T? c
+
+compare-≺ : ∀ c → Conn ⟅ c ⟆_≺_ ⟅ not c ⟆_≺_
+compare-≺ c xs ys with c ! xs ≺? ys
+compare-≺ c xs ys | yes p = inj₁ p
+compare-≺ c xs ys | no ¬p = inj₂ (pos-asym-≺ c ys xs ¬p)
+
+≺⁺-antisym : ∀ c → Antisymmetric _≡_ ⟅ c ⟆_≺⁺_
+≺⁺-antisym c {1ᵇ} {1ᵇ} xs<ys ys<xs = refl
+≺⁺-antisym c {1ᵇ} {x ∷ ys} xs<ys ()
+≺⁺-antisym c {x ∷ xs} {1ᵇ} () ys<xs
+≺⁺-antisym c {O ∷ xs} {O ∷ ys} xs<ys ys<xs = cong (O ∷_) (≺⁺-antisym (c ∨ O) xs<ys ys<xs)
+≺⁺-antisym c {O ∷ xs} {I ∷ ys} xs<ys ys<xs = ⊥-elim (asym-≺⁺ O xs ys ys<xs (weaken (c ∨ I) xs ys xs<ys))
+≺⁺-antisym c {I ∷ xs} {O ∷ ys} xs<ys ys<xs = ⊥-elim (asym-≺⁺ O ys xs xs<ys (weaken (c ∨ I) ys xs ys<xs))
+≺⁺-antisym c {I ∷ xs} {I ∷ ys} xs<ys ys<xs = cong (I ∷_) (≺⁺-antisym c xs<ys ys<xs)
+
+≺-antisym : ∀ c → Antisymmetric _≡_ ⟅ c ⟆_≺_
+≺-antisym c {0< x} {0< x₁} xs<ys ys<xs = cong 0<_ (≺⁺-antisym c xs<ys ys<xs)
+≺-antisym c {0< x} {0ᵇ} () ys<xs
+≺-antisym c {0ᵇ} {0< x} xs<ys ()
+≺-antisym c {0ᵇ} {0ᵇ} xs<ys ys<xs = refl
 
 open import Data.Binary.NonZero.Operations.Addition
 import Data.Empty.Irrelevant as Irrel
