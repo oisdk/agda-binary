@@ -18,13 +18,13 @@ open import Data.Nat.Reasoning
 
 mul-homo : ∀ xs ys → ⟦ mul xs ys ⇓⟧⁺ ≡ ⟦ xs ⇓⟧⁺ ℕ.* ⟦ ys ⇓⟧⁺
 mul-homo 1ᵇ ys = sym (ℕ.+-identityʳ _)
-mul-homo (O ∷ xs) ys = cong 2*_ (mul-homo xs ys) ⟨ trans ⟩ sym (ℕ.*-distribʳ-+ ⟦ ys ⇓⟧⁺ ⟦ xs ⇓⟧⁺ _)
+mul-homo (O ∷ xs) ys = cong 2* (mul-homo xs ys) ⟨ trans ⟩ sym (ℕ.*-distribʳ-+ ⟦ ys ⇓⟧⁺ ⟦ xs ⇓⟧⁺ _)
 mul-homo (I ∷ xs) ys =
   begin
-    ⟦ add₀ (O ∷ mul ys xs) ys ⇓⟧⁺
+    ⟦ add O (O ∷ mul ys xs) ys ⇓⟧⁺
   ≡⟨ add₀-homo (O ∷ mul ys xs) ys ⟩
     2* ⟦ mul ys xs ⇓⟧⁺ ℕ.+ ⟦ ys ⇓⟧⁺
-  ≡⟨ ⟦ ys ⇓⟧⁺ ≪+ cong 2*_ (mul-homo ys xs) ⟩
+  ≡⟨ ⟦ ys ⇓⟧⁺ ≪+ cong 2* (mul-homo ys xs) ⟩
     2* (⟦ ys ⇓⟧⁺ ℕ.* ⟦ xs ⇓⟧⁺) ℕ.+ ⟦ ys ⇓⟧⁺
   ≡⟨ ℕ.+-comm _ ⟦ ys ⇓⟧⁺ ⟩
     ⟦ ys ⇓⟧⁺ ℕ.+ 2* (⟦ ys ⇓⟧⁺ ℕ.* ⟦ xs ⇓⟧⁺)

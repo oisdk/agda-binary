@@ -2,7 +2,11 @@
 
 module Data.Binary.Bits where
 
-open import Data.Bool as Bool using (not; _∨_; _∧_; _xor_; T) renaming (Bool to Bit; true to I; false to O) public
+open import Data.Bool
+  as Bool
+  using (not; _∨_; _∧_; _xor_; T)
+  renaming (Bool to Bit; true to I; false to O)
+  public
 
 _xnor_ : Bit → Bit → Bit
 O xnor y = not y

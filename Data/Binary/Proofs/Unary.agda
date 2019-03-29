@@ -17,7 +17,7 @@ inc⁺⁺-homo (O ∷ xs) = refl
 inc⁺⁺-homo (I ∷ xs) =
   begin
     2* ⟦ inc⁺⁺ xs ⇓⟧⁺
-  ≡⟨ cong 2*_ (inc⁺⁺-homo xs) ⟩
+  ≡⟨ cong 2* (inc⁺⁺-homo xs) ⟩
     2* (suc ⟦ xs ⇓⟧⁺)
   ≡⟨⟩
     (suc ⟦ xs ⇓⟧⁺) ℕ.+ suc ⟦ xs ⇓⟧⁺
@@ -35,7 +35,7 @@ open import Data.Product
 ⟦x⇓⟧⁺≡suc 1ᵇ = 0 , refl
 ⟦x⇓⟧⁺≡suc (I ∷ x) = 2* ⟦ x ⇓⟧⁺ , refl
 ⟦x⇓⟧⁺≡suc (O ∷ x) with ⟦x⇓⟧⁺≡suc x
-⟦x⇓⟧⁺≡suc (O ∷ x) | fst , snd = suc (2* fst) , (cong 2*_ snd ⟨ trans ⟩ (ℕ.+-suc (suc fst) _))
+⟦x⇓⟧⁺≡suc (O ∷ x) | fst , snd = suc (2* fst) , (cong 2* snd ⟨ trans ⟩ (ℕ.+-suc (suc fst) _))
 
 ⟦x⇓⟧⁺≢0 : ∀ x → ⟦ x ⇓⟧⁺ ≢ 0
 ⟦x⇓⟧⁺≢0 x x≡0 with ⟦x⇓⟧⁺≡suc x

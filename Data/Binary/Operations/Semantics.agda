@@ -7,9 +7,9 @@ open import Data.Binary.Definitions
 open import Data.Binary.Operations.Unary
 import Data.List as List
 
-2*_ : ℕ → ℕ
+2* : ℕ → ℕ
 2* x = x ℕ.+ x
-{-# INLINE 2*_ #-}
+{-# INLINE 2* #-}
 
 _∷⇓_ : Bit → ℕ → ℕ
 O ∷⇓ xs = 2* xs
