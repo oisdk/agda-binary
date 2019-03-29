@@ -195,6 +195,12 @@ open import Data.Binary.NonZero.Operations.Unary
 ≺⁺-add (O ∷ ys) 1ᵇ c₁ O = tt
 ≺⁺-add (I ∷ ys) 1ᵇ c₁ O = tt
 
+≺-add : ∀ ys xs → ⟅ I ⟆ xs ≺ ys + xs
+≺-add (0< x) (0< x₁) = ≺⁺-add x x₁ I O
+≺-add (0< x) 0ᵇ = tt
+≺-add 0ᵇ (0< x) = ≼-refl x
+≺-add 0ᵇ 0ᵇ = tt
+
 infix 4 _≤_ _<_
 record _≤_ (x y : 𝔹) : Set where
   constructor ≤!

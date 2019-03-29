@@ -22,8 +22,8 @@ open import Data.Maybe as Maybe using (Maybe; just; nothing)
 - zero = O , zero
 - (suc snd) = I , snd
 
-+ : ℕ → ℤ
-+ = O ,_
++⇑ : ℕ → ℤ
++⇑ = O ,_
 
 ⟦_⇑⟧ : ℤ → 𝔹±
 ⟦ O , snd ⇑⟧ = Maybe.map (O ,_) Pos.⟦ snd ⇑⟧
@@ -58,9 +58,12 @@ _z+_ : ℤ → ℤ → ℤ
 
 
 {-# DISPLAY _,_ I xn = - (suc xn) #-}
-{-# DISPLAY _,_ O xn = + xn #-}
+{-# DISPLAY _,_ O xn = +⇑ xn #-}
 
 open import Data.Binary.NonZero.Operations.Subtraction
 
-_ : _+_ ≡⌈ 3 ⌉₂≡ _z+_
-_ = refl
+-- _ : ⟦ ⟦ (- 3) ⇑⟧ + ⟦ +⇑ 2 ⇑⟧ ⇓⟧ ≡ (- 1)
+-- _ = refl
+
+-- _ : _+_ ≡⌈ 3 ⌉₂≡ _z+_
+-- _ = refl
