@@ -1,0 +1,67 @@
+name: Compile Agda and LaTeX and Deploy to Site
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  compile-agda:
+    name: Compile Agda
+    runs-on: ubuntu-20.04
+
+    strategy:
+      matrix:
+        cubical-ref: ["v0.3"]
+        agda-ver: ["2.6.2"]
+
+    steps:
+
+# Install Agda
+    - uses: wenkokke/setup-agda@v2.0.0
+      with:
+        agda-version: ${{ matrix.agda-ver }}
+        agda-stdlib-version: 'recommended'
+        agda-libraries: |
+          https://github.com/agda/cubical.git#${{ matrix.cubical-ref }}
+
+# Download and compile main library
+    - name: Checkout main
+      uses: actions/checkout@v3.4.0
+      with:
+        path: main
+
+    - uses: actions/cache@v3.3.1
+      name: Cache agda library
+      id: cache-agda
+      with:
+        path: ~/main-build
+        key: ${{ runner.os }}-${{ matrix.agda-ver }}-${{ matrix.cubical-ref }}-${{ hashFiles('main/**') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ matrix.agda-ver }}-${{ matrix.cubical-ref }}-
+          ${{ runner.os }}-${{ matrix.agda-ver }}-
+
+    - name: Cache hit (agda); Retrieve agda library
+      if: steps.cache-agda.outputs.cache-hit == 'true'
+      run: cp -f -R ~/main-build/* $GITHUB_WORKSPACE/main
+
+    - name: Cache miss (agda); Compile agda library
+      if: steps.cache-agda.outputs.cache-hit != 'true'
+      run: |
+        set -e
+        mkdir -p ~/main-build/_build
+        cp -f -R ~/main-build/_build $GITHUB_WORKSPACE/main/_build
+        rm -r ~/main-build
+        cd main
+
+        ./scripts/render.sh
+
+        cd ..
+        cp -f -R main/ ~/main-build/
+
+    - name: Deploy html to github pages
+      if: steps.cache-agda.outputs.cache-hit != 'true'
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: main/docs
+        destination_dir: agda
