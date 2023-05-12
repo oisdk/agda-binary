@@ -144,3 +144,19 @@ is-just _        = false
 
 just-inj : {x y : A} → just x ≡ just y → x ≡ y
 just-inj {x = x} = cong (from-maybe x)
+
+*-zeroʳ : ∀ x → x ℕ.* zero ≡ zero
+*-zeroʳ zero = refl
+*-zeroʳ (suc x) = *-zeroʳ x
+
+*-suc : ∀ x y → x ℕ.+ x ℕ.* y ≡ x ℕ.* suc y
+*-suc zero    y = refl
+*-suc (suc x) y = cong suc (sym (+-assoc x y (x ℕ.* y)) ∙ cong (ℕ._+ x ℕ.* y) (+-comm x y) ∙ +-assoc y x (x ℕ.* y) ∙ cong (y ℕ.+_) (*-suc x y))
+
+*-comm : ∀ x y → x ℕ.* y ≡ y ℕ.* x
+*-comm zero    y = sym (*-zeroʳ y)
+*-comm (suc x) y = cong (y ℕ.+_) (*-comm x y) ∙ *-suc y x
+
+*-assoc : ∀ x y z → (x ℕ.* y) ℕ.* z ≡ x ℕ.* (y ℕ.* z)
+*-assoc zero    y z = refl
+*-assoc (suc x) y z = +-*-distrib y (x ℕ.* y) z ∙ cong (y ℕ.* z ℕ.+_) (*-assoc x y z)
