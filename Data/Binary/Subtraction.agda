@@ -18,7 +18,7 @@ _×2^suc_ : 𝔹 → ℕ → 𝔹
 (2ᵇ xs) ×2^suc n = 2ᵇ ones (suc n) xs
 
 mutual
-  -- sube₁ n x y = (x - (y + 1)) × 2ⁿ⁺
+  -- sube₁ n x y = (x - (y + 1)) × 2ⁿ⁺¹
   sube₁ : ℕ → 𝔹 → 𝔹 → Maybe 𝔹
   sube₁ n 0ᵇ      _       = nothing
   sube₁ n (1ᵇ xs) 0ᵇ      = just (xs ×2^suc suc n)
