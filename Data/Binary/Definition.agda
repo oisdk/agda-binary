@@ -1,5 +1,3 @@
-{-# OPTIONS --without-K --safe #-}
-
 module Data.Binary.Definition where
 
 infixr 8 1ᵇ_ 2ᵇ_

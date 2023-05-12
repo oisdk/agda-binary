@@ -1,5 +1,3 @@
-{-# OPTIONS --without-K --safe #-}
-
 module Data.Binary.Increment where
 
 open import Data.Binary.Definition
