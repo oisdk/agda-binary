@@ -1,4 +1,3 @@
 name: agda-binary
-depend: standard-library
 flags: --without-K --safe
 include: .

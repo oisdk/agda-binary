@@ -58,7 +58,8 @@ mutual
   -- sub x y = x - y
   sub : 𝔹 → 𝔹 → Maybe 𝔹
   sub xs      0ᵇ      = just xs
-  sub 0ᵇ      _       = nothing
+  sub 0ᵇ      (1ᵇ _)  = nothing
+  sub 0ᵇ      (2ᵇ _)  = nothing
   sub (1ᵇ xs) (1ᵇ ys) = sube 0 xs ys
   sub (2ᵇ xs) (2ᵇ ys) = sube 0 xs ys
   sub (1ᵇ xs) (2ᵇ ys) = map-maybe 1ᵇ_ (sub₁ xs ys)
