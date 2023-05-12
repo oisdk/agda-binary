@@ -10,13 +10,13 @@ open import Data.Binary.Helpers
 import Agda.Builtin.Nat as ℕ
 
 inc-suc : ∀ x → ⟦ inc x ⇓⟧ ≡ suc ⟦ x ⇓⟧
-inc-suc 0ᵇ     i = 1
-inc-suc (1ᵇ x) i = 2 ℕ.+ ⟦ x ⇓⟧ ℕ.* 2
-inc-suc (2ᵇ x) i = suc (inc-suc x i ℕ.* 2)
+inc-suc 0ᵇ     = refl
+inc-suc (1ᵇ x) = refl
+inc-suc (2ᵇ x) = cong (λ r → suc (r ℕ.* 2)) (inc-suc x)
 
 inc-2*-1ᵇ : ∀ n → inc ⟦ n ℕ.* 2 ⇑⟧ ≡ 1ᵇ ⟦ n ⇑⟧
-inc-2*-1ᵇ zero    i = 1ᵇ 0ᵇ
-inc-2*-1ᵇ (suc n) i = inc (inc (inc-2*-1ᵇ n i))
+inc-2*-1ᵇ zero    = refl
+inc-2*-1ᵇ (suc n) = cong (λ r → inc (inc r)) (inc-2*-1ᵇ n)
 
 𝔹-rightInv : ∀ x → ⟦ ⟦ x ⇑⟧ ⇓⟧ ≡ x
 𝔹-rightInv zero    = refl
