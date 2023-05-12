@@ -1,0 +1,12 @@
+<!DOCTYPE HTML>
+<html><head><meta charset="utf-8"><title>Data.Binary.Increment</title><link rel="stylesheet" href="Agda.css"></head><body><pre class="Agda"><a id="1" class="Symbol">{-#</a> <a id="5" class="Keyword">OPTIONS</a> <a id="13" class="Pragma">--without-K</a> <a id="25" class="Pragma">--safe</a> <a id="32" class="Symbol">#-}</a>
+
+<a id="37" class="Keyword">module</a> <a id="44" href="Data.Binary.Increment.html" class="Module">Data.Binary.Increment</a> <a id="66" class="Keyword">where</a>
+
+<a id="73" class="Keyword">open</a> <a id="78" class="Keyword">import</a> <a id="85" href="Data.Binary.Definition.html" class="Module">Data.Binary.Definition</a>
+
+<a id="inc"></a><a id="109" href="Data.Binary.Increment.html#109" class="Function">inc</a> <a id="113" class="Symbol">:</a> <a id="115" href="Data.Binary.Definition.html#96" class="Datatype">𝔹</a> <a id="117" class="Symbol">→</a> <a id="119" href="Data.Binary.Definition.html#96" class="Datatype">𝔹</a>
+<a id="121" href="Data.Binary.Increment.html#109" class="Function">inc</a> <a id="125" href="Data.Binary.Definition.html#112" class="InductiveConstructor">0ᵇ</a>      <a id="133" class="Symbol">=</a> <a id="135" href="Data.Binary.Definition.html#121" class="InductiveConstructor Operator">1ᵇ</a> <a id="138" href="Data.Binary.Definition.html#112" class="InductiveConstructor">0ᵇ</a>
+<a id="141" href="Data.Binary.Increment.html#109" class="Function">inc</a> <a id="145" class="Symbol">(</a><a id="146" href="Data.Binary.Definition.html#121" class="InductiveConstructor Operator">1ᵇ</a> <a id="149" href="Data.Binary.Increment.html#149" class="Bound">xs</a><a id="151" class="Symbol">)</a> <a id="153" class="Symbol">=</a> <a id="155" href="Data.Binary.Definition.html#125" class="InductiveConstructor Operator">2ᵇ</a> <a id="158" href="Data.Binary.Increment.html#149" class="Bound">xs</a>
+<a id="161" href="Data.Binary.Increment.html#109" class="Function">inc</a> <a id="165" class="Symbol">(</a><a id="166" href="Data.Binary.Definition.html#125" class="InductiveConstructor Operator">2ᵇ</a> <a id="169" href="Data.Binary.Increment.html#169" class="Bound">xs</a><a id="171" class="Symbol">)</a> <a id="173" class="Symbol">=</a> <a id="175" href="Data.Binary.Definition.html#121" class="InductiveConstructor Operator">1ᵇ</a> <a id="178" href="Data.Binary.Increment.html#109" class="Function">inc</a> <a id="182" href="Data.Binary.Increment.html#169" class="Bound">xs</a>
+</pre></body></html>
