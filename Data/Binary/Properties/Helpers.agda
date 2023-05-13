@@ -2,10 +2,10 @@
 
 module Data.Binary.Properties.Helpers where
 
-private variable A B : Set
+private variable A B C : Set
 
 open import Cubical.Foundations.Everything
-  using (_≡_; cong; refl; _∙_; Iso; sym; cong₂; subst)
+  using (_≡_; cong; refl; _∙_; Iso; sym; cong₂; subst; funExt)
   public
 
 open import Cubical.Data.Empty
@@ -19,6 +19,9 @@ import Agda.Builtin.Nat as ℕ
 open import Data.Binary.Helpers
 open import Agda.Builtin.Bool
 open import Agda.Builtin.Unit public
+
+flip : (A → B → C) → B → A → C
+flip f x y = f y x
 
 infixr 2 ≡˘⟨⟩-syntax _≡⟨⟩_ ≡⟨∙⟩-syntax
 
