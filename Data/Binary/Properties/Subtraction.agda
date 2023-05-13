@@ -45,7 +45,7 @@ exp-𝔹-0 : ∀ n → exp-𝔹 n 0ᵇ ≡ 0ᵇ
 exp-𝔹-0 zero = refl
 exp-𝔹-0 (suc n) = exp-𝔹-0 n
 
-exp-𝔹-1 : ∀ n xs → exp-𝔹 n (2ᵇ xs) ≡ 2ones n xs
+exp-𝔹-1 : ∀ n xs → exp-𝔹 n (2ᵇ xs) ≡ xs +1×2^suc n
 exp-𝔹-1 zero 0ᵇ = refl
 exp-𝔹-1 zero (1ᵇ xs) = refl
 exp-𝔹-1 zero (2ᵇ xs) = refl
@@ -117,11 +117,7 @@ map-maybe-comp f b g = maybe-fuse (maybe f b) _ _
 -′‿suc-*2 (suc x) zero = refl
 -′‿suc-*2 (suc x) (suc y) = -′‿suc-*2 x y
 
-pred : ℕ → ℕ
-pred (suc n) = n
-pred zero = zero
-
-2ones-cong : ∀ n xs → ⟦ 2ones n xs ⇓⟧ ≡ exp2 (suc n) (suc ⟦ xs ⇓⟧)
+2ones-cong : ∀ n xs → ⟦ xs +1×2^suc n ⇓⟧ ≡ exp2 (suc n) (suc ⟦ xs ⇓⟧)
 2ones-cong n xs = cong ⟦_⇓⟧ (sym (exp-𝔹-1 n xs)) ∙ exp-𝔹-cong n (2ᵇ xs) ∙ exp2-assoc n (suc ⟦ xs ⇓⟧)
 
 exp-suc-lemma : ∀ n xs ys → map-maybe (λ x → exp2 n x ℕ.* 2 ℕ.* 2) (xs -′ ys) ≡
@@ -129,16 +125,16 @@ exp-suc-lemma : ∀ n xs ys → map-maybe (λ x → exp2 n x ℕ.* 2 ℕ.* 2) (x
                   ((xs ℕ.* 2) -′ (ys ℕ.* 2))
 exp-suc-lemma n xs ys = cong (flip map-maybe (xs -′ ys)) (funExt (λ x → cong (ℕ._* 2) (sym (exp2-assoc n x)))) ∙ sym (map-maybe-comp _ _ _ (xs -′ ys)) ∙ cong (map-maybe (exp2 (suc n))) (*-distrib‿-′ 1 xs ys)
 
-sube₁-0-cong : ∀ n xs ys → ⟦ map-maybe (2ones n) (sube₁ 0 xs ys) ⇓⟧′ ≡ map-maybe (exp2 (suc n)) ((⟦ xs ⇓⟧ ℕ.* 2) -′ suc (⟦ ys ⇓⟧ ℕ.* 2))
-sube-0-cong : ∀ n xs ys → ⟦ map-maybe (2ones n) (sube 0 xs ys) ⇓⟧′ ≡ map-maybe (exp2 (suc n)) (suc (⟦ xs ⇓⟧ ℕ.* 2) -′ (⟦ ys ⇓⟧ ℕ.* 2))
+sube₁-0-cong : ∀ n xs ys → ⟦ map-maybe (_+1×2^suc n) (sube₁ 0 xs ys) ⇓⟧′ ≡ map-maybe (exp2 (suc n)) ((⟦ xs ⇓⟧ ℕ.* 2) -′ suc (⟦ ys ⇓⟧ ℕ.* 2))
+sube-0-cong : ∀ n xs ys → ⟦ map-maybe (_+1×2^suc n) (sube 0 xs ys) ⇓⟧′ ≡ map-maybe (exp2 (suc n)) (suc (⟦ xs ⇓⟧ ℕ.* 2) -′ (⟦ ys ⇓⟧ ℕ.* 2))
 sube-cong  : ∀ n xs ys → ⟦ sube  n xs ys ⇓⟧′ ≡ map-maybe (exp2 (suc n)) (⟦ xs ⇓⟧ -′ ⟦ ys ⇓⟧)
 sube₁-cong : ∀ n xs ys → ⟦ sube₁ n xs ys ⇓⟧′ ≡ map-maybe (exp2 (suc n)) (⟦ xs ⇓⟧ -′ suc ⟦ ys ⇓⟧)
 sub₁-cong  : ∀   xs ys → ⟦ sub₁ xs ys ⇓⟧′ ≡ ⟦ xs ⇓⟧ -′ suc ⟦ ys ⇓⟧
 sub-cong   : ∀   xs ys → ⟦ sub xs ys ⇓⟧′ ≡ ⟦ xs ⇓⟧ -′ ⟦ ys ⇓⟧
 
 sube₁-0-cong n xs ys =
-  ⟦ map-maybe (2ones n) (sube₁ 0 xs ys) ⇓⟧′ ≡⟨ map-maybe-comp _ _ _ (sube₁ 0 xs ys) ⟩
-  map-maybe (⟦_⇓⟧ ∘ 2ones n) (sube₁ 0 xs ys) ≡⟨ cong (flip map-maybe (sube₁ 0 xs ys)) (funExt (2ones-cong n)) ⟩
+  ⟦ map-maybe (_+1×2^suc n) (sube₁ 0 xs ys) ⇓⟧′ ≡⟨ map-maybe-comp _ _ _ (sube₁ 0 xs ys) ⟩
+  map-maybe (⟦_⇓⟧ ∘ (_+1×2^suc n)) (sube₁ 0 xs ys) ≡⟨ cong (flip map-maybe (sube₁ 0 xs ys)) (funExt (2ones-cong n)) ⟩
   map-maybe (exp2 (suc n) ∘ suc ∘ ⟦_⇓⟧) (sube₁ 0 xs ys) ≡˘⟨ map-maybe-comp _ _ _ (sube₁ 0 xs ys) ⟩
   map-maybe (exp2 (suc n) ∘ suc) ⟦ sube₁ 0 xs ys ⇓⟧′ ≡⟨ cong (map-maybe (exp2 (suc n) ∘ suc)) (sube₁-cong 0 xs ys) ⟩
   map-maybe (exp2 (suc n) ∘ suc) (map-maybe (exp2 1) (⟦ xs ⇓⟧ -′ suc ⟦ ys ⇓⟧)) ≡⟨ map-maybe-comp _ _ _ (⟦ xs ⇓⟧ -′ suc ⟦ ys ⇓⟧) ⟩
@@ -147,8 +143,8 @@ sube₁-0-cong n xs ys =
   map-maybe (exp2 (suc n)) ((⟦ xs ⇓⟧ ℕ.* 2) -′ suc (⟦ ys ⇓⟧ ℕ.* 2)) ∎
 
 sube-0-cong n xs ys =
-  ⟦ map-maybe (2ones n) (sube 0 xs ys) ⇓⟧′ ≡⟨ map-maybe-comp _ _ _ (sube 0 xs ys) ⟩
-  map-maybe (⟦_⇓⟧ ∘ 2ones n) (sube 0 xs ys) ≡⟨ cong (flip map-maybe (sube 0 xs ys)) (funExt (2ones-cong n)) ⟩
+  ⟦ map-maybe (_+1×2^suc n) (sube 0 xs ys) ⇓⟧′ ≡⟨ map-maybe-comp _ _ _ (sube 0 xs ys) ⟩
+  map-maybe (⟦_⇓⟧ ∘ (_+1×2^suc n)) (sube 0 xs ys) ≡⟨ cong (flip map-maybe (sube 0 xs ys)) (funExt (2ones-cong n)) ⟩
   map-maybe (exp2 (suc n) ∘ suc ∘ ⟦_⇓⟧) (sube 0 xs ys) ≡˘⟨ map-maybe-comp _ _ _ (sube 0 xs ys) ⟩
   map-maybe (exp2 (suc n) ∘ suc) ⟦ sube 0 xs ys ⇓⟧′ ≡⟨ cong (map-maybe (exp2 (suc n) ∘ suc)) (sube-cong 0 xs ys) ⟩
   map-maybe (exp2 (suc n) ∘ suc) (map-maybe (exp2 1) (⟦ xs ⇓⟧ -′ ⟦ ys ⇓⟧)) ≡⟨ map-maybe-comp _ _ _ (⟦ xs ⇓⟧ -′ ⟦ ys ⇓⟧) ⟩
