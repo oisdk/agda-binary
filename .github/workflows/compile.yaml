@@ -19,7 +19,6 @@ jobs:
     - uses: wenkokke/setup-agda@v2.0.0
       with:
         agda-version: ${{ matrix.agda-ver }}
-        agda-stdlib-version: 'recommended'
         agda-libraries: |
           https://github.com/agda/cubical.git#${{ matrix.cubical-ref }}
 
