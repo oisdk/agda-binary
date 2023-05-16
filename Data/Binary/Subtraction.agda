@@ -9,12 +9,13 @@ ones : ℕ → 𝔹 → 𝔹
 ones zero    xs = xs
 ones (suc n) xs = ones n (1ᵇ xs)
 
+infixl 7 _+1×2^suc_ _×2^suc_
 _+1×2^suc_ : 𝔹 → ℕ → 𝔹
 xs +1×2^suc n = 2ᵇ ones n xs
 
 _×2^suc_ : 𝔹 → ℕ → 𝔹
 0ᵇ      ×2^suc n = 0ᵇ
-(1ᵇ xs) ×2^suc n = double xs +1×2^suc n
+(1ᵇ xs) ×2^suc n = 2× xs +1×2^suc n
 (2ᵇ xs) ×2^suc n = xs +1×2^suc suc n
 
 mutual
@@ -22,7 +23,7 @@ mutual
   subᵉ₁ : ℕ → 𝔹 → 𝔹 → Maybe 𝔹
   subᵉ₁ n 0ᵇ      _       = nothing
   subᵉ₁ n (1ᵇ xs) 0ᵇ      = just (xs ×2^suc suc n)
-  subᵉ₁ n (2ᵇ xs) 0ᵇ      = just (double xs +1×2^suc n)
+  subᵉ₁ n (2ᵇ xs) 0ᵇ      = just (2× xs +1×2^suc n)
   subᵉ₁ n (1ᵇ xs) (1ᵇ ys) = map-maybe (_+1×2^suc n) (subᵉ₁ 0 xs ys)
   subᵉ₁ n (2ᵇ xs) (2ᵇ ys) = map-maybe (_+1×2^suc n) (subᵉ₁ 0 xs ys)
   subᵉ₁ n (1ᵇ xs) (2ᵇ ys) = subᵉ₁ (suc n) xs ys
@@ -42,7 +43,7 @@ mutual
   -- sub₁ x y = x - (y + 1)
   sub₁ : 𝔹 → 𝔹 → Maybe 𝔹
   sub₁ 0ᵇ      _       = nothing
-  sub₁ (1ᵇ xs) 0ᵇ      = just (double xs)
+  sub₁ (1ᵇ xs) 0ᵇ      = just (2× xs)
   sub₁ (2ᵇ xs) 0ᵇ      = just (1ᵇ xs)
   sub₁ (1ᵇ xs) (1ᵇ ys) = map-maybe 1ᵇ_ (sub₁ xs ys)
   sub₁ (2ᵇ xs) (2ᵇ ys) = map-maybe 1ᵇ_ (sub₁ xs ys)

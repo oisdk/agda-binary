@@ -39,7 +39,7 @@ exp2 (suc n) x = exp2 n x ℕ.* 2
 
 exp2-𝔹 : ℕ → 𝔹 → 𝔹
 exp2-𝔹 zero    xs = xs
-exp2-𝔹 (suc n) xs = exp2-𝔹 n (double xs)
+exp2-𝔹 (suc n) xs = exp2-𝔹 n (2× xs)
 
 exp2-𝔹-0ᵇ : ∀ n → exp2-𝔹 n 0ᵇ ≡ 0ᵇ
 exp2-𝔹-0ᵇ zero = refl
@@ -53,7 +53,7 @@ exp2-𝔹-2ᵇ (suc n) xs = exp2-𝔹-2ᵇ n (1ᵇ xs)
 
 exp2-𝔹-×2^suc : ∀ n xs → exp2-𝔹 (suc n) xs ≡ xs ×2^suc n
 exp2-𝔹-×2^suc n 0ᵇ      = exp2-𝔹-0ᵇ n
-exp2-𝔹-×2^suc n (1ᵇ xs) = exp2-𝔹-2ᵇ n (double xs)
+exp2-𝔹-×2^suc n (1ᵇ xs) = exp2-𝔹-2ᵇ n (2× xs)
 exp2-𝔹-×2^suc n (2ᵇ xs) = exp2-𝔹-2ᵇ n (1ᵇ xs)
 
 exp2-assoc : ∀ n m → exp2 n (m ℕ.* 2) ≡ exp2 n m ℕ.* 2
@@ -62,7 +62,7 @@ exp2-assoc (suc n) m = cong (ℕ._* 2) (exp2-assoc n m)
 
 exp2-𝔹-cong : ∀ n xs → ⟦ exp2-𝔹 n xs ⇓⟧ ≡ exp2 n ⟦ xs ⇓⟧
 exp2-𝔹-cong zero xs = refl
-exp2-𝔹-cong (suc n) xs = exp2-𝔹-cong n (double xs) ∙ cong (exp2 n) (double-cong xs) ∙ exp2-assoc n ⟦ xs ⇓⟧
+exp2-𝔹-cong (suc n) xs = exp2-𝔹-cong n (2× xs) ∙ cong (exp2 n) (double-cong xs) ∙ exp2-assoc n ⟦ xs ⇓⟧
 
 ×2^suc-cong : ∀ n xs → ⟦ xs ×2^suc n ⇓⟧ ≡ exp2 (suc n) ⟦ xs ⇓⟧
 ×2^suc-cong n xs = cong ⟦_⇓⟧ (sym (exp2-𝔹-×2^suc n xs)) ∙ exp2-𝔹-cong (suc n) xs
@@ -167,7 +167,7 @@ subᵉ₁-cong n 0ᵇ      _       = refl
 subᵉ₁-cong n (1ᵇ xs) 0ᵇ      = cong just (×2^suc-cong (suc n) xs ∙ cong (ℕ._* 2) (sym (exp2-assoc n ⟦ xs ⇓⟧)))
 subᵉ₁-cong n (1ᵇ xs) (1ᵇ ys) = subᵉ₁-0-cong n xs ys
 subᵉ₁-cong n (1ᵇ xs) (2ᵇ ys) = subᵉ₁-cong (suc n) xs ys ∙ exp-suc-lemma n ⟦ xs ⇓⟧ (suc ⟦ ys ⇓⟧)
-subᵉ₁-cong n (2ᵇ xs) 0ᵇ      = cong just (+1×2^suc-cong n (double xs) ∙ cong (λ e → exp2 n (suc e) ℕ.* 2) (double-cong xs))
+subᵉ₁-cong n (2ᵇ xs) 0ᵇ      = cong just (+1×2^suc-cong n (2× xs) ∙ cong (λ e → exp2 n (suc e) ℕ.* 2) (double-cong xs))
 subᵉ₁-cong n (2ᵇ xs) (1ᵇ ys) = subᵉ-cong (suc n) xs ys ∙ exp-suc-lemma n ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
 subᵉ₁-cong n (2ᵇ xs) (2ᵇ ys) = subᵉ₁-0-cong n xs ys
 

@@ -12,27 +12,27 @@ open import Data.Binary.Helpers
 
 
 +-cong : ∀ xs ys → ⟦ xs + ys ⇓⟧ ≡ ⟦ xs ⇓⟧ ℕ.+ ⟦ ys ⇓⟧
-add₁-cong : ∀ xs ys → ⟦ add₁ xs ys ⇓⟧ ≡ 1 ℕ.+ ⟦ xs ⇓⟧ ℕ.+ ⟦ ys ⇓⟧
-add₂-cong : ∀ xs ys → ⟦ add₂ xs ys ⇓⟧ ≡ 2 ℕ.+ ⟦ xs ⇓⟧ ℕ.+ ⟦ ys ⇓⟧
+add₁-cong : ∀ xs ys → ⟦ 1+[ xs + ys ] ⇓⟧ ≡ 1 ℕ.+ ⟦ xs ⇓⟧ ℕ.+ ⟦ ys ⇓⟧
+add₂-cong : ∀ xs ys → ⟦ 2+[ xs + ys ] ⇓⟧ ≡ 2 ℕ.+ ⟦ xs ⇓⟧ ℕ.+ ⟦ ys ⇓⟧
 
-lemma₁ : ∀ xs ys → ⟦ add₁ xs ys ⇓⟧ ℕ.* 2 ≡ ⟦ xs ⇓⟧ ℕ.* 2 ℕ.+ (2 ℕ.+ ⟦ ys ⇓⟧ ℕ.* 2)
+lemma₁ : ∀ xs ys → ⟦ 1+[  xs + ys ] ⇓⟧ ℕ.* 2 ≡ ⟦ xs ⇓⟧ ℕ.* 2 ℕ.+ (2 ℕ.+ ⟦ ys ⇓⟧ ℕ.* 2)
 lemma₁ xs ys =
-  ⟦ add₁ xs ys ⇓⟧ ℕ.* 2 ≡⟨ cong (ℕ._* 2) (add₁-cong xs ys) ⟩
+  ⟦ 1+[ xs + ys ] ⇓⟧ ℕ.* 2 ≡⟨ cong (ℕ._* 2) (add₁-cong xs ys) ⟩
   2 ℕ.+ (⟦ xs ⇓⟧ ℕ.+ ⟦ ys ⇓⟧) ℕ.* 2 ≡⟨ cong (2 ℕ.+_ ) (+-*-distrib ⟦ xs ⇓⟧ ⟦ ys ⇓⟧ 2) ⟩
   2 ℕ.+ ⟦ xs ⇓⟧ ℕ.* 2 ℕ.+ ⟦ ys ⇓⟧ ℕ.* 2 ≡⟨ cong (ℕ._+ (⟦ ys ⇓⟧ ℕ.* 2)) (+-comm 2 (⟦ xs ⇓⟧ ℕ.* 2)) ⟩
   ⟦ xs ⇓⟧ ℕ.* 2 ℕ.+ 2 ℕ.+ ⟦ ys ⇓⟧ ℕ.* 2 ≡⟨ +-assoc (⟦ xs ⇓⟧ ℕ.* 2) 2 (⟦ ys ⇓⟧ ℕ.* 2) ⟩
   ⟦ xs ⇓⟧ ℕ.* 2 ℕ.+ (2 ℕ.+ ⟦ ys ⇓⟧ ℕ.* 2) ∎
 
-lemma₂ : ∀ xs ys → ⟦ add₁ xs ys ⇓⟧ ℕ.* 2 ≡ (1 ℕ.+ ⟦ xs ⇓⟧ ℕ.* 2) ℕ.+ (1 ℕ.+ ⟦ ys ⇓⟧ ℕ.* 2)
+lemma₂ : ∀ xs ys → ⟦ 1+[ xs + ys ] ⇓⟧ ℕ.* 2 ≡ (1 ℕ.+ ⟦ xs ⇓⟧ ℕ.* 2) ℕ.+ (1 ℕ.+ ⟦ ys ⇓⟧ ℕ.* 2)
 lemma₂ xs ys =
-  ⟦ add₁ xs ys ⇓⟧ ℕ.* 2 ≡⟨ cong (ℕ._* 2) (add₁-cong xs ys) ⟩
+  ⟦ 1+[ xs + ys ] ⇓⟧ ℕ.* 2 ≡⟨ cong (ℕ._* 2) (add₁-cong xs ys) ⟩
   (1 ℕ.+ ⟦ xs ⇓⟧ ℕ.+ ⟦ ys ⇓⟧) ℕ.* 2 ≡⟨ +-*-distrib (1 ℕ.+ ⟦ xs ⇓⟧) ⟦ ys ⇓⟧ 2 ⟩
   2 ℕ.+ ⟦ xs ⇓⟧ ℕ.* 2 ℕ.+ ⟦ ys ⇓⟧ ℕ.* 2 ≡˘⟨ +-suc (1 ℕ.+ ⟦ xs ⇓⟧ ℕ.* 2) (⟦ ys ⇓⟧ ℕ.* 2) ⟩
   (1 ℕ.+ ⟦ xs ⇓⟧ ℕ.* 2) ℕ.+ (1 ℕ.+ ⟦ ys ⇓⟧ ℕ.* 2) ∎
 
-lemma₃ : ∀ xs ys → ⟦ add₂ xs ys ⇓⟧ ℕ.* 2 ≡ suc (suc (⟦ xs ⇓⟧ ℕ.* 2 ℕ.+ suc (suc (⟦ ys ⇓⟧ ℕ.* 2))))
+lemma₃ : ∀ xs ys → ⟦ 2+[ xs + ys ] ⇓⟧ ℕ.* 2 ≡ suc (suc (⟦ xs ⇓⟧ ℕ.* 2 ℕ.+ suc (suc (⟦ ys ⇓⟧ ℕ.* 2))))
 lemma₃ xs ys =
-  ⟦ add₂ xs ys ⇓⟧ ℕ.* 2 ≡⟨ cong (ℕ._* 2) (add₂-cong xs ys) ⟩
+  ⟦ 2+[ xs + ys ] ⇓⟧ ℕ.* 2 ≡⟨ cong (ℕ._* 2) (add₂-cong xs ys) ⟩
   (2 ℕ.+ ⟦ xs ⇓⟧ ℕ.+ ⟦ ys ⇓⟧) ℕ.* 2 ≡˘⟨ cong (ℕ._* 2) (+-suc (1 ℕ.+ ⟦ xs ⇓⟧) ⟦ ys ⇓⟧) ⟩
   ((1 ℕ.+ ⟦ xs ⇓⟧) ℕ.+ (1 ℕ.+ ⟦ ys ⇓⟧)) ℕ.* 2 ≡⟨ +-*-distrib (1 ℕ.+ ⟦ xs ⇓⟧) (1 ℕ.+ ⟦ ys ⇓⟧) 2 ⟩
   suc (suc (⟦ xs ⇓⟧ ℕ.* 2 ℕ.+ suc (suc (⟦ ys ⇓⟧ ℕ.* 2)))) ∎

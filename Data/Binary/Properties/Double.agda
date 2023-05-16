@@ -10,7 +10,7 @@ open import Data.Binary.Definition
 
 import Agda.Builtin.Nat as ℕ
 
-double-cong : ∀ xs → ⟦ double xs ⇓⟧ ≡ ⟦ xs ⇓⟧ ℕ.* 2
+double-cong : ∀ xs → ⟦ 2× xs ⇓⟧ ≡ ⟦ xs ⇓⟧ ℕ.* 2
 double-cong 0ᵇ i = zero
 double-cong (1ᵇ xs) i = 2 ℕ.+ double-cong xs i ℕ.* 2
 double-cong (2ᵇ xs) i = ⟦ 2ᵇ 1ᵇ xs ⇓⟧
