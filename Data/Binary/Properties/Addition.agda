@@ -11,58 +11,61 @@ open import Data.Binary.Properties.Helpers
 open import Data.Binary.Helpers
 
 
-+-cong : ∀ xs ys → ⟦ xs + ys ⇓⟧ ≡ ⟦ xs ⇓⟧ ℕ.+ ⟦ ys ⇓⟧
-add₁-cong : ∀ xs ys → ⟦ 1+[ xs + ys ] ⇓⟧ ≡ 1 ℕ.+ ⟦ xs ⇓⟧ ℕ.+ ⟦ ys ⇓⟧
-add₂-cong : ∀ xs ys → ⟦ 2+[ xs + ys ] ⇓⟧ ≡ 2 ℕ.+ ⟦ xs ⇓⟧ ℕ.+ ⟦ ys ⇓⟧
++-cong  : ∀ x y → ⟦ x + y ⇓⟧ ≡ ⟦ x ⇓⟧ ℕ.+ ⟦ y ⇓⟧
++₁-cong : ∀ x y → ⟦ 1+[ x + y ] ⇓⟧ ≡ 1 ℕ.+ ⟦ x ⇓⟧ ℕ.+ ⟦ y ⇓⟧
++₂-cong : ∀ x y → ⟦ 2+[ x + y ] ⇓⟧ ≡ 2 ℕ.+ ⟦ x ⇓⟧ ℕ.+ ⟦ y ⇓⟧
 
-lemma₁ : ∀ xs ys → ⟦ 1+[  xs + ys ] ⇓⟧ ℕ.* 2 ≡ ⟦ xs ⇓⟧ ℕ.* 2 ℕ.+ (2 ℕ.+ ⟦ ys ⇓⟧ ℕ.* 2)
-lemma₁ xs ys =
-  ⟦ 1+[ xs + ys ] ⇓⟧ ℕ.* 2 ≡⟨ cong (ℕ._* 2) (add₁-cong xs ys) ⟩
-  2 ℕ.+ (⟦ xs ⇓⟧ ℕ.+ ⟦ ys ⇓⟧) ℕ.* 2 ≡⟨ cong (2 ℕ.+_ ) (+-*-distrib ⟦ xs ⇓⟧ ⟦ ys ⇓⟧ 2) ⟩
-  2 ℕ.+ ⟦ xs ⇓⟧ ℕ.* 2 ℕ.+ ⟦ ys ⇓⟧ ℕ.* 2 ≡⟨ cong (ℕ._+ (⟦ ys ⇓⟧ ℕ.* 2)) (+-comm 2 (⟦ xs ⇓⟧ ℕ.* 2)) ⟩
-  ⟦ xs ⇓⟧ ℕ.* 2 ℕ.+ 2 ℕ.+ ⟦ ys ⇓⟧ ℕ.* 2 ≡⟨ +-assoc (⟦ xs ⇓⟧ ℕ.* 2) 2 (⟦ ys ⇓⟧ ℕ.* 2) ⟩
-  ⟦ xs ⇓⟧ ℕ.* 2 ℕ.+ (2 ℕ.+ ⟦ ys ⇓⟧ ℕ.* 2) ∎
+lemma₁ : ∀ x y → ⟦ 1+[  x + y ] ⇓⟧ ℕ.* 2 ≡ ⟦ x ⇓⟧ ℕ.* 2 ℕ.+ (2 ℕ.+ ⟦ y ⇓⟧ ℕ.* 2)
+lemma₁ x y =
+  ⟦ 1+[ x + y ] ⇓⟧ ℕ.* 2               ≡⟨ cong (ℕ._* 2) (+₁-cong x y) ⟩
+  2 ℕ.+ (⟦ x ⇓⟧ ℕ.+ ⟦ y ⇓⟧) ℕ.* 2      ≡⟨ cong (2 ℕ.+_ ) (+-*-distrib ⟦ x ⇓⟧ ⟦ y ⇓⟧ 2) ⟩
+  2 ℕ.+ ⟦ x ⇓⟧ ℕ.* 2 ℕ.+ ⟦ y ⇓⟧ ℕ.* 2  ≡⟨ cong (ℕ._+ (⟦ y ⇓⟧ ℕ.* 2)) (+-comm 2 (⟦ x ⇓⟧ ℕ.* 2)) ⟩
+  ⟦ x ⇓⟧ ℕ.* 2 ℕ.+ 2 ℕ.+ ⟦ y ⇓⟧ ℕ.* 2  ≡⟨ +-assoc (⟦ x ⇓⟧ ℕ.* 2) 2 (⟦ y ⇓⟧ ℕ.* 2) ⟩
+  ⟦ x ⇓⟧ ℕ.* 2 ℕ.+ (2 ℕ.+ ⟦ y ⇓⟧ ℕ.* 2) ∎
 
-lemma₂ : ∀ xs ys → ⟦ 1+[ xs + ys ] ⇓⟧ ℕ.* 2 ≡ (1 ℕ.+ ⟦ xs ⇓⟧ ℕ.* 2) ℕ.+ (1 ℕ.+ ⟦ ys ⇓⟧ ℕ.* 2)
-lemma₂ xs ys =
-  ⟦ 1+[ xs + ys ] ⇓⟧ ℕ.* 2 ≡⟨ cong (ℕ._* 2) (add₁-cong xs ys) ⟩
-  (1 ℕ.+ ⟦ xs ⇓⟧ ℕ.+ ⟦ ys ⇓⟧) ℕ.* 2 ≡⟨ +-*-distrib (1 ℕ.+ ⟦ xs ⇓⟧) ⟦ ys ⇓⟧ 2 ⟩
-  2 ℕ.+ ⟦ xs ⇓⟧ ℕ.* 2 ℕ.+ ⟦ ys ⇓⟧ ℕ.* 2 ≡˘⟨ +-suc (1 ℕ.+ ⟦ xs ⇓⟧ ℕ.* 2) (⟦ ys ⇓⟧ ℕ.* 2) ⟩
-  (1 ℕ.+ ⟦ xs ⇓⟧ ℕ.* 2) ℕ.+ (1 ℕ.+ ⟦ ys ⇓⟧ ℕ.* 2) ∎
+lemma₂ : ∀ x y → ⟦ 1+[ x + y ] ⇓⟧ ℕ.* 2 ≡ (1 ℕ.+ ⟦ x ⇓⟧ ℕ.* 2) ℕ.+ (1 ℕ.+ ⟦ y ⇓⟧ ℕ.* 2)
+lemma₂ x y =
+  ⟦ 1+[ x + y ] ⇓⟧ ℕ.* 2              ≡⟨ cong (ℕ._* 2) (+₁-cong x y) ⟩
+  (1 ℕ.+ ⟦ x ⇓⟧ ℕ.+ ⟦ y ⇓⟧) ℕ.* 2     ≡⟨ +-*-distrib (1 ℕ.+ ⟦ x ⇓⟧) ⟦ y ⇓⟧ 2 ⟩
+  2 ℕ.+ ⟦ x ⇓⟧ ℕ.* 2 ℕ.+ ⟦ y ⇓⟧ ℕ.* 2 ≡˘⟨ +-suc (1 ℕ.+ ⟦ x ⇓⟧ ℕ.* 2) (⟦ y ⇓⟧ ℕ.* 2) ⟩
+  (1 ℕ.+ ⟦ x ⇓⟧ ℕ.* 2) ℕ.+ (1 ℕ.+ ⟦ y ⇓⟧ ℕ.* 2) ∎
 
-lemma₃ : ∀ xs ys → ⟦ 2+[ xs + ys ] ⇓⟧ ℕ.* 2 ≡ suc (suc (⟦ xs ⇓⟧ ℕ.* 2 ℕ.+ suc (suc (⟦ ys ⇓⟧ ℕ.* 2))))
-lemma₃ xs ys =
-  ⟦ 2+[ xs + ys ] ⇓⟧ ℕ.* 2 ≡⟨ cong (ℕ._* 2) (add₂-cong xs ys) ⟩
-  (2 ℕ.+ ⟦ xs ⇓⟧ ℕ.+ ⟦ ys ⇓⟧) ℕ.* 2 ≡˘⟨ cong (ℕ._* 2) (+-suc (1 ℕ.+ ⟦ xs ⇓⟧) ⟦ ys ⇓⟧) ⟩
-  ((1 ℕ.+ ⟦ xs ⇓⟧) ℕ.+ (1 ℕ.+ ⟦ ys ⇓⟧)) ℕ.* 2 ≡⟨ +-*-distrib (1 ℕ.+ ⟦ xs ⇓⟧) (1 ℕ.+ ⟦ ys ⇓⟧) 2 ⟩
-  suc (suc (⟦ xs ⇓⟧ ℕ.* 2 ℕ.+ suc (suc (⟦ ys ⇓⟧ ℕ.* 2)))) ∎
+lemma₃ : ∀ x y → ⟦ 2+[ x + y ] ⇓⟧ ℕ.* 2 ≡ 2 ℕ.+ (⟦ x ⇓⟧ ℕ.* 2 ℕ.+ (2 ℕ.+ ⟦ y ⇓⟧ ℕ.* 2))
+lemma₃ x y =
+  ⟦ 2+[ x + y ] ⇓⟧ ℕ.* 2                    ≡⟨ cong (ℕ._* 2) (+₂-cong x y) ⟩
+  (2 ℕ.+ ⟦ x ⇓⟧ ℕ.+ ⟦ y ⇓⟧) ℕ.* 2           ≡˘⟨ cong (ℕ._* 2) (+-suc (1 ℕ.+ ⟦ x ⇓⟧) ⟦ y ⇓⟧) ⟩
+  ((1 ℕ.+ ⟦ x ⇓⟧) ℕ.+ (1 ℕ.+ ⟦ y ⇓⟧)) ℕ.* 2 ≡⟨ +-*-distrib (1 ℕ.+ ⟦ x ⇓⟧) (1 ℕ.+ ⟦ y ⇓⟧) 2 ⟩
+  2 ℕ.+ (⟦ x ⇓⟧ ℕ.* 2 ℕ.+ (2 ℕ.+ ⟦ y ⇓⟧ ℕ.* 2)) ∎
 
-add₁-cong 0ᵇ ys = inc-suc ys
-add₁-cong (1ᵇ xs) 0ᵇ = cong (2 ℕ.+_) (sym (+-idʳ (⟦ xs ⇓⟧ ℕ.* 2)))
-add₁-cong (2ᵇ xs) 0ᵇ = cong suc (cong (ℕ._* 2) (inc-suc xs) ∙ cong (2 ℕ.+_) (sym (+-idʳ (⟦ xs ⇓⟧ ℕ.* 2))))
-add₁-cong (1ᵇ xs) (1ᵇ ys) = cong suc (lemma₂ xs ys)
-add₁-cong (1ᵇ xs) (2ᵇ ys) = cong (2 ℕ.+_) (lemma₁ xs ys)
-add₁-cong (2ᵇ xs) (1ᵇ ys) = cong (2 ℕ.+_) (lemma₂ xs ys)
-add₁-cong (2ᵇ xs) (2ᵇ ys) = cong (1 ℕ.+_) (lemma₃ xs ys)
+lemma₄ : ∀ x y → 2 ℕ.+ ⟦ x + y ⇓⟧ ℕ.* 2 ≡ 1 ℕ.+ ⟦ x ⇓⟧ ℕ.* 2 ℕ.+ (1 ℕ.+ ⟦ y ⇓⟧ ℕ.* 2)
+lemma₄ x y =
+  2 ℕ.+ ⟦ x + y ⇓⟧ ℕ.* 2                ≡⟨ cong (λ xy → 2 ℕ.+ xy ℕ.* 2) (+-cong x y) ⟩
+  2 ℕ.+ (⟦ x ⇓⟧ ℕ.+ ⟦ y ⇓⟧) ℕ.* 2       ≡⟨ cong (2 ℕ.+_) (+-*-distrib ⟦ x ⇓⟧ ⟦ y ⇓⟧ 2) ⟩
+  2 ℕ.+ (⟦ x ⇓⟧ ℕ.* 2 ℕ.+ ⟦ y ⇓⟧ ℕ.* 2) ≡˘⟨ cong suc (+-suc (⟦ x ⇓⟧ ℕ.* 2) (⟦ y ⇓⟧ ℕ.* 2)) ⟩
+  1 ℕ.+ ⟦ x ⇓⟧ ℕ.* 2 ℕ.+ (1 ℕ.+ ⟦ y ⇓⟧ ℕ.* 2) ∎
 
-add₂-cong 0ᵇ 0ᵇ = refl
-add₂-cong 0ᵇ (1ᵇ ys) = cong (1 ℕ.+_) (cong (ℕ._* 2) (inc-suc ys))
-add₂-cong 0ᵇ (2ᵇ ys) = cong (2 ℕ.+_) (cong (ℕ._* 2) (inc-suc ys))
-add₂-cong (1ᵇ xs) 0ᵇ = cong (1 ℕ.+_) ((cong (ℕ._* 2) (inc-suc xs)) ∙ cong (2 ℕ.+_) (sym (+-idʳ _)))
-add₂-cong (2ᵇ xs) 0ᵇ = cong (2 ℕ.+_) ((cong (ℕ._* 2) (inc-suc xs)) ∙ cong (2 ℕ.+_) (sym (+-idʳ _)))
-add₂-cong (1ᵇ xs) (1ᵇ ys) = cong (2 ℕ.+_ ) (lemma₂ xs ys)
-add₂-cong (1ᵇ xs) (2ᵇ ys) = cong (1 ℕ.+_) (lemma₃ xs ys)
-add₂-cong (2ᵇ xs) (1ᵇ ys) = cong (1 ℕ.+_) (lemma₃ xs ys ∙ +-suc (2 ℕ.+ ⟦ xs ⇓⟧ ℕ.* 2) (1 ℕ.+ ⟦ ys ⇓⟧ ℕ.* 2))
-add₂-cong (2ᵇ xs) (2ᵇ ys) = cong (2 ℕ.+_) (lemma₃ xs ys)
++₁-cong 0ᵇ y = inc-suc y
++₁-cong (1ᵇ x) 0ᵇ = cong (2 ℕ.+_) (sym (+-idʳ (⟦ x ⇓⟧ ℕ.* 2)))
++₁-cong (2ᵇ x) 0ᵇ = cong suc (cong (ℕ._* 2) (inc-suc x) ∙ cong (2 ℕ.+_) (sym (+-idʳ (⟦ x ⇓⟧ ℕ.* 2))))
++₁-cong (1ᵇ x) (1ᵇ y) = cong suc (lemma₂ x y)
++₁-cong (1ᵇ x) (2ᵇ y) = cong (2 ℕ.+_) (lemma₁ x y)
++₁-cong (2ᵇ x) (1ᵇ y) = cong (2 ℕ.+_) (lemma₂ x y)
++₁-cong (2ᵇ x) (2ᵇ y) = cong (1 ℕ.+_) (lemma₃ x y)
 
-+-cong 0ᵇ ys = refl
-+-cong (1ᵇ xs) 0ᵇ = cong suc (sym (+-idʳ (⟦ xs ⇓⟧ ℕ.* 2)))
-+-cong (2ᵇ xs) 0ᵇ = cong (λ r → suc (suc r)) (sym (+-idʳ (⟦ xs ⇓⟧ ℕ.* 2)))
-+-cong (1ᵇ xs) (1ᵇ ys) =
-  2 ℕ.+ ⟦ xs + ys ⇓⟧ ℕ.* 2 ≡⟨ cong (λ xy → 2 ℕ.+ xy ℕ.* 2) (+-cong xs ys) ⟩
-  2 ℕ.+ (⟦ xs ⇓⟧ ℕ.+ ⟦ ys ⇓⟧) ℕ.* 2 ≡⟨ cong (2 ℕ.+_) (+-*-distrib ⟦ xs ⇓⟧ ⟦ ys ⇓⟧ 2) ⟩
-  2 ℕ.+ (⟦ xs ⇓⟧ ℕ.* 2 ℕ.+ ⟦ ys ⇓⟧ ℕ.* 2) ≡˘⟨ cong suc (+-suc (⟦ xs ⇓⟧ ℕ.* 2) (⟦ ys ⇓⟧ ℕ.* 2)) ⟩
-  1 ℕ.+ ⟦ xs ⇓⟧ ℕ.* 2 ℕ.+ (1 ℕ.+ ⟦ ys ⇓⟧ ℕ.* 2) ∎
-+-cong (1ᵇ xs) (2ᵇ ys) = cong suc (lemma₁ xs ys)
-+-cong (2ᵇ xs) (1ᵇ ys) = cong suc (lemma₂ xs ys)
-+-cong (2ᵇ xs) (2ᵇ ys) = cong (2 ℕ.+_) (lemma₁ xs ys)
++₂-cong 0ᵇ 0ᵇ = refl
++₂-cong 0ᵇ (1ᵇ y) = cong (1 ℕ.+_) (cong (ℕ._* 2) (inc-suc y))
++₂-cong 0ᵇ (2ᵇ y) = cong (2 ℕ.+_) (cong (ℕ._* 2) (inc-suc y))
++₂-cong (1ᵇ x) 0ᵇ = cong (1 ℕ.+_) ((cong (ℕ._* 2) (inc-suc x)) ∙ cong (2 ℕ.+_) (sym (+-idʳ _)))
++₂-cong (2ᵇ x) 0ᵇ = cong (2 ℕ.+_) ((cong (ℕ._* 2) (inc-suc x)) ∙ cong (2 ℕ.+_) (sym (+-idʳ _)))
++₂-cong (1ᵇ x) (1ᵇ y) = cong (2 ℕ.+_ ) (lemma₂ x y)
++₂-cong (1ᵇ x) (2ᵇ y) = cong (1 ℕ.+_) (lemma₃ x y)
++₂-cong (2ᵇ x) (1ᵇ y) = cong (1 ℕ.+_) (lemma₃ x y ∙ +-suc (2 ℕ.+ ⟦ x ⇓⟧ ℕ.* 2) (1 ℕ.+ ⟦ y ⇓⟧ ℕ.* 2))
++₂-cong (2ᵇ x) (2ᵇ y) = cong (2 ℕ.+_) (lemma₃ x y)
+
++-cong 0ᵇ y = refl
++-cong (1ᵇ x) 0ᵇ = cong suc (sym (+-idʳ (⟦ x ⇓⟧ ℕ.* 2)))
++-cong (2ᵇ x) 0ᵇ = cong (λ r → suc (suc r)) (sym (+-idʳ (⟦ x ⇓⟧ ℕ.* 2)))
++-cong (1ᵇ x) (1ᵇ y) = lemma₄ x y
++-cong (1ᵇ x) (2ᵇ y) = cong suc (lemma₁ x y)
++-cong (2ᵇ x) (1ᵇ y) = cong suc (lemma₂ x y)
++-cong (2ᵇ x) (2ᵇ y) = cong (2 ℕ.+_) (lemma₁ x y)
