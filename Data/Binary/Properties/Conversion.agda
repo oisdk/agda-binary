@@ -65,7 +65,7 @@ fast-correct-helper zero    w       p = refl
 fast-correct-helper (suc n) (suc w) p =
     head-tail-cong _ (inc ⟦ n ⇑⟧)
       (lemma₁ (even n) ⟦ div2 n ⇑⟧⟨ w ⟩ ∙ sym (head𝔹-homo n))
-      (lemma₂ (even n) ⟦ div2 n ⇑⟧⟨ w ⟩ ∙ fast-correct-helper (div2 n ) w (div2≤ n w (p≤p n w p)) ∙ sym (tail-homo n))
+      (lemma₂ (even n) ⟦ div2 n ⇑⟧⟨ w ⟩ ∙ fast-correct-helper (div2 n) w (div2≤ n w (p≤p n w p)) ∙ sym (tail-homo n))
   where
   lemma₁ : ∀ x xs → head𝔹 (if x then 1ᵇ xs else 2ᵇ xs) ≡ just x
   lemma₁ false xs = refl
