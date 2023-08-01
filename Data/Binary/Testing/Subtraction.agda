@@ -12,5 +12,5 @@ import Agda.Builtin.Nat as ℕ
 _ : test _-_ ℕ._-_ 30
 _ = refl
 
--- perf : perf-test _-_ 200
+-- perf : perf-test _-_ 400
 -- perf = refl

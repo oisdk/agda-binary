@@ -47,9 +47,10 @@ forces (x ∷ xs) = primForce (force x) λ x′ → primForce (forces xs) λ xs�
 
 open import Data.Binary.Conversion.Fast
 open import Data.Binary.Properties.Helpers using (_≡_; refl) public
+open import Agda.Builtin.Bool using (true)
 
 perf-test : (𝔹 → 𝔹 → 𝔹) → ℕ → Set
-perf-test f n = comb f (up-to n) (up-to n) ≡ forces (comb f (up-to n) (up-to n))
+perf-test f n = true ≡ primForce (forces (comb f (up-to n) (up-to n))) (λ _ → true) 
 
 map : {A B : Set} → (A → B) → List A → List B
 map _ [] = []
