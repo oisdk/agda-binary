@@ -19,6 +19,17 @@ import Agda.Builtin.Nat as ℕ
 open import Data.Binary.Helpers
 open import Agda.Builtin.Bool
 open import Agda.Builtin.Unit public
+open import Agda.Builtin.Maybe public
+
+maybe : {A B : Set} → (A → B) → B → Maybe A → B
+maybe f b nothing = b
+maybe f b (just x) = f x
+
+map-maybe : {A B : Set} → (A → B) → Maybe A → Maybe B
+map-maybe f = maybe (just ∘ f) nothing
+
+from-maybe : {A : Set} → A → Maybe A → A
+from-maybe = maybe id
 
 flip : (A → B → C) → B → A → C
 flip f x y = f y x
