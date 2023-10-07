@@ -22,9 +22,13 @@ data 𝔹± : Set where
   neg : 𝔹±
   +[_] : 𝔹 → 𝔹±
 
-pos : (𝔹 → 𝔹) → 𝔹± → 𝔹±
-pos _ neg = neg
-pos f +[ x ] = +[ f x ]
++[_]+1×2^suc_ : 𝔹± → ℕ → 𝔹±
++[ neg    ]+1×2^suc n = neg
++[ +[ x ] ]+1×2^suc n = +[ 2ᵇ ones n x ]
+
+1ᵇ+[_] : 𝔹± → 𝔹±
+1ᵇ+[ neg ] = neg
+1ᵇ+[ +[ x ] ] = +[ 1ᵇ x ]
 
 abs : 𝔹± → 𝔹
 abs neg = 0ᵇ
@@ -36,8 +40,8 @@ mutual
   subᵉ₁ n 0ᵇ      _       = neg
   subᵉ₁ n (1ᵇ xs) 0ᵇ      = +[ xs ×2^suc suc n ]
   subᵉ₁ n (2ᵇ xs) 0ᵇ      = +[ 2× xs +1×2^suc n ]
-  subᵉ₁ n (1ᵇ xs) (1ᵇ ys) = pos (_+1×2^suc n) (subᵉ₁ 0 xs ys)
-  subᵉ₁ n (2ᵇ xs) (2ᵇ ys) = pos (_+1×2^suc n) (subᵉ₁ 0 xs ys)
+  subᵉ₁ n (1ᵇ xs) (1ᵇ ys) = +[ subᵉ₁ 0 xs ys ]+1×2^suc n
+  subᵉ₁ n (2ᵇ xs) (2ᵇ ys) = +[ subᵉ₁ 0 xs ys ]+1×2^suc n
   subᵉ₁ n (1ᵇ xs) (2ᵇ ys) = subᵉ₁ (suc n) xs ys
   subᵉ₁ n (2ᵇ xs) (1ᵇ ys) = subᵉ  (suc n) xs ys
 
@@ -48,8 +52,8 @@ mutual
   subᵉ _ 0ᵇ      (2ᵇ _)  = neg
   subᵉ n (1ᵇ xs) (1ᵇ ys) = subᵉ (suc n) xs ys
   subᵉ n (2ᵇ xs) (2ᵇ ys) = subᵉ (suc n) xs ys
-  subᵉ n (1ᵇ xs) (2ᵇ ys) = pos (_+1×2^suc n) (subᵉ₁ 0 xs ys)
-  subᵉ n (2ᵇ xs) (1ᵇ ys) = pos (_+1×2^suc n) (subᵉ  0 xs ys)
+  subᵉ n (1ᵇ xs) (2ᵇ ys) = +[ subᵉ₁ 0 xs ys ]+1×2^suc n
+  subᵉ n (2ᵇ xs) (1ᵇ ys) = +[ subᵉ  0 xs ys ]+1×2^suc n
 
 mutual
   -- sub₁ x y = x - (y + 1)
@@ -57,8 +61,8 @@ mutual
   sub₁ 0ᵇ      _       = neg
   sub₁ (1ᵇ xs) 0ᵇ      = +[ 2× xs ]
   sub₁ (2ᵇ xs) 0ᵇ      = +[ 1ᵇ xs ]
-  sub₁ (1ᵇ xs) (1ᵇ ys) = pos 1ᵇ_ (sub₁ xs ys)
-  sub₁ (2ᵇ xs) (2ᵇ ys) = pos 1ᵇ_ (sub₁ xs ys)
+  sub₁ (1ᵇ xs) (1ᵇ ys) = 1ᵇ+[ sub₁ xs ys ]
+  sub₁ (2ᵇ xs) (2ᵇ ys) = 1ᵇ+[ sub₁ xs ys ]
   sub₁ (1ᵇ xs) (2ᵇ ys) = subᵉ₁ 0 xs ys
   sub₁ (2ᵇ xs) (1ᵇ ys) = subᵉ  0 xs ys
 
@@ -69,8 +73,8 @@ mutual
   sub 0ᵇ      (2ᵇ _)  = neg
   sub (1ᵇ xs) (1ᵇ ys) = subᵉ 0 xs ys
   sub (2ᵇ xs) (2ᵇ ys) = subᵉ 0 xs ys
-  sub (1ᵇ xs) (2ᵇ ys) = pos 1ᵇ_ (sub₁ xs ys)
-  sub (2ᵇ xs) (1ᵇ ys) = pos 1ᵇ_ (sub  xs ys)
+  sub (1ᵇ xs) (2ᵇ ys) = 1ᵇ+[ sub₁ xs ys ]
+  sub (2ᵇ xs) (1ᵇ ys) = 1ᵇ+[ sub  xs ys ]
 
 infixl 6 _-_
 _-_ : 𝔹 → 𝔹 → 𝔹

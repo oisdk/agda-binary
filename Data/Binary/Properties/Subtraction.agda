@@ -79,9 +79,13 @@ maybe-fuse _ _ _ (just _) = refl
 map-maybe-comp : {A B C : Set} (f : A → B) (b : B) (g : C → A) (x : Maybe C) → maybe f b (map-maybe g x) ≡ maybe (f ∘ g) b x
 map-maybe-comp f b g = maybe-fuse (maybe f b) _ _
 
-trunc-pos-comm : ∀ f x → trunc (pos f x) ≡ map-maybe f (trunc x)
-trunc-pos-comm f neg = refl
-trunc-pos-comm f +[ x ] = refl
+trunc-pos-comm-2× : ∀ x n → trunc (+[ x ]+1×2^suc n) ≡ map-maybe (_+1×2^suc n) (trunc x)
+trunc-pos-comm-2× neg    _ = refl
+trunc-pos-comm-2× +[ x ] _ = refl
+
+trunc-pos-comm-1ᵇ : ∀ x → trunc 1ᵇ+[ x ] ≡ map-maybe 1ᵇ_ (trunc x)
+trunc-pos-comm-1ᵇ neg    = refl
+trunc-pos-comm-1ᵇ +[ x ] = refl
 
 1ᵇz-lemma : ∀ n → ⟦ map-maybe 1ᵇ_ (trunc n) ⇓⟧′ ≡ map-maybe 1ᵇℕ (map-maybe ⟦_⇓⟧ (trunc n))
 1ᵇz-lemma neg  = refl
@@ -166,34 +170,34 @@ subᵉ-cong n xs      0ᵇ      = cong just (×2^suc-cong n xs)
 subᵉ-cong n 0ᵇ      (1ᵇ ys) = refl
 subᵉ-cong n 0ᵇ      (2ᵇ ys) = refl
 subᵉ-cong n (1ᵇ xs) (1ᵇ ys) = subᵉ-cong (suc n) xs ys ∙ exp-suc-lemma n ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
-subᵉ-cong n (1ᵇ xs) (2ᵇ ys) = cong ⟦_⇓⟧′ (trunc-pos-comm (_+1×2^suc n) (subᵉ₁ 0 xs ys)) ∙ subᵉ₁-0-cong n xs ys
-subᵉ-cong n (2ᵇ xs) (1ᵇ ys) = cong ⟦_⇓⟧′ (trunc-pos-comm (_+1×2^suc n) (subᵉ 0 xs ys)) ∙ subᵉ-0-cong n xs ys
+subᵉ-cong n (1ᵇ xs) (2ᵇ ys) = cong ⟦_⇓⟧′ (trunc-pos-comm-2× (subᵉ₁ 0 xs ys) n) ∙ subᵉ₁-0-cong n xs ys
+subᵉ-cong n (2ᵇ xs) (1ᵇ ys) = cong ⟦_⇓⟧′ (trunc-pos-comm-2× (subᵉ 0 xs ys) n) ∙ subᵉ-0-cong n xs ys
 
 subᵉ-cong n (2ᵇ xs) (2ᵇ ys) = subᵉ-cong (suc n) xs ys ∙ exp-suc-lemma n ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
 
 subᵉ₁-cong n 0ᵇ      _       = refl
 subᵉ₁-cong n (1ᵇ xs) 0ᵇ      = cong just (×2^suc-cong (suc n) xs ∙ cong (ℕ._* 2) (sym (exp2-assoc n ⟦ xs ⇓⟧)))
-subᵉ₁-cong n (1ᵇ xs) (1ᵇ ys) = cong ⟦_⇓⟧′ (trunc-pos-comm (_+1×2^suc n) (subᵉ₁ 0 xs ys)) ∙ subᵉ₁-0-cong n xs ys
+subᵉ₁-cong n (1ᵇ xs) (1ᵇ ys) = cong ⟦_⇓⟧′ (trunc-pos-comm-2× (subᵉ₁ 0 xs ys) n) ∙ subᵉ₁-0-cong n xs ys
 subᵉ₁-cong n (1ᵇ xs) (2ᵇ ys) = subᵉ₁-cong (suc n) xs ys ∙ exp-suc-lemma n ⟦ xs ⇓⟧ (suc ⟦ ys ⇓⟧)
 subᵉ₁-cong n (2ᵇ xs) 0ᵇ      = cong just (+1×2^suc-cong n (2× xs) ∙ cong (λ e → exp2 n (suc e) ℕ.* 2) (double-cong xs))
 subᵉ₁-cong n (2ᵇ xs) (1ᵇ ys) = subᵉ-cong (suc n) xs ys ∙ exp-suc-lemma n ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
-subᵉ₁-cong n (2ᵇ xs) (2ᵇ ys) = cong ⟦_⇓⟧′ (trunc-pos-comm (_+1×2^suc n) (subᵉ₁ 0 xs ys)) ∙ subᵉ₁-0-cong n xs ys
+subᵉ₁-cong n (2ᵇ xs) (2ᵇ ys) = cong ⟦_⇓⟧′ (trunc-pos-comm-2× (subᵉ₁ 0 xs ys) n) ∙ subᵉ₁-0-cong n xs ys
 
 sub₁-cong 0ᵇ      _       = refl
 sub₁-cong (1ᵇ xs) 0ᵇ      = cong just (double-cong xs)
-sub₁-cong (1ᵇ xs) (1ᵇ ys) = cong ⟦_⇓⟧′ (trunc-pos-comm 1ᵇ_ (sub₁ xs ys)) ∙ 1ᵇz-lemma (sub₁ xs ys) ∙ cong (map-maybe 1ᵇℕ) (sub₁-cong xs ys) ∙ 1ᵇzs-distrib‿-′ ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
+sub₁-cong (1ᵇ xs) (1ᵇ ys) = cong ⟦_⇓⟧′ (trunc-pos-comm-1ᵇ (sub₁ xs ys)) ∙ 1ᵇz-lemma (sub₁ xs ys) ∙ cong (map-maybe 1ᵇℕ) (sub₁-cong xs ys) ∙ 1ᵇzs-distrib‿-′ ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
 sub₁-cong (1ᵇ xs) (2ᵇ ys) = subᵉ₁-cong 0 xs ys ∙ 2ᵇzs-distrib‿-′ ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
 sub₁-cong (2ᵇ xs) 0ᵇ      = refl
 sub₁-cong (2ᵇ xs) (1ᵇ ys) = subᵉ-cong 0 xs ys ∙ *-distrib‿-′ 1 ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
-sub₁-cong (2ᵇ xs) (2ᵇ ys) = cong ⟦_⇓⟧′ (trunc-pos-comm 1ᵇ_ (sub₁ xs ys)) ∙  1ᵇz-lemma (sub₁ xs ys) ∙ cong (map-maybe 1ᵇℕ) (sub₁-cong xs ys) ∙ 1ᵇzs-distrib‿-′ ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
+sub₁-cong (2ᵇ xs) (2ᵇ ys) = cong ⟦_⇓⟧′ (trunc-pos-comm-1ᵇ (sub₁ xs ys)) ∙  1ᵇz-lemma (sub₁ xs ys) ∙ cong (map-maybe 1ᵇℕ) (sub₁-cong xs ys) ∙ 1ᵇzs-distrib‿-′ ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
 
 sub-cong xs 0ᵇ           = refl
 sub-cong 0ᵇ      (1ᵇ _)  = refl
 sub-cong 0ᵇ      (2ᵇ _)  = refl
 sub-cong (1ᵇ xs) (1ᵇ ys) = subᵉ-cong 0 xs ys ∙ *-distrib‿-′ 1 ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
 sub-cong (2ᵇ xs) (2ᵇ ys) = subᵉ-cong 0 xs ys ∙ *-distrib‿-′ 1 ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
-sub-cong (1ᵇ xs) (2ᵇ ys) = cong ⟦_⇓⟧′ (trunc-pos-comm 1ᵇ_ (sub₁ xs ys)) ∙ 1ᵇz-lemma (sub₁ xs ys) ∙ cong (map-maybe 1ᵇℕ) (sub₁-cong xs ys) ∙ 1ᵇzs-distrib‿-′ ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
-sub-cong (2ᵇ xs) (1ᵇ ys) = cong ⟦_⇓⟧′ (trunc-pos-comm 1ᵇ_ (sub xs ys)) ∙ 1ᵇz-lemma (sub xs ys) ∙ cong (map-maybe 1ᵇℕ) (sub-cong xs ys) ∙ 1ᵇsz-distrib‿-′ ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
+sub-cong (1ᵇ xs) (2ᵇ ys) = cong ⟦_⇓⟧′ (trunc-pos-comm-1ᵇ (sub₁ xs ys)) ∙ 1ᵇz-lemma (sub₁ xs ys) ∙ cong (map-maybe 1ᵇℕ) (sub₁-cong xs ys) ∙ 1ᵇzs-distrib‿-′ ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
+sub-cong (2ᵇ xs) (1ᵇ ys) = cong ⟦_⇓⟧′ (trunc-pos-comm-1ᵇ (sub xs ys)) ∙ 1ᵇz-lemma (sub xs ys) ∙ cong (map-maybe 1ᵇℕ) (sub-cong xs ys) ∙ 1ᵇsz-distrib‿-′ ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
 
 abs-cong : ∀ x → abs x ≡ from-maybe 0ᵇ (trunc x)
 abs-cong neg = refl
