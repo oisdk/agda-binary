@@ -1,4 +1,4 @@
 name: agda-binary
 depend: cubical
-flags: --without-K --safe
+flags: --cubical-compatible --safe
 include: .
