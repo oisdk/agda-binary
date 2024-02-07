@@ -16,6 +16,8 @@ fi
 everything_file=$(mktemp)
 trap "rm -f $everything_file" 0 2 3 15
 cat > "$everything_file" <<-EOF
+{-# OPTIONS --cubical #-}
+
 module Everything where
 
 -- This file imports every module in the project. Click on
