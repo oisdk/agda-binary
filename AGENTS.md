@@ -6,3 +6,4 @@
 ## Testing instructions
 
 - Test by running the check-all.sh script in the scripts/ directory, from the root level of the repo
+- On success, this script prints "All checks passed."
