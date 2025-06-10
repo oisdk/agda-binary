@@ -1,7 +1,8 @@
 ## Building instructions
 
 - Agda and all of its dependencies have been downloaded, to the Agda-2.6.4.1 directory.
-- Cabal and GHC have also been installed, use them to build Agda (you may need to add agda to the path)
+- Build agda by running cabal build in the Agda-2.6.4.1 directory.
+- You may need to add agda to the path.
 
 ## Testing instructions
 
