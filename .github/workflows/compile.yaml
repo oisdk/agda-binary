@@ -25,7 +25,7 @@ jobs:
     strategy:
       matrix:
         cubical-ref: ["v0.8"]
-        agda-ver: ["2.8.0"]
+        agda-ver: ["2.7.0"]
 
     steps:
 
