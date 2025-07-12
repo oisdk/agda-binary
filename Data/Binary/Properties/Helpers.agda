@@ -4,8 +4,12 @@ module Data.Binary.Properties.Helpers where
 
 private variable A B C : Set
 
-open import Cubical.Foundations.Everything
-  using (_≡_; cong; refl; _∙_; Iso; sym; cong₂; subst; funExt)
+open import Cubical.Foundations.Prelude
+  using (_≡_; cong; refl; _∙_; sym; cong₂; subst; funExt)
+  public
+
+open import Cubical.Foundations.Isomorphism
+  using (Iso)
   public
 
 open import Cubical.Data.Empty
