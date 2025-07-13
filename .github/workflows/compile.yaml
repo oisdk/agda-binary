@@ -80,7 +80,7 @@ jobs:
           cubical/_build
           main/_build
           /home/runner/.local/share/agda/${{ matrix.agda-ver }}
-        key: ${{ runner.os }}-v${{ matrix.agda-ver }}-${{ matrix.cubical.ref }}-${{ hashFiles('main/**') }}
+        key: ${{ steps.cache.outputs.cache-primary-key }}
 
     - name: Setup Pages
       uses: actions/configure-pages@v4
