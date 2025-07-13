@@ -8,6 +8,8 @@ open import Data.Binary.Properties.Multiplication public
   using (*-cong)
 open import Data.Binary.Properties.Subtraction public
   using (-‿cong)
+open import Data.Binary.Properties.Division public
+  using (÷-cong)
 open import Data.Binary.Properties.Conversion public
   using (fast-correct)
 open import Data.Binary.Properties.Isomorphism public
