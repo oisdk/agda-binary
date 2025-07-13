@@ -53,6 +53,26 @@ jobs:
       with:
         path: main
 
+    - name: Make cached build directory
+      run: |
+        mkdir -p cubical/_build
+        mkdir -p main/_build
+        mkdir -p /home/runner/.local/share/agda/${{ matrix.agda-ver }}
+
+    - uses: actions/cache@v4.2.0
+      name: Cache agda library
+      id: cache-agda
+      with:
+        path: |
+          cubical/_build
+          main/_build
+          /home/runner/.local/share/agda/${{ matrix.agda-ver }}
+        key: ${{ runner.os }}-v${{ matrix.agda-ver }}-${{ matrix.cubical.ref }}-${{ hashFiles('main/**') }}
+        restore-keys: |
+          ${{ runner.os }}-v${{ matrix.agda-ver }}-${{ matrix.cubical.ref }}-
+          ${{ runner.os }}-v${{ matrix.agda-ver }}-
+          ${{ runner.os }}-
+
     - name: Compile agda library
       run: |
         set -e
