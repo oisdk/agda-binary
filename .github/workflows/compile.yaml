@@ -54,7 +54,7 @@ jobs:
         path: main
 
     - name: Restore cached dependencies
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v4.2.2
       id: cache
       with:
         path: |
@@ -74,7 +74,7 @@ jobs:
 
     - name: Save cached dependencies
       if: steps.cache.outputs.cache-hit != 'true'
-      uses: actions/cache/save@v4
+      uses: actions/cache/save@v4.2.2
       with:
         path: |
           cubical/_build
