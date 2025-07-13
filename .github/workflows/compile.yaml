@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -73,6 +76,7 @@ jobs:
         ./scripts/render.sh
 
     - name: Save cached dependencies
+      if: github.event_name == 'push'
       uses: actions/cache/save@v4.2.2
       with:
         path: |
@@ -82,14 +86,17 @@ jobs:
         key: ${{ steps.cache.outputs.cache-primary-key }}
 
     - name: Setup Pages
+      if: github.event_name == 'push'
       uses: actions/configure-pages@v4
 
     - name: Upload artifact
+      if: github.event_name == 'push'
       uses: actions/upload-pages-artifact@v3
       with:
         path: 'main/docs'
 
     - name: Deploy to GitHub Pages
+      if: github.event_name == 'push'
       id: deployment
       uses: actions/deploy-pages@v4
 
