@@ -64,8 +64,6 @@ jobs:
         key: ${{ runner.os }}-v${{ matrix.agda-ver }}-${{ matrix.cubical.ref }}-${{ hashFiles('main/**') }}
         restore-keys: |
           ${{ runner.os }}-v${{ matrix.agda-ver }}-${{ matrix.cubical.ref }}-
-          ${{ runner.os }}-v${{ matrix.agda-ver }}-
-          ${{ runner.os }}-
 
 
     - name: Compile agda library
@@ -75,6 +73,7 @@ jobs:
         ./scripts/render.sh
 
     - name: Save cached dependencies
+      if: steps.cache.outputs.cache-hit != 'true'
       uses: actions/cache/save@v4
       with:
         path: |
