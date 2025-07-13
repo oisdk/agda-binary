@@ -73,7 +73,6 @@ jobs:
         ./scripts/render.sh
 
     - name: Save cached dependencies
-      if: steps.cache.outputs.cache-hit == 'true'
       uses: actions/cache/save@v4.2.2
       with:
         path: |
