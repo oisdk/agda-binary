@@ -76,7 +76,6 @@ jobs:
 
     - name: Save cached dependencies
       uses: actions/cache/save@v4
-      id: cache
       with:
         path: |
           cubical/_build
