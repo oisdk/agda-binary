@@ -53,15 +53,9 @@ jobs:
       with:
         path: main
 
-    - name: Make cached build directory
-      run: |
-        mkdir -p cubical/_build
-        mkdir -p main/_build
-        mkdir -p /home/runner/.local/share/agda/${{ matrix.agda-ver }}
-
-    - uses: actions/cache@v4.2.0
-      name: Cache agda library
-      id: cache-agda
+    - name: Restore cached dependencies
+      uses: actions/cache/restore@v4
+      id: cache
       with:
         path: |
           cubical/_build
@@ -73,11 +67,22 @@ jobs:
           ${{ runner.os }}-v${{ matrix.agda-ver }}-
           ${{ runner.os }}-
 
+
     - name: Compile agda library
       run: |
         set -e
         cd main
         ./scripts/render.sh
+
+    - name: Save cached dependencies
+      uses: actions/cache/save@v4
+      id: cache
+      with:
+        path: |
+          cubical/_build
+          main/_build
+          /home/runner/.local/share/agda/${{ matrix.agda-ver }}
+        key: ${{ runner.os }}-v${{ matrix.agda-ver }}-${{ matrix.cubical.ref }}-${{ hashFiles('main/**') }}
 
     - name: Setup Pages
       uses: actions/configure-pages@v4
