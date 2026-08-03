@@ -3,209 +3,115 @@
 module Data.Binary.Properties.Subtraction where
 
 open import Data.Binary.Definition
-open import Data.Binary.Addition
-open import Data.Binary.Properties.Addition using (+-cong)
-open import Data.Binary.Multiplication
 open import Data.Binary.Conversion
 import Agda.Builtin.Nat as ℕ
-
-open import Data.Binary.Properties.Isomorphism
 
 open import Data.Binary.Helpers
 open import Data.Binary.Properties.Helpers
 open import Data.Binary.Properties.Double
-open import Data.Binary.Double
 open import Data.Binary.Subtraction
 
-_-′_ : ℕ → ℕ → Maybe ℕ
-n     -′ zero  = just n
-zero  -′ suc _ = nothing
-suc n -′ suc m = n -′ m
+data ℕ± : Set where
+  negⁿ  : ℕ±
+  -1ⁿ   : ℕ±
+  +ⁿ[_] : ℕ → ℕ±
 
-1ᵇℕ : ℕ → ℕ
-1ᵇℕ n = suc (n ℕ.* 2)
+infixl 6 _⊖_
+_⊖_ : ℕ → ℕ → ℕ±
+n     ⊖ zero        = +ⁿ[ n ]
+zero  ⊖ suc zero    = -1ⁿ
+zero  ⊖ suc (suc _) = negⁿ
+suc n ⊖ suc m       = n ⊖ m
 
--′‿cong : ∀ n m → from-maybe 0 (n -′ m) ≡ n ℕ.- m
--′‿cong n zero    = refl
--′‿cong zero (suc m) = refl
--′‿cong (suc n) (suc m) = -′‿cong n m
+⟦_⇓⟧± : 𝔹± → ℕ±
+⟦ neg   ⇓⟧± = negⁿ
+⟦ -1ᵇ   ⇓⟧± = -1ⁿ
+⟦ +[ x ] ⇓⟧± = +ⁿ[ ⟦ x ⇓⟧ ]
 
-trunc : 𝔹± → Maybe 𝔹
-trunc neg = nothing
-trunc +[ x ] = just x
+absⁿ : ℕ± → ℕ
+absⁿ negⁿ    = 0
+absⁿ -1ⁿ     = 0
+absⁿ +ⁿ[ n ] = n
 
-⟦_⇓⟧′ : Maybe 𝔹 → Maybe ℕ
-⟦_⇓⟧′ = map-maybe ⟦_⇓⟧
+infixr 8 1ᵇⁿ_ 2ᵇⁿ_
 
-exp2 : ℕ → ℕ → ℕ
-exp2 zero    x = x
-exp2 (suc n) x = exp2 n x ℕ.* 2
+1ᵇⁿ_ : ℕ± → ℕ±
+1ᵇⁿ negⁿ    = negⁿ
+1ᵇⁿ -1ⁿ     = -1ⁿ
+1ᵇⁿ +ⁿ[ n ] = +ⁿ[ suc (n ℕ.* 2) ]
 
-exp2-𝔹 : ℕ → 𝔹 → 𝔹
-exp2-𝔹 zero    xs = xs
-exp2-𝔹 (suc n) xs = exp2-𝔹 n (2× xs)
+2ᵇⁿ_ : ℕ± → ℕ±
+2ᵇⁿ negⁿ    = negⁿ
+2ᵇⁿ -1ⁿ     = +ⁿ[ 0 ]
+2ᵇⁿ +ⁿ[ n ] = +ⁿ[ suc (suc (n ℕ.* 2)) ]
 
-exp2-𝔹-0ᵇ : ∀ n → exp2-𝔹 n 0ᵇ ≡ 0ᵇ
-exp2-𝔹-0ᵇ zero = refl
-exp2-𝔹-0ᵇ (suc n) = exp2-𝔹-0ᵇ n
+1ᵇ±-cong : ∀ x → ⟦ 1ᵇ± x ⇓⟧± ≡ 1ᵇⁿ ⟦ x ⇓⟧±
+1ᵇ±-cong neg    = refl
+1ᵇ±-cong -1ᵇ    = refl
+1ᵇ±-cong +[ _ ] = refl
 
-exp2-𝔹-2ᵇ : ∀ n xs → exp2-𝔹 n (2ᵇ xs) ≡ xs +1×2^suc n
-exp2-𝔹-2ᵇ zero 0ᵇ = refl
-exp2-𝔹-2ᵇ zero (1ᵇ xs) = refl
-exp2-𝔹-2ᵇ zero (2ᵇ xs) = refl
-exp2-𝔹-2ᵇ (suc n) xs = exp2-𝔹-2ᵇ n (1ᵇ xs)
+2ᵇ±-cong : ∀ x → ⟦ 2ᵇ± x ⇓⟧± ≡ 2ᵇⁿ ⟦ x ⇓⟧±
+2ᵇ±-cong neg    = refl
+2ᵇ±-cong -1ᵇ    = refl
+2ᵇ±-cong +[ _ ] = refl
 
-exp2-𝔹-×2^suc : ∀ n xs → exp2-𝔹 (suc n) xs ≡ xs ×2^suc n
-exp2-𝔹-×2^suc n 0ᵇ      = exp2-𝔹-0ᵇ n
-exp2-𝔹-×2^suc n (1ᵇ xs) = exp2-𝔹-2ᵇ n (2× xs)
-exp2-𝔹-×2^suc n (2ᵇ xs) = exp2-𝔹-2ᵇ n (1ᵇ xs)
+dec±-cong : ∀ xs → ⟦ dec± xs ⇓⟧± ≡ ⟦ xs ⇓⟧ ⊖ 1
+dec±-cong 0ᵇ      = refl
+dec±-cong (1ᵇ xs) = cong +ⁿ[_] (double-cong xs)
+dec±-cong (2ᵇ xs) = refl
 
-exp2-assoc : ∀ n m → exp2 n (m ℕ.* 2) ≡ exp2 n m ℕ.* 2
-exp2-assoc zero m = refl
-exp2-assoc (suc n) m = cong (ℕ._* 2) (exp2-assoc n m)
+1ᵇ-⊖ : ∀ x z → 1ᵇⁿ (x ⊖ z) ≡ suc (x ℕ.* 2) ⊖ (z ℕ.* 2)
+1ᵇ-⊖ x       zero          = refl
+1ᵇ-⊖ zero    (suc zero)    = refl
+1ᵇ-⊖ zero    (suc (suc z)) = refl
+1ᵇ-⊖ (suc x) (suc z)       = 1ᵇ-⊖ x z
 
-exp2-𝔹-cong : ∀ n xs → ⟦ exp2-𝔹 n xs ⇓⟧ ≡ exp2 n ⟦ xs ⇓⟧
-exp2-𝔹-cong zero xs = refl
-exp2-𝔹-cong (suc n) xs = exp2-𝔹-cong n (2× xs) ∙ cong (exp2 n) (double-cong xs) ∙ exp2-assoc n ⟦ xs ⇓⟧
+2ᵇ-⊖ : ∀ x z → 2ᵇⁿ (x ⊖ suc z) ≡ (x ℕ.* 2) ⊖ (z ℕ.* 2)
+2ᵇ-⊖ zero    zero    = refl
+2ᵇ-⊖ zero    (suc z) = refl
+2ᵇ-⊖ (suc x) zero    = refl
+2ᵇ-⊖ (suc x) (suc z) = 2ᵇ-⊖ x z
 
-×2^suc-cong : ∀ n xs → ⟦ xs ×2^suc n ⇓⟧ ≡ exp2 (suc n) ⟦ xs ⇓⟧
-×2^suc-cong n xs = cong ⟦_⇓⟧ (sym (exp2-𝔹-×2^suc n xs)) ∙ exp2-𝔹-cong (suc n) xs
+sub-cong  : ∀ xs ys → ⟦ sub  xs ys ⇓⟧± ≡ ⟦ xs ⇓⟧ ⊖ ⟦ ys ⇓⟧
+sub₁-cong : ∀ xs ys → ⟦ sub₁ xs ys ⇓⟧± ≡ ⟦ xs ⇓⟧ ⊖ suc ⟦ ys ⇓⟧
+sub₂-cong : ∀ xs ys → ⟦ sub₂ xs ys ⇓⟧± ≡ ⟦ xs ⇓⟧ ⊖ suc (suc ⟦ ys ⇓⟧)
 
-maybe-fuse : {A B C : Set} (c : B → C) (f : A → B) (b : B) (x : Maybe A)
-           → c (maybe f b x) ≡ maybe (c ∘ f) (c b) x
-maybe-fuse _ _ _ nothing  = refl
-maybe-fuse _ _ _ (just _) = refl
+sub-cong _       0ᵇ           = refl
+sub-cong 0ᵇ      (1ᵇ 0ᵇ)      = refl
+sub-cong 0ᵇ      (1ᵇ (1ᵇ _))  = refl
+sub-cong 0ᵇ      (1ᵇ (2ᵇ _))  = refl
+sub-cong 0ᵇ      (2ᵇ _)       = refl
+sub-cong (1ᵇ xs) (1ᵇ ys) = 2ᵇ±-cong (sub₁ xs ys) ∙ cong 2ᵇⁿ_ (sub₁-cong xs ys) ∙ 2ᵇ-⊖ ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
+sub-cong (2ᵇ xs) (2ᵇ ys) = 2ᵇ±-cong (sub₁ xs ys) ∙ cong 2ᵇⁿ_ (sub₁-cong xs ys) ∙ 2ᵇ-⊖ ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
+sub-cong (2ᵇ xs) (1ᵇ ys) = 1ᵇ±-cong (sub  xs ys) ∙ cong 1ᵇⁿ_ (sub-cong  xs ys) ∙ 1ᵇ-⊖ ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
+sub-cong (1ᵇ xs) (2ᵇ ys) = 1ᵇ±-cong (sub₁ xs ys) ∙ cong 1ᵇⁿ_ (sub₁-cong xs ys) ∙ 1ᵇ-⊖ ⟦ xs ⇓⟧ (suc ⟦ ys ⇓⟧)
 
-map-maybe-comp : {A B C : Set} (f : A → B) (b : B) (g : C → A) (x : Maybe C) → maybe f b (map-maybe g x) ≡ maybe (f ∘ g) b x
-map-maybe-comp f b g = maybe-fuse (maybe f b) _ _
+sub₁-cong xs      0ᵇ      = dec±-cong xs
+sub₁-cong 0ᵇ      (1ᵇ _)  = refl
+sub₁-cong 0ᵇ      (2ᵇ _)  = refl
+sub₁-cong (1ᵇ xs) (1ᵇ ys) = 1ᵇ±-cong (sub₁ xs ys) ∙ cong 1ᵇⁿ_ (sub₁-cong xs ys) ∙ 1ᵇ-⊖ ⟦ xs ⇓⟧ (suc ⟦ ys ⇓⟧)
+sub₁-cong (2ᵇ xs) (2ᵇ ys) = 1ᵇ±-cong (sub₁ xs ys) ∙ cong 1ᵇⁿ_ (sub₁-cong xs ys) ∙ 1ᵇ-⊖ ⟦ xs ⇓⟧ (suc ⟦ ys ⇓⟧)
+sub₁-cong (2ᵇ xs) (1ᵇ ys) = 2ᵇ±-cong (sub₁ xs ys) ∙ cong 2ᵇⁿ_ (sub₁-cong xs ys) ∙ 2ᵇ-⊖ ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
+sub₁-cong (1ᵇ xs) (2ᵇ ys) = 2ᵇ±-cong (sub₂ xs ys) ∙ cong 2ᵇⁿ_ (sub₂-cong xs ys) ∙ 2ᵇ-⊖ ⟦ xs ⇓⟧ (suc ⟦ ys ⇓⟧)
 
-trunc-pos-comm-2× : ∀ x n → trunc (+[ x ]+1×2^suc n) ≡ map-maybe (_+1×2^suc n) (trunc x)
-trunc-pos-comm-2× neg    _ = refl
-trunc-pos-comm-2× +[ x ] _ = refl
+sub₂-cong 0ᵇ      _       = refl
+sub₂-cong (1ᵇ xs) 0ᵇ      = 1ᵇ±-cong (dec± xs)   ∙ cong 1ᵇⁿ_ (dec±-cong xs)   ∙ 1ᵇ-⊖ ⟦ xs ⇓⟧ 1
+sub₂-cong (2ᵇ xs) 0ᵇ      = 2ᵇ±-cong (dec± xs)   ∙ cong 2ᵇⁿ_ (dec±-cong xs)   ∙ 2ᵇ-⊖ ⟦ xs ⇓⟧ 0
+sub₂-cong (1ᵇ xs) (1ᵇ ys) = 2ᵇ±-cong (sub₂ xs ys) ∙ cong 2ᵇⁿ_ (sub₂-cong xs ys) ∙ 2ᵇ-⊖ ⟦ xs ⇓⟧ (suc ⟦ ys ⇓⟧)
+sub₂-cong (2ᵇ xs) (2ᵇ ys) = 2ᵇ±-cong (sub₂ xs ys) ∙ cong 2ᵇⁿ_ (sub₂-cong xs ys) ∙ 2ᵇ-⊖ ⟦ xs ⇓⟧ (suc ⟦ ys ⇓⟧)
+sub₂-cong (2ᵇ xs) (1ᵇ ys) = 1ᵇ±-cong (sub₁ xs ys) ∙ cong 1ᵇⁿ_ (sub₁-cong xs ys) ∙ 1ᵇ-⊖ ⟦ xs ⇓⟧ (suc ⟦ ys ⇓⟧)
+sub₂-cong (1ᵇ xs) (2ᵇ ys) = 1ᵇ±-cong (sub₂ xs ys) ∙ cong 1ᵇⁿ_ (sub₂-cong xs ys) ∙ 1ᵇ-⊖ ⟦ xs ⇓⟧ (suc (suc ⟦ ys ⇓⟧))
 
-trunc-pos-comm-1ᵇ : ∀ x → trunc 1ᵇ+[ x ] ≡ map-maybe 1ᵇ_ (trunc x)
-trunc-pos-comm-1ᵇ neg    = refl
-trunc-pos-comm-1ᵇ +[ x ] = refl
-
-1ᵇz-lemma : ∀ n → ⟦ map-maybe 1ᵇ_ (trunc n) ⇓⟧′ ≡ map-maybe 1ᵇℕ (map-maybe ⟦_⇓⟧ (trunc n))
-1ᵇz-lemma neg  = refl
-1ᵇz-lemma +[ x ] = refl
-
-1ᵇzs-distrib‿-′ : ∀ x y → map-maybe 1ᵇℕ (x -′ suc y) ≡  (x ℕ.* 2) -′ suc (y ℕ.* 2)
-1ᵇzs-distrib‿-′ zero y = refl
-1ᵇzs-distrib‿-′ (suc x) zero = refl
-1ᵇzs-distrib‿-′ (suc x) (suc y) = 1ᵇzs-distrib‿-′ x y
-
-2ᵇzs-distrib‿-′ : ∀ x y → map-maybe (ℕ._* 2) (x -′ suc y) ≡  (x ℕ.* 2) -′ suc (suc (y ℕ.* 2))
-2ᵇzs-distrib‿-′ zero y = refl
-2ᵇzs-distrib‿-′ (suc x) zero = refl
-2ᵇzs-distrib‿-′ (suc x) (suc y) = 2ᵇzs-distrib‿-′ x y
-
-1ᵇsz-distrib‿-′ : ∀ x y → map-maybe 1ᵇℕ (x -′ y) ≡ suc (x ℕ.* 2) -′ (y ℕ.* 2)
-1ᵇsz-distrib‿-′ zero zero = refl
-1ᵇsz-distrib‿-′ zero (suc y) = refl
-1ᵇsz-distrib‿-′ (suc x) zero = refl
-1ᵇsz-distrib‿-′ (suc x) (suc y) = 1ᵇsz-distrib‿-′ x y
-
-+-cong‿-′ : ∀ n x y → (n ℕ.+ x) -′ (n ℕ.+ y) ≡ x -′ y
-+-cong‿-′ zero x y = refl
-+-cong‿-′ (suc n) x y = +-cong‿-′ n x y
-
-*-distrib‿-′ : ∀ n x y → map-maybe (ℕ._* suc n) (x -′ y) ≡ (x ℕ.* suc n) -′ (y ℕ.* suc n)
-*-distrib‿-′ n zero zero = refl
-*-distrib‿-′ n zero (suc y) = refl
-*-distrib‿-′ n (suc x) zero = refl
-*-distrib‿-′ n (suc x) (suc y) = *-distrib‿-′ n x y ∙ sym (+-cong‿-′ n _ _)
-
--′‿*2-suc : ∀ x y → map-maybe suc ((x ℕ.* 2) -′ (y ℕ.* 2)) ≡ suc (x ℕ.* 2) -′ (y ℕ.* 2)
--′‿*2-suc zero zero = refl
--′‿*2-suc zero (suc y) = refl
--′‿*2-suc (suc x) zero = refl
--′‿*2-suc (suc x) (suc y) = -′‿*2-suc x y
-
--′‿suc-*2 : ∀ x y → map-maybe (suc ∘ (ℕ._* 2)) (x -′ suc y) ≡ (x ℕ.* 2) -′ suc (y ℕ.* 2)
--′‿suc-*2 zero zero = refl
--′‿suc-*2 zero (suc y) = refl
--′‿suc-*2 (suc x) zero = refl
--′‿suc-*2 (suc x) (suc y) = -′‿suc-*2 x y
-
-+1×2^suc-cong : ∀ n xs → ⟦ xs +1×2^suc n ⇓⟧ ≡ exp2 (suc n) (suc ⟦ xs ⇓⟧)
-+1×2^suc-cong n xs = cong ⟦_⇓⟧ (sym (exp2-𝔹-2ᵇ n xs)) ∙ exp2-𝔹-cong n (2ᵇ xs) ∙ exp2-assoc n (suc ⟦ xs ⇓⟧)
-
-exp-suc-lemma : ∀ n xs ys → map-maybe (λ x → exp2 n x ℕ.* 2 ℕ.* 2) (xs -′ ys) ≡
-                  map-maybe (λ x → exp2 n x ℕ.* 2)
-                  ((xs ℕ.* 2) -′ (ys ℕ.* 2))
-exp-suc-lemma n xs ys = cong (flip map-maybe (xs -′ ys)) (funExt (λ x → cong (ℕ._* 2) (sym (exp2-assoc n x)))) ∙ sym (map-maybe-comp _ _ _ (xs -′ ys)) ∙ cong (map-maybe (exp2 (suc n))) (*-distrib‿-′ 1 xs ys)
-
-subᵉ₁-0-cong : ∀ n xs ys → ⟦ map-maybe (_+1×2^suc n) (trunc (subᵉ₁ 0 xs ys)) ⇓⟧′ ≡ map-maybe (exp2 (suc n)) ((⟦ xs ⇓⟧ ℕ.* 2) -′ suc (⟦ ys ⇓⟧ ℕ.* 2))
-subᵉ-0-cong : ∀ n xs ys → ⟦ map-maybe (_+1×2^suc n) (trunc (subᵉ 0 xs ys)) ⇓⟧′ ≡ map-maybe (exp2 (suc n)) (suc (⟦ xs ⇓⟧ ℕ.* 2) -′ (⟦ ys ⇓⟧ ℕ.* 2))
-subᵉ-cong  : ∀ n xs ys → ⟦ trunc (subᵉ  n xs ys) ⇓⟧′ ≡ map-maybe (exp2 (suc n)) (⟦ xs ⇓⟧ -′ ⟦ ys ⇓⟧)
-subᵉ₁-cong : ∀ n xs ys → ⟦ trunc (subᵉ₁ n xs ys) ⇓⟧′ ≡ map-maybe (exp2 (suc n)) (⟦ xs ⇓⟧ -′ suc ⟦ ys ⇓⟧)
-sub₁-cong  : ∀   xs ys → ⟦ trunc (sub₁ xs ys) ⇓⟧′ ≡ ⟦ xs ⇓⟧ -′ suc ⟦ ys ⇓⟧
-sub-cong   : ∀   xs ys → ⟦ trunc (sub xs ys )⇓⟧′ ≡ ⟦ xs ⇓⟧ -′ ⟦ ys ⇓⟧
-
-subᵉ₁-0-cong n xs ys =
-  ⟦ map-maybe (_+1×2^suc n) (trunc (subᵉ₁ 0 xs ys)) ⇓⟧′ ≡⟨ map-maybe-comp _ _ _ (trunc (subᵉ₁ 0 xs ys)) ⟩
-  map-maybe (⟦_⇓⟧ ∘ (_+1×2^suc n)) (trunc (subᵉ₁ 0 xs ys)) ≡⟨ cong (flip map-maybe (trunc (subᵉ₁ 0 xs ys))) (funExt (+1×2^suc-cong n)) ⟩
-  map-maybe (exp2 (suc n) ∘ suc ∘ ⟦_⇓⟧) (trunc (subᵉ₁ 0 xs ys)) ≡˘⟨ map-maybe-comp _ _ _ (trunc (subᵉ₁ 0 xs ys)) ⟩
-  map-maybe (exp2 (suc n) ∘ suc) ⟦ trunc (subᵉ₁ 0 xs ys) ⇓⟧′ ≡⟨ cong (map-maybe (exp2 (suc n) ∘ suc)) (subᵉ₁-cong 0 xs ys) ⟩
-  map-maybe (exp2 (suc n) ∘ suc) (map-maybe (exp2 1) (⟦ xs ⇓⟧ -′ suc ⟦ ys ⇓⟧)) ≡⟨ map-maybe-comp _ _ _ (⟦ xs ⇓⟧ -′ suc ⟦ ys ⇓⟧) ⟩
-  map-maybe (exp2 (suc n) ∘ suc ∘ exp2 1) (⟦ xs ⇓⟧ -′ suc ⟦ ys ⇓⟧) ≡˘⟨ map-maybe-comp _ _ _ (⟦ xs ⇓⟧ -′ suc ⟦ ys ⇓⟧) ⟩
-  map-maybe (exp2 (suc n)) (map-maybe (suc ∘ exp2 1) (⟦ xs ⇓⟧ -′ suc ⟦ ys ⇓⟧)) ≡⟨ cong (map-maybe (exp2 (suc n))) (-′‿suc-*2 ⟦ xs ⇓⟧ ⟦ ys ⇓⟧) ⟩
-  map-maybe (exp2 (suc n)) ((⟦ xs ⇓⟧ ℕ.* 2) -′ suc (⟦ ys ⇓⟧ ℕ.* 2)) ∎
-
-subᵉ-0-cong n xs ys =
-  ⟦ map-maybe (_+1×2^suc n) (trunc (subᵉ 0 xs ys)) ⇓⟧′ ≡⟨ map-maybe-comp _ _ _ (trunc (subᵉ 0 xs ys)) ⟩
-  map-maybe (⟦_⇓⟧ ∘ (_+1×2^suc n)) (trunc (subᵉ 0 xs ys)) ≡⟨ cong (flip map-maybe (trunc (subᵉ 0 xs ys))) (funExt (+1×2^suc-cong n)) ⟩
-  map-maybe (exp2 (suc n) ∘ suc ∘ ⟦_⇓⟧) (trunc (subᵉ 0 xs ys)) ≡˘⟨ map-maybe-comp _ _ _ (trunc (subᵉ 0 xs ys)) ⟩
-  map-maybe (exp2 (suc n) ∘ suc) ⟦ trunc (subᵉ 0 xs ys) ⇓⟧′ ≡⟨ cong (map-maybe (exp2 (suc n) ∘ suc)) (subᵉ-cong 0 xs ys) ⟩
-  map-maybe (exp2 (suc n) ∘ suc) (map-maybe (exp2 1) (⟦ xs ⇓⟧ -′ ⟦ ys ⇓⟧)) ≡⟨ map-maybe-comp _ _ _ (⟦ xs ⇓⟧ -′ ⟦ ys ⇓⟧) ⟩
-  map-maybe (exp2 (suc n) ∘ suc ∘ exp2 1) (⟦ xs ⇓⟧ -′ ⟦ ys ⇓⟧) ≡˘⟨ map-maybe-comp _ _ _ (⟦ xs ⇓⟧ -′ ⟦ ys ⇓⟧) ⟩
-  map-maybe (exp2 (suc n)) (map-maybe (suc ∘ exp2 1) (⟦ xs ⇓⟧ -′ ⟦ ys ⇓⟧)) ≡˘⟨ cong (map-maybe (exp2 (suc n))) (map-maybe-comp _ _ _ (⟦ xs ⇓⟧ -′ ⟦ ys ⇓⟧)) ⟩
-  map-maybe (exp2 (suc n)) (map-maybe suc (map-maybe (exp2 1) (⟦ xs ⇓⟧ -′ ⟦ ys ⇓⟧))) ≡⟨ cong (map-maybe (exp2 (suc n)) ∘ map-maybe suc) (*-distrib‿-′ 1 ⟦ xs ⇓⟧ ⟦ ys ⇓⟧) ⟩
-  map-maybe (exp2 (suc n)) (map-maybe suc (exp2 1 ⟦ xs ⇓⟧ -′ exp2 1 ⟦ ys ⇓⟧)) ≡⟨ cong (map-maybe (exp2 (suc n))) (-′‿*2-suc ⟦ xs ⇓⟧ ⟦ ys ⇓⟧) ⟩
-  map-maybe (exp2 (suc n)) (suc (⟦ xs ⇓⟧ ℕ.* 2) -′ (⟦ ys ⇓⟧ ℕ.* 2)) ∎
-
-subᵉ-cong n xs      0ᵇ      = cong just (×2^suc-cong n xs)
-subᵉ-cong n 0ᵇ      (1ᵇ ys) = refl
-subᵉ-cong n 0ᵇ      (2ᵇ ys) = refl
-subᵉ-cong n (1ᵇ xs) (1ᵇ ys) = subᵉ-cong (suc n) xs ys ∙ exp-suc-lemma n ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
-subᵉ-cong n (1ᵇ xs) (2ᵇ ys) = cong ⟦_⇓⟧′ (trunc-pos-comm-2× (subᵉ₁ 0 xs ys) n) ∙ subᵉ₁-0-cong n xs ys
-subᵉ-cong n (2ᵇ xs) (1ᵇ ys) = cong ⟦_⇓⟧′ (trunc-pos-comm-2× (subᵉ 0 xs ys) n) ∙ subᵉ-0-cong n xs ys
-
-subᵉ-cong n (2ᵇ xs) (2ᵇ ys) = subᵉ-cong (suc n) xs ys ∙ exp-suc-lemma n ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
-
-subᵉ₁-cong n 0ᵇ      _       = refl
-subᵉ₁-cong n (1ᵇ xs) 0ᵇ      = cong just (×2^suc-cong (suc n) xs ∙ cong (ℕ._* 2) (sym (exp2-assoc n ⟦ xs ⇓⟧)))
-subᵉ₁-cong n (1ᵇ xs) (1ᵇ ys) = cong ⟦_⇓⟧′ (trunc-pos-comm-2× (subᵉ₁ 0 xs ys) n) ∙ subᵉ₁-0-cong n xs ys
-subᵉ₁-cong n (1ᵇ xs) (2ᵇ ys) = subᵉ₁-cong (suc n) xs ys ∙ exp-suc-lemma n ⟦ xs ⇓⟧ (suc ⟦ ys ⇓⟧)
-subᵉ₁-cong n (2ᵇ xs) 0ᵇ      = cong just (+1×2^suc-cong n (2× xs) ∙ cong (λ e → exp2 n (suc e) ℕ.* 2) (double-cong xs))
-subᵉ₁-cong n (2ᵇ xs) (1ᵇ ys) = subᵉ-cong (suc n) xs ys ∙ exp-suc-lemma n ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
-subᵉ₁-cong n (2ᵇ xs) (2ᵇ ys) = cong ⟦_⇓⟧′ (trunc-pos-comm-2× (subᵉ₁ 0 xs ys) n) ∙ subᵉ₁-0-cong n xs ys
-
-sub₁-cong 0ᵇ      _       = refl
-sub₁-cong (1ᵇ xs) 0ᵇ      = cong just (double-cong xs)
-sub₁-cong (1ᵇ xs) (1ᵇ ys) = cong ⟦_⇓⟧′ (trunc-pos-comm-1ᵇ (sub₁ xs ys)) ∙ 1ᵇz-lemma (sub₁ xs ys) ∙ cong (map-maybe 1ᵇℕ) (sub₁-cong xs ys) ∙ 1ᵇzs-distrib‿-′ ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
-sub₁-cong (1ᵇ xs) (2ᵇ ys) = subᵉ₁-cong 0 xs ys ∙ 2ᵇzs-distrib‿-′ ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
-sub₁-cong (2ᵇ xs) 0ᵇ      = refl
-sub₁-cong (2ᵇ xs) (1ᵇ ys) = subᵉ-cong 0 xs ys ∙ *-distrib‿-′ 1 ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
-sub₁-cong (2ᵇ xs) (2ᵇ ys) = cong ⟦_⇓⟧′ (trunc-pos-comm-1ᵇ (sub₁ xs ys)) ∙  1ᵇz-lemma (sub₁ xs ys) ∙ cong (map-maybe 1ᵇℕ) (sub₁-cong xs ys) ∙ 1ᵇzs-distrib‿-′ ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
-
-sub-cong xs 0ᵇ           = refl
-sub-cong 0ᵇ      (1ᵇ _)  = refl
-sub-cong 0ᵇ      (2ᵇ _)  = refl
-sub-cong (1ᵇ xs) (1ᵇ ys) = subᵉ-cong 0 xs ys ∙ *-distrib‿-′ 1 ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
-sub-cong (2ᵇ xs) (2ᵇ ys) = subᵉ-cong 0 xs ys ∙ *-distrib‿-′ 1 ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
-sub-cong (1ᵇ xs) (2ᵇ ys) = cong ⟦_⇓⟧′ (trunc-pos-comm-1ᵇ (sub₁ xs ys)) ∙ 1ᵇz-lemma (sub₁ xs ys) ∙ cong (map-maybe 1ᵇℕ) (sub₁-cong xs ys) ∙ 1ᵇzs-distrib‿-′ ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
-sub-cong (2ᵇ xs) (1ᵇ ys) = cong ⟦_⇓⟧′ (trunc-pos-comm-1ᵇ (sub xs ys)) ∙ 1ᵇz-lemma (sub xs ys) ∙ cong (map-maybe 1ᵇℕ) (sub-cong xs ys) ∙ 1ᵇsz-distrib‿-′ ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
-
-abs-cong : ∀ x → abs x ≡ from-maybe 0ᵇ (trunc x)
-abs-cong neg = refl
+abs-cong : ∀ x → ⟦ abs x ⇓⟧ ≡ absⁿ ⟦ x ⇓⟧±
+abs-cong neg    = refl
+abs-cong -1ᵇ    = refl
 abs-cong +[ _ ] = refl
 
+⊖-cong : ∀ n m → absⁿ (n ⊖ m) ≡ n ℕ.- m
+⊖-cong n       zero          = refl
+⊖-cong zero    (suc zero)    = refl
+⊖-cong zero    (suc (suc m)) = refl
+⊖-cong (suc n) (suc m)       = ⊖-cong n m
+
 -‿cong : ∀ xs ys → ⟦ xs - ys ⇓⟧ ≡ ⟦ xs ⇓⟧ ℕ.- ⟦ ys ⇓⟧
--‿cong x y = cong ⟦_⇓⟧ (abs-cong (sub x y))
-           ∙ maybe-fuse ⟦_⇓⟧ _ _ (trunc (sub x y))
-           ∙ sym (map-maybe-comp _ _ ⟦_⇓⟧ (trunc (sub x y)))
-           ∙ cong (from-maybe 0) (sub-cong x y)
-           ∙ -′‿cong ⟦ x ⇓⟧ ⟦ y ⇓⟧
+-‿cong xs ys = abs-cong (sub xs ys) ∙ cong absⁿ (sub-cong xs ys) ∙ ⊖-cong ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
