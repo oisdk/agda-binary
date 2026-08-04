@@ -9,128 +9,100 @@ open import Data.Binary.Multiplication
 open import Data.Binary.Conversion
 import Agda.Builtin.Nat as ℕ
 
-open import Data.Binary.Properties.Isomorphism
-
 open import Data.Binary.Helpers
 open import Data.Binary.Properties.Helpers
 open import Data.Binary.Properties.Double
 open import Data.Binary.Double
-open import Data.Binary.Increment
 
-+0ᵇ : ∀ x → x + 0ᵇ ≡ x
-+0ᵇ 0ᵇ = refl
-+0ᵇ (1ᵇ x) = refl
-+0ᵇ (2ᵇ x) = refl
++2×-cong : ∀ x y → ⟦ x +2× y ⇓⟧ ≡ ⟦ x ⇓⟧ ℕ.+ ⟦ y ⇓⟧ ℕ.* 2
++2×-cong 0ᵇ     y = double-cong y
++2×-cong (1ᵇ x) y = cong (λ z → suc (z ℕ.* 2)) (+-cong x y) ∙ cong suc (+-*-distrib ⟦ x ⇓⟧ ⟦ y ⇓⟧ 2)
++2×-cong (2ᵇ x) y = cong (λ z → 2 ℕ.+ z ℕ.* 2) (+-cong x y) ∙ cong (2 ℕ.+_) (+-*-distrib ⟦ x ⇓⟧ ⟦ y ⇓⟧ 2)
 
-+2ᵇ : ∀ x y → x + 2ᵇ y ≡ 1+[ x + 1ᵇ y ]
-+2ᵇ 0ᵇ y = refl
-+2ᵇ (1ᵇ x) y = refl
-+2ᵇ (2ᵇ x) y = refl
+shuffle : ∀ x y z → (x ℕ.+ y) ℕ.+ z ≡ y ℕ.+ (x ℕ.+ z)
+shuffle x y z = cong (ℕ._+ z) (+-comm x y) ∙ +-assoc y x z
 
-1ᵇ-double : ∀ x → 1ᵇ x ≡ inc (2× x)
-1ᵇ-double 0ᵇ = refl
-1ᵇ-double (1ᵇ x) = cong 1ᵇ_ (1ᵇ-double x)
-1ᵇ-double (2ᵇ x) = refl
+4ab : ∀ a b → a ℕ.* b ℕ.* 2 ℕ.* 2 ≡ a ℕ.* 2 ℕ.* (b ℕ.* 2)
+4ab a b =
+  a ℕ.* b ℕ.* 2 ℕ.* 2     ≡⟨ *-assoc (a ℕ.* b) 2 2 ⟩
+  a ℕ.* b ℕ.* 4           ≡⟨ *-assoc a b 4 ⟩
+  a ℕ.* (b ℕ.* 4)         ≡˘⟨ cong (a ℕ.*_) (*-assoc b 2 2) ⟩
+  a ℕ.* (b ℕ.* 2 ℕ.* 2)   ≡⟨ cong (a ℕ.*_) (*-comm (b ℕ.* 2) 2) ⟩
+  a ℕ.* (2 ℕ.* (b ℕ.* 2)) ≡˘⟨ *-assoc a 2 (b ℕ.* 2) ⟩
+  a ℕ.* 2 ℕ.* (b ℕ.* 2)   ∎
 
-2ᵇ-double : ∀ x → 2ᵇ x ≡ 2× (inc x)
-2ᵇ-double 0ᵇ = refl
-2ᵇ-double (1ᵇ x) = refl
-2ᵇ-double (2ᵇ x) = cong 2ᵇ_ (2ᵇ-double x)
+exp₁₁ : ∀ a b → suc (((a ℕ.+ b) ℕ.+ a ℕ.* b ℕ.* 2) ℕ.* 2) ≡ suc (a ℕ.* 2) ℕ.* suc (b ℕ.* 2)
+exp₁₁ a b =
+  suc (((a ℕ.+ b) ℕ.+ a ℕ.* b ℕ.* 2) ℕ.* 2)                   ≡⟨ cong suc (+-*-distrib (a ℕ.+ b) (a ℕ.* b ℕ.* 2) 2) ⟩
+  suc ((a ℕ.+ b) ℕ.* 2 ℕ.+ a ℕ.* b ℕ.* 2 ℕ.* 2)               ≡⟨ cong (λ z → suc (z ℕ.+ a ℕ.* b ℕ.* 2 ℕ.* 2)) (+-*-distrib a b 2) ⟩
+  suc (a ℕ.* 2 ℕ.+ b ℕ.* 2 ℕ.+ a ℕ.* b ℕ.* 2 ℕ.* 2)           ≡⟨ cong (λ z → suc (a ℕ.* 2 ℕ.+ b ℕ.* 2 ℕ.+ z)) (4ab a b) ⟩
+  suc (a ℕ.* 2 ℕ.+ b ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.* (b ℕ.* 2))         ≡⟨ cong suc (shuffle (a ℕ.* 2) (b ℕ.* 2) (a ℕ.* 2 ℕ.* (b ℕ.* 2))) ⟩
+  suc (b ℕ.* 2 ℕ.+ (a ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.* (b ℕ.* 2)))       ≡⟨ cong (λ z → suc (b ℕ.* 2 ℕ.+ z)) (*-suc (a ℕ.* 2) (b ℕ.* 2)) ⟩
+  suc (b ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.* suc (b ℕ.* 2))                 ∎
 
-add-inc : ∀ x → 1+[ x + 0ᵇ ] ≡ inc x
-add-inc 0ᵇ = refl
-add-inc (1ᵇ x) = refl
-add-inc (2ᵇ x) = refl
+exp₁₂ : ∀ a b → 2 ℕ.+ (b ℕ.+ (a ℕ.+ a ℕ.* b) ℕ.* 2) ℕ.* 2 ≡ suc (a ℕ.* 2) ℕ.* (2 ℕ.+ b ℕ.* 2)
+exp₁₂ a b =
+  2 ℕ.+ (b ℕ.+ (a ℕ.+ a ℕ.* b) ℕ.* 2) ℕ.* 2                                 ≡⟨ cong (2 ℕ.+_) (+-*-distrib b ((a ℕ.+ a ℕ.* b) ℕ.* 2) 2) ⟩
+  2 ℕ.+ (b ℕ.* 2 ℕ.+ (a ℕ.+ a ℕ.* b) ℕ.* 2 ℕ.* 2)                           ≡⟨ cong (λ z → 2 ℕ.+ (b ℕ.* 2 ℕ.+ z ℕ.* 2)) (+-*-distrib a (a ℕ.* b) 2) ⟩
+  2 ℕ.+ (b ℕ.* 2 ℕ.+ (a ℕ.* 2 ℕ.+ a ℕ.* b ℕ.* 2) ℕ.* 2)                     ≡⟨ cong (λ z → 2 ℕ.+ (b ℕ.* 2 ℕ.+ z)) (+-*-distrib (a ℕ.* 2) (a ℕ.* b ℕ.* 2) 2) ⟩
+  2 ℕ.+ (b ℕ.* 2 ℕ.+ (a ℕ.* 2 ℕ.* 2 ℕ.+ a ℕ.* b ℕ.* 2 ℕ.* 2))               ≡˘⟨ cong (λ z → 2 ℕ.+ (b ℕ.* 2 ℕ.+ (z ℕ.+ a ℕ.* b ℕ.* 2 ℕ.* 2))) (double-plus (a ℕ.* 2)) ⟩
+  2 ℕ.+ (b ℕ.* 2 ℕ.+ (a ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.+ a ℕ.* b ℕ.* 2 ℕ.* 2))         ≡⟨ cong (λ z → 2 ℕ.+ (b ℕ.* 2 ℕ.+ (a ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.+ z))) (4ab a b) ⟩
+  2 ℕ.+ (b ℕ.* 2 ℕ.+ (a ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.* (b ℕ.* 2)))       ≡⟨ cong (λ z → 2 ℕ.+ (b ℕ.* 2 ℕ.+ z)) (+-assoc (a ℕ.* 2) (a ℕ.* 2) (a ℕ.* 2 ℕ.* (b ℕ.* 2))) ⟩
+  2 ℕ.+ (b ℕ.* 2 ℕ.+ (a ℕ.* 2 ℕ.+ (a ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.* (b ℕ.* 2))))     ≡⟨ cong (λ z → 2 ℕ.+ (b ℕ.* 2 ℕ.+ (a ℕ.* 2 ℕ.+ z))) (*-suc (a ℕ.* 2) (b ℕ.* 2)) ⟩
+  2 ℕ.+ (b ℕ.* 2 ℕ.+ (a ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.* suc (b ℕ.* 2)))               ≡⟨ cong (λ z → 2 ℕ.+ (b ℕ.* 2 ℕ.+ z)) (*-suc (a ℕ.* 2) (suc (b ℕ.* 2))) ⟩
+  2 ℕ.+ (b ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.* suc (suc (b ℕ.* 2)))                       ∎
 
-+2ᵇ₂ : ∀ x y → 1+[  x + 2ᵇ y ] ≡ 2+[  x + 1ᵇ y ]
-+2ᵇ₂ 0ᵇ y = refl
-+2ᵇ₂ (1ᵇ x) y = refl
-+2ᵇ₂ (2ᵇ x) y = refl
+exp₂₁ : ∀ a b → 2 ℕ.+ (a ℕ.+ (b ℕ.+ a ℕ.* b) ℕ.* 2) ℕ.* 2 ≡ (2 ℕ.+ a ℕ.* 2) ℕ.* suc (b ℕ.* 2)
+exp₂₁ a b =
+  2 ℕ.+ (a ℕ.+ (b ℕ.+ a ℕ.* b) ℕ.* 2) ℕ.* 2                                   ≡⟨ cong (2 ℕ.+_) (+-*-distrib a ((b ℕ.+ a ℕ.* b) ℕ.* 2) 2) ⟩
+  2 ℕ.+ (a ℕ.* 2 ℕ.+ (b ℕ.+ a ℕ.* b) ℕ.* 2 ℕ.* 2)                             ≡⟨ cong (λ z → 2 ℕ.+ (a ℕ.* 2 ℕ.+ z ℕ.* 2)) (+-*-distrib b (a ℕ.* b) 2) ⟩
+  2 ℕ.+ (a ℕ.* 2 ℕ.+ (b ℕ.* 2 ℕ.+ a ℕ.* b ℕ.* 2) ℕ.* 2)                       ≡⟨ cong (λ z → 2 ℕ.+ (a ℕ.* 2 ℕ.+ z)) (+-*-distrib (b ℕ.* 2) (a ℕ.* b ℕ.* 2) 2) ⟩
+  2 ℕ.+ (a ℕ.* 2 ℕ.+ (b ℕ.* 2 ℕ.* 2 ℕ.+ a ℕ.* b ℕ.* 2 ℕ.* 2))                 ≡˘⟨ cong (λ z → 2 ℕ.+ (a ℕ.* 2 ℕ.+ (z ℕ.+ a ℕ.* b ℕ.* 2 ℕ.* 2))) (double-plus (b ℕ.* 2)) ⟩
+  2 ℕ.+ (a ℕ.* 2 ℕ.+ (b ℕ.* 2 ℕ.+ b ℕ.* 2 ℕ.+ a ℕ.* b ℕ.* 2 ℕ.* 2))           ≡⟨ cong (λ z → 2 ℕ.+ (a ℕ.* 2 ℕ.+ (b ℕ.* 2 ℕ.+ b ℕ.* 2 ℕ.+ z))) (4ab a b) ⟩
+  2 ℕ.+ (a ℕ.* 2 ℕ.+ (b ℕ.* 2 ℕ.+ b ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.* (b ℕ.* 2)))         ≡⟨ cong (λ z → 2 ℕ.+ (a ℕ.* 2 ℕ.+ z)) (+-assoc (b ℕ.* 2) (b ℕ.* 2) (a ℕ.* 2 ℕ.* (b ℕ.* 2))) ⟩
+  2 ℕ.+ (a ℕ.* 2 ℕ.+ (b ℕ.* 2 ℕ.+ (b ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.* (b ℕ.* 2))))       ≡˘⟨ cong (2 ℕ.+_) (+-assoc (a ℕ.* 2) (b ℕ.* 2) (b ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.* (b ℕ.* 2))) ⟩
+  2 ℕ.+ (a ℕ.* 2 ℕ.+ b ℕ.* 2 ℕ.+ (b ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.* (b ℕ.* 2)))         ≡⟨ cong (2 ℕ.+_) (shuffle (a ℕ.* 2) (b ℕ.* 2) (b ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.* (b ℕ.* 2))) ⟩
+  2 ℕ.+ (b ℕ.* 2 ℕ.+ (a ℕ.* 2 ℕ.+ (b ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.* (b ℕ.* 2))))       ≡˘⟨ cong (λ z → 2 ℕ.+ (b ℕ.* 2 ℕ.+ z)) (+-assoc (a ℕ.* 2) (b ℕ.* 2) (a ℕ.* 2 ℕ.* (b ℕ.* 2))) ⟩
+  2 ℕ.+ (b ℕ.* 2 ℕ.+ (a ℕ.* 2 ℕ.+ b ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.* (b ℕ.* 2)))         ≡⟨ cong (λ z → 2 ℕ.+ (b ℕ.* 2 ℕ.+ z)) (shuffle (a ℕ.* 2) (b ℕ.* 2) (a ℕ.* 2 ℕ.* (b ℕ.* 2))) ⟩
+  2 ℕ.+ (b ℕ.* 2 ℕ.+ (b ℕ.* 2 ℕ.+ (a ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.* (b ℕ.* 2))))       ≡⟨ cong (λ z → 2 ℕ.+ (b ℕ.* 2 ℕ.+ (b ℕ.* 2 ℕ.+ z))) (*-suc (a ℕ.* 2) (b ℕ.* 2)) ⟩
+  2 ℕ.+ (b ℕ.* 2 ℕ.+ (b ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.* suc (b ℕ.* 2)))                 ≡˘⟨ cong suc (+-suc (b ℕ.* 2) (b ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.* suc (b ℕ.* 2))) ⟩
+  suc (b ℕ.* 2 ℕ.+ suc (b ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.* suc (b ℕ.* 2)))               ∎
 
-+1ᵇ₂ : ∀ x y → 1+[ x + 1ᵇ y ] ≡ 2+[ x + 2× y ]
-+1ᵇ₂ 0ᵇ 0ᵇ = refl
-+1ᵇ₂ 0ᵇ (1ᵇ y) = cong 2ᵇ_ (1ᵇ-double y)
-+1ᵇ₂ 0ᵇ (2ᵇ y) = refl
-+1ᵇ₂ (1ᵇ x) 0ᵇ = cong 1ᵇ_ (add-inc x)
-+1ᵇ₂ (1ᵇ x) (1ᵇ y) = cong 1ᵇ_ (+1ᵇ₂ x y)
-+1ᵇ₂ (1ᵇ x) (2ᵇ y) = cong 1ᵇ_ (+2ᵇ₂ x y)
-+1ᵇ₂ (2ᵇ x) 0ᵇ = cong 2ᵇ_ (add-inc x)
-+1ᵇ₂ (2ᵇ x) (1ᵇ y) = cong 2ᵇ_ (+1ᵇ₂ x y)
-+1ᵇ₂ (2ᵇ x) (2ᵇ y) = cong 2ᵇ_ (+2ᵇ₂ x y)
-
-+1ᵇ : ∀ x y → x + 1ᵇ y ≡ 1+[  x + 2× y ]
-+1ᵇ 0ᵇ y = 1ᵇ-double y
-+1ᵇ (1ᵇ x) 0ᵇ = cong 2ᵇ_ (+0ᵇ x)
-+1ᵇ (1ᵇ x) (1ᵇ y) = cong 2ᵇ_ (+1ᵇ x y)
-+1ᵇ (1ᵇ x) (2ᵇ y) = cong 2ᵇ_ (+2ᵇ x y)
-+1ᵇ (2ᵇ x) 0ᵇ = cong 1ᵇ_ (add-inc x)
-+1ᵇ (2ᵇ x) (1ᵇ y) = cong 1ᵇ_ (+1ᵇ₂ x y)
-+1ᵇ (2ᵇ x) (2ᵇ y) = cong 1ᵇ_ (+2ᵇ₂ x y)
-
-+2×-lemma : ∀ x y → x +2× y ≡ x + 2× y
-+2×-lemma 0ᵇ y = refl
-+2×-lemma (1ᵇ x) 0ᵇ = cong 1ᵇ_ (+0ᵇ x)
-+2×-lemma (2ᵇ x) 0ᵇ = cong 2ᵇ_ (+0ᵇ x)
-+2×-lemma (1ᵇ x) (1ᵇ y) = cong 1ᵇ_ (+1ᵇ x y)
-+2×-lemma (1ᵇ x) (2ᵇ y) = cong 1ᵇ_ (+2ᵇ x y)
-+2×-lemma (2ᵇ x) (1ᵇ y) = cong 2ᵇ_ (+1ᵇ x y)
-+2×-lemma (2ᵇ x) (2ᵇ y) = cong 2ᵇ_ (+2ᵇ x y)
-
-2ᵇ-double-+₂ : ∀ x y → 2ᵇ 1+[ x + y ] ≡ 2× 2+[ x + y ]
-2ᵇ-double-+₂ 0ᵇ 0ᵇ = refl
-2ᵇ-double-+₂ 0ᵇ (1ᵇ y) = cong 2ᵇ_ (2ᵇ-double y)
-2ᵇ-double-+₂ 0ᵇ (2ᵇ y) = refl
-2ᵇ-double-+₂ (1ᵇ x) 0ᵇ = cong 2ᵇ_ (2ᵇ-double x)
-2ᵇ-double-+₂ (1ᵇ x) (1ᵇ y) = refl
-2ᵇ-double-+₂ (1ᵇ x) (2ᵇ y) = cong 2ᵇ_ (2ᵇ-double-+₂ x y)
-2ᵇ-double-+₂ (2ᵇ x) 0ᵇ = refl
-2ᵇ-double-+₂ (2ᵇ x) (1ᵇ y) = cong 2ᵇ_ (2ᵇ-double-+₂ x y)
-2ᵇ-double-+₂ (2ᵇ x) (2ᵇ y) = refl
-
-2ᵇ-double-+ : ∀ x y → 2ᵇ (x + y) ≡ 2× 1+[ x + y ]
-2ᵇ-double-+ 0ᵇ y = 2ᵇ-double y
-2ᵇ-double-+ (1ᵇ x) 0ᵇ = refl
-2ᵇ-double-+ (1ᵇ x) (1ᵇ y) = cong 2ᵇ_ (2ᵇ-double-+ x y)
-2ᵇ-double-+ (1ᵇ x) (2ᵇ y) = refl
-2ᵇ-double-+ (2ᵇ x) 0ᵇ = cong 2ᵇ_ (2ᵇ-double x)
-2ᵇ-double-+ (2ᵇ x) (1ᵇ y) = refl
-2ᵇ-double-+ (2ᵇ x) (2ᵇ y) = cong 2ᵇ_ (2ᵇ-double-+₂ x y)
-
-+²-lemma : ∀ x y → 2×[ x + y ] ≡ 2× (x + y)
-+²-lemma 0ᵇ y = refl
-+²-lemma (1ᵇ x) 0ᵇ = refl
-+²-lemma (2ᵇ x) 0ᵇ = refl
-+²-lemma (1ᵇ x) (1ᵇ y) = refl
-+²-lemma (2ᵇ x) (2ᵇ y) = refl
-+²-lemma (1ᵇ x) (2ᵇ y) = cong 2ᵇ_ (2ᵇ-double-+ x y)
-+²-lemma (2ᵇ x) (1ᵇ y) = cong 2ᵇ_ (2ᵇ-double-+ x y)
-
-lemma₁ : ∀ x y → x ℕ.* y ℕ.* 2 ≡ y ℕ.* 2 ℕ.* x
-lemma₁ x y =
-  x ℕ.* y ℕ.* 2 ≡⟨ *-assoc x y 2 ⟩
-  x ℕ.* (y ℕ.* 2) ≡⟨ *-comm x (y ℕ.* 2) ⟩
-  y ℕ.* 2 ℕ.* x ∎
-
-lemma₂ : ∀ x y → (x ℕ.+ x ℕ.* y) ℕ.* 2 ≡ x ℕ.+ (x ℕ.+ y ℕ.* 2 ℕ.* x)
-lemma₂ x y =
-  (x ℕ.+ x ℕ.* y) ℕ.* 2 ≡⟨ +-*-distrib x (x ℕ.* y) 2 ⟩
-  x ℕ.* 2 ℕ.+ x ℕ.* y ℕ.* 2 ≡⟨ cong₂ ℕ._+_ (sym (double-plus x)) (lemma₁ x y) ⟩
-  x ℕ.+ x ℕ.+ y ℕ.* 2 ℕ.* x ≡⟨ +-assoc x x (y ℕ.* 2 ℕ.* x) ⟩
-  x ℕ.+ (x ℕ.+ y ℕ.* 2 ℕ.* x) ∎
+exp₂₂ : ∀ a b → 2 ℕ.+ suc (((a ℕ.+ b) ℕ.+ a ℕ.* b) ℕ.* 2) ℕ.* 2 ≡ (2 ℕ.+ a ℕ.* 2) ℕ.* (2 ℕ.+ b ℕ.* 2)
+exp₂₂ a b =
+  2 ℕ.+ suc (((a ℕ.+ b) ℕ.+ a ℕ.* b) ℕ.* 2) ℕ.* 2                                     ≡⟨ cong (λ z → 4 ℕ.+ z ℕ.* 2) (+-*-distrib (a ℕ.+ b) (a ℕ.* b) 2) ⟩
+  4 ℕ.+ ((a ℕ.+ b) ℕ.* 2 ℕ.+ a ℕ.* b ℕ.* 2) ℕ.* 2                                     ≡⟨ cong (λ z → 4 ℕ.+ (z ℕ.+ a ℕ.* b ℕ.* 2) ℕ.* 2) (+-*-distrib a b 2) ⟩
+  4 ℕ.+ (a ℕ.* 2 ℕ.+ b ℕ.* 2 ℕ.+ a ℕ.* b ℕ.* 2) ℕ.* 2                                 ≡⟨ cong (4 ℕ.+_) (+-*-distrib (a ℕ.* 2 ℕ.+ b ℕ.* 2) (a ℕ.* b ℕ.* 2) 2) ⟩
+  4 ℕ.+ ((a ℕ.* 2 ℕ.+ b ℕ.* 2) ℕ.* 2 ℕ.+ a ℕ.* b ℕ.* 2 ℕ.* 2)                         ≡⟨ cong (λ z → 4 ℕ.+ (z ℕ.+ a ℕ.* b ℕ.* 2 ℕ.* 2)) (+-*-distrib (a ℕ.* 2) (b ℕ.* 2) 2) ⟩
+  4 ℕ.+ (a ℕ.* 2 ℕ.* 2 ℕ.+ b ℕ.* 2 ℕ.* 2 ℕ.+ a ℕ.* b ℕ.* 2 ℕ.* 2)                     ≡˘⟨ cong (λ z → 4 ℕ.+ (z ℕ.+ b ℕ.* 2 ℕ.* 2 ℕ.+ a ℕ.* b ℕ.* 2 ℕ.* 2)) (double-plus (a ℕ.* 2)) ⟩
+  4 ℕ.+ (a ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.+ b ℕ.* 2 ℕ.* 2 ℕ.+ a ℕ.* b ℕ.* 2 ℕ.* 2)               ≡˘⟨ cong (λ z → 4 ℕ.+ (a ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.+ z ℕ.+ a ℕ.* b ℕ.* 2 ℕ.* 2)) (double-plus (b ℕ.* 2)) ⟩
+  4 ℕ.+ (a ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.+ (b ℕ.* 2 ℕ.+ b ℕ.* 2) ℕ.+ a ℕ.* b ℕ.* 2 ℕ.* 2)       ≡⟨ cong (λ z → 4 ℕ.+ (a ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.+ (b ℕ.* 2 ℕ.+ b ℕ.* 2) ℕ.+ z)) (4ab a b) ⟩
+  4 ℕ.+ (a ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.+ (b ℕ.* 2 ℕ.+ b ℕ.* 2) ℕ.+ a ℕ.* 2 ℕ.* (b ℕ.* 2))     ≡⟨ cong (4 ℕ.+_) (shuffle (a ℕ.* 2 ℕ.+ a ℕ.* 2) (b ℕ.* 2 ℕ.+ b ℕ.* 2) (a ℕ.* 2 ℕ.* (b ℕ.* 2))) ⟩
+  4 ℕ.+ (b ℕ.* 2 ℕ.+ b ℕ.* 2 ℕ.+ (a ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.* (b ℕ.* 2)))     ≡⟨ cong (4 ℕ.+_) (+-assoc (b ℕ.* 2) (b ℕ.* 2) (a ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.* (b ℕ.* 2))) ⟩
+  4 ℕ.+ (b ℕ.* 2 ℕ.+ (b ℕ.* 2 ℕ.+ (a ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.* (b ℕ.* 2))))   ≡⟨ cong (λ z → 4 ℕ.+ (b ℕ.* 2 ℕ.+ (b ℕ.* 2 ℕ.+ z))) (+-assoc (a ℕ.* 2) (a ℕ.* 2) (a ℕ.* 2 ℕ.* (b ℕ.* 2))) ⟩
+  4 ℕ.+ (b ℕ.* 2 ℕ.+ (b ℕ.* 2 ℕ.+ (a ℕ.* 2 ℕ.+ (a ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.* (b ℕ.* 2))))) ≡⟨ cong (λ z → 4 ℕ.+ (b ℕ.* 2 ℕ.+ (b ℕ.* 2 ℕ.+ (a ℕ.* 2 ℕ.+ z)))) (*-suc (a ℕ.* 2) (b ℕ.* 2)) ⟩
+  4 ℕ.+ (b ℕ.* 2 ℕ.+ (b ℕ.* 2 ℕ.+ (a ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.* suc (b ℕ.* 2))))           ≡⟨ cong (λ z → 4 ℕ.+ (b ℕ.* 2 ℕ.+ (b ℕ.* 2 ℕ.+ z))) (*-suc (a ℕ.* 2) (suc (b ℕ.* 2))) ⟩
+  4 ℕ.+ (b ℕ.* 2 ℕ.+ (b ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.* suc (suc (b ℕ.* 2))))                   ≡˘⟨ cong (λ z → 3 ℕ.+ z) (+-suc (b ℕ.* 2) (b ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.* suc (suc (b ℕ.* 2)))) ⟩
+  3 ℕ.+ (b ℕ.* 2 ℕ.+ suc (b ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.* suc (suc (b ℕ.* 2))))               ≡˘⟨ cong (λ z → 2 ℕ.+ z) (+-suc (b ℕ.* 2) (suc (b ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.* suc (suc (b ℕ.* 2))))) ⟩
+  2 ℕ.+ (b ℕ.* 2 ℕ.+ suc (suc (b ℕ.* 2 ℕ.+ a ℕ.* 2 ℕ.* suc (suc (b ℕ.* 2)))))         ∎
 
 *-cong : ∀ xs ys → ⟦ xs * ys ⇓⟧ ≡ ⟦ xs ⇓⟧ ℕ.* ⟦ ys ⇓⟧
-*-cong 0ᵇ ys = refl
-*-cong (1ᵇ xs) ys =
-  ⟦ ys +2× (ys * xs) ⇓⟧ ≡⟨ cong ⟦_⇓⟧ (+2×-lemma ys (ys * xs)) ⟩
-  ⟦ ys + 2× (ys * xs) ⇓⟧ ≡⟨ +-cong ys (2× (ys * xs)) ⟩
-  ⟦ ys ⇓⟧  ℕ.+ ⟦ 2× (ys * xs) ⇓⟧ ≡⟨ cong (⟦ ys ⇓⟧ ℕ.+_)  (double-cong (ys * xs)) ⟩
-  ⟦ ys ⇓⟧  ℕ.+ ⟦ ys * xs ⇓⟧ ℕ.* 2 ≡⟨ cong (⟦ ys ⇓⟧ ℕ.+_)  (cong (ℕ._* 2) (*-cong ys xs)) ⟩
-  ⟦ ys ⇓⟧  ℕ.+ ⟦ ys ⇓⟧ ℕ.* ⟦ xs ⇓⟧ ℕ.* 2 ≡⟨ cong (⟦ ys ⇓⟧ ℕ.+_) (lemma₁ ⟦ ys ⇓⟧ ⟦ xs ⇓⟧) ⟩
-  ⟦ ys ⇓⟧ ℕ.+ ⟦ xs ⇓⟧ ℕ.* 2 ℕ.* ⟦ ys ⇓⟧ ∎
-*-cong (2ᵇ xs) ys =
-  ⟦ 2×[ ys + ys * xs ] ⇓⟧ ≡⟨ cong ⟦_⇓⟧ (+²-lemma ys (ys * xs)) ⟩
-  ⟦ 2× (ys + ys * xs) ⇓⟧ ≡⟨ double-cong (ys + ys * xs) ⟩
-  ⟦ ys + ys * xs ⇓⟧ ℕ.* 2 ≡⟨ cong (ℕ._* 2) (+-cong ys (ys * xs)) ⟩
-  (⟦ ys ⇓⟧ ℕ.+ ⟦ ys * xs ⇓⟧) ℕ.* 2 ≡⟨ cong (ℕ._* 2) (cong (⟦ ys ⇓⟧ ℕ.+_) (*-cong ys xs)) ⟩
-  (⟦ ys ⇓⟧ ℕ.+ ⟦ ys ⇓⟧ ℕ.* ⟦ xs ⇓⟧) ℕ.* 2 ≡⟨ lemma₂ ⟦ ys ⇓⟧ ⟦ xs ⇓⟧  ⟩
-  ⟦ ys ⇓⟧ ℕ.+ (⟦ ys ⇓⟧ ℕ.+ ⟦ xs ⇓⟧ ℕ.* 2 ℕ.* ⟦ ys ⇓⟧) ∎
+*-cong 0ᵇ      ys      = refl
+*-cong (1ᵇ xs) 0ᵇ      = sym (*-zeroʳ ⟦ 1ᵇ xs ⇓⟧)
+*-cong (2ᵇ xs) 0ᵇ      = sym (*-zeroʳ ⟦ 2ᵇ xs ⇓⟧)
+*-cong (1ᵇ xs) (1ᵇ ys) =
+  cong (λ z → suc (z ℕ.* 2))
+    (+2×-cong (xs + ys) (xs * ys) ∙ cong₂ ℕ._+_ (+-cong xs ys) (cong (ℕ._* 2) (*-cong xs ys)))
+  ∙ exp₁₁ ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
+*-cong (1ᵇ xs) (2ᵇ ys) =
+  cong (λ z → 2 ℕ.+ z ℕ.* 2)
+    (+2×-cong ys (xs + xs * ys) ∙ cong (λ z → ⟦ ys ⇓⟧ ℕ.+ z ℕ.* 2) (+-cong xs (xs * ys) ∙ cong (⟦ xs ⇓⟧ ℕ.+_) (*-cong xs ys)))
+  ∙ exp₁₂ ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
+*-cong (2ᵇ xs) (1ᵇ ys) =
+  cong (λ z → 2 ℕ.+ z ℕ.* 2)
+    (+2×-cong xs (ys + xs * ys) ∙ cong (λ z → ⟦ xs ⇓⟧ ℕ.+ z ℕ.* 2) (+-cong ys (xs * ys) ∙ cong (⟦ ys ⇓⟧ ℕ.+_) (*-cong xs ys)))
+  ∙ exp₂₁ ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
+*-cong (2ᵇ xs) (2ᵇ ys) =
+  cong (λ z → 2 ℕ.+ suc (z ℕ.* 2) ℕ.* 2)
+    (+-cong (xs + ys) (xs * ys) ∙ cong₂ ℕ._+_ (+-cong xs ys) (*-cong xs ys))
+  ∙ exp₂₂ ⟦ xs ⇓⟧ ⟦ ys ⇓⟧
